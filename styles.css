@@ -187,7 +187,7 @@ textarea { resize: vertical; }
 .prog { height: 8px; border-radius: 4px; background: var(--fundo); overflow: hidden; margin-top: 4px; }
 .prog span { display: block; height: 100%; background: var(--o); width: 0; transition: width .2s; }
 
-.enviado { text-align: center; max-width: 560px; padding-top: 4rem; }
+.pagina.enviado { text-align: center; max-width: 560px; padding-top: 4rem; }
 .selo { width: 84px; height: 84px; border-radius: 50%; background: var(--o); color: #fff; font-size: 2.6rem; display: grid; place-items: center; margin: 0 auto 1.25rem; animation: surgir .4s ease-out; }
 @keyframes surgir { from { transform: scale(.6); opacity: 0; } }
 
@@ -321,7 +321,7 @@ tfoot th { background: var(--tinta); color: #fff; font-size: 1.05rem; }
 .aud-cab { margin: .5rem 0 0; }
 .aud-cab p { margin: .2rem 0; }
 .nota-crono { background: #FFF7E6; border-left: 4px solid var(--r); padding: .5rem .75rem; border-radius: 0 6px 6px 0; font-size: .9rem; margin-top: .6rem !important; }
-.escolha-item.enviado { border-left-color: var(--o); cursor: default; opacity: .8; }
+.escolha-item.ja-enviado { border-left-color: var(--o); background: #F7FBF8; }
 .escolha-item em.ok { color: var(--o); background: #DDEFE5; }
 
 /* cronograma */
@@ -428,3 +428,16 @@ html { scroll-behavior: smooth; }
 .forca span.on.f3 { background: var(--b); }
 .forca span.on.f4 { background: var(--o); }
 .forca-txt { font-size: .85rem; margin: -.5rem 0 0; }
+
+/* preenchimento enviado e resultado liberado */
+.rodape-card { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .35rem; }
+.rodape-card em { margin-top: 0 !important; }
+.rodape-card .ver { font-size: .85rem; font-weight: 600; color: var(--petroleo); text-decoration: underline; text-underline-offset: 3px; }
+.barra-planilha.pendente { border-left-color: var(--r); }
+.barra-planilha.liberado { border-left-color: var(--o); }
+.det-resumo.oculto { display: none; }
+.det-cab .aud-ciclo { display: block; }
+.painel-cab .aud-ciclo { display: block; margin-top: .9rem; }
+.rodape-card { justify-content: flex-start; gap: .75rem; }
+.rodape-card .ver { white-space: nowrap; }
+.aud-cab + .barra-planilha, .nota-crono + .barra-planilha { margin-top: 1rem; }

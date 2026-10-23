@@ -54,7 +54,7 @@
   }
 
   /* ---------- cache local: telas abrem na hora com os últimos dados e atualizam em segundo plano ---------- */
-  const LEITURAS = ['painel', 'cronograma', 'minhasAuditorias', 'listarFiliais', 'listarUsuarios', 'detalhe'];
+  const LEITURAS = ['painel', 'cronograma', 'minhasAuditorias', 'listarFiliais', 'listarUsuarios', 'detalhe', 'meuEnvio', 'meuResultado'];
   const memoria = new Map();
   const chaveC = (action, dados) => 'ck_api_' + (state.sessao ? state.sessao.login : '') + '_' + action + '_' + JSON.stringify(dados || {});
   function lerC(k) {
@@ -278,7 +278,7 @@
           <span class="aud-ciclo">${ciclo(a)}</span>
           <strong>${esc(a.filial_nome)}</strong>
           <span class="aud-locais">${locaisAud(a).map(esc).join(' · ')}</span>
-          <span class="aud-rodape"><span class="badge st-${a.status}">${STATUS[a.status]}</span><span>${feitos} de ${a.aplicaveis.length} checklists enviados</span></span>
+          <span class="aud-rodape">${a.liberado ? '<span class="badge st-REALIZADO">Resultado disponível</span>' : `<span class="badge st-${a.status}">${STATUS[a.status]}</span>`}<span>${feitos} de ${a.aplicaveis.length} checklists enviados</span></span>
           ${q ? `<small>Avaliador: ${esc(a.auditores.join(', '))}</small>` : ''}
         </button>`; }).join('')}</div>`;
     }, '#lista');
@@ -295,18 +295,28 @@
           <p><strong>Locais:</strong> ${locaisAud(a).map(esc).join(', ')}</p>
           <p class="suave">Avaliador: ${esc(a.auditores.join(', '))}</p>
           ${a.observacao ? `<p class="nota-crono">${esc(a.observacao)}</p>` : ''}</div>
+        ${statusResultado(a)}
         <h2 class="titulo-sec">Checklists desta auditoria</h2>
         <div class="escolha">${a.aplicaveis.map((k) => {
           const c = CHECKLISTS[k]; const env = a.enviados.includes(k); const r = !env && lerRascunho(a.id, k);
           const cols = locaisDoModelo(c, a);
-          const tag = env ? 'div' : 'button';
-          return `<${tag} class="escolha-item ${env ? 'enviado' : ''}" ${env ? '' : `data-abrir="${k}"`}>
+          return `<button class="escolha-item ${env ? 'ja-enviado' : ''}" ${env ? `data-ver-envio="${esc(a.envios[k])}"` : `data-abrir="${k}"`}>
             <span class="escolha-tipo">${c.tipo === 'veiculo' ? 'Veículos' : 'Predial'}</span>
             <strong>${esc(c.titulo)}</strong><small>${esc(cols.join(' · '))}</small>
-            ${env ? '<em class="ok">Enviado</em>' : r ? `<em>Rascunho de ${fmtData(r.salvoEm)}</em>` : ''}
-          </${tag}>`; }).join('')}</div>`;
+            ${env ? '<span class="rodape-card"><em class="ok">Enviado</em><span class="ver">Ver respostas</span></span>' : r ? `<em>Rascunho de ${fmtData(r.salvoEm)}</em>` : ''}
+          </button>`; }).join('')}</div>`;
     });
   };
+
+  function statusResultado(a) {
+    const feitos = a.aplicaveis.filter((k) => a.enviados.includes(k)).length;
+    if (a.liberado) return `<div class="barra-planilha liberado"><div><strong>Resultado disponível</strong>
+      <span class="suave">A Qualidade validou esta auditoria em ${fmtData(a.liberado_em)}.</span></div>
+      <div class="acoes-inline"><button class="btn primario" data-ver-resultado="${esc(a.id)}">Ver resultado</button></div></div>`;
+    if (feitos && feitos === a.aplicaveis.length) return `<div class="barra-planilha pendente"><div><strong>Aguardando validação da Qualidade</strong>
+      <span class="suave">Todos os checklists foram enviados. O resultado aparece aqui assim que a Qualidade validar.</span></div></div>`;
+    return '';
+  }
 
   function locaisDoModelo(ck, a) {
     if (ck.locais === 'garagem') return [a.garagem];
@@ -597,7 +607,19 @@
     observarFotos();
   }
 
-  function renderPainelFilial(d) {
+  function barraLiberacao(d) {
+    const c = d.cronograma;
+    if (!c || d.historico || !d.avaliacoes.length) return '';
+    return c.liberado
+      ? `<div class="barra-planilha liberado"><div><strong>Resultado liberado para o avaliador</strong>
+          <span class="suave">Validado em ${fmtData(c.liberado_em)}${c.liberado_por ? ' por ' + esc(c.liberado_por) : ''}. ${esc(c.auditores.join(', '))} já pode ver notas e gráficos pelo próprio login.</span></div>
+          <div class="acoes-inline"><button class="btn sec" data-acao="recolherResultado" data-crono="${esc(c.id)}">Recolher resultado</button></div></div>`
+      : `<div class="barra-planilha pendente"><div><strong>Resultado ainda não validado</strong>
+          <span class="suave">${esc(c.auditores.join(', '))} vê só o próprio preenchimento, sem notas. Confira os resultados e libere quando estiverem corretos.</span></div>
+          <div class="acoes-inline"><button class="btn primario" data-acao="liberarResultado" data-crono="${esc(c.id)}">Validar e liberar resultado</button></div></div>`;
+  }
+
+  function renderPainelFilial(d, modoAvaliador) {
     const r = d.resumo, el = $('#conteudo'), f = nomeFilial(d);
     if (!d.avaliacoes.length && !d.historico) {
       el.innerHTML = `<div class="painel-cab"><h1>${esc(f.nome || '')}</h1>${filtros(d)}</div>
@@ -606,8 +628,11 @@
     }
     const linha = (k) => `<tr><td>${esc(rotuloIndicador(k, d))}</td><td class="num">${fmt(r.checklists[k].nota)}</td></tr>`;
     el.innerHTML = `
-      <div class="painel-cab"><div><button class="link voltar" data-ver-filial="">Todas as filiais</button><h1>${esc(f.nome)}</h1></div>${filtros(d)}</div>
-      ${d.historico ? '<p class="aviso-hist">Semestre do histórico importado das planilhas (aba Acumulado): há só as notas por indicador, sem itens nem evidências.</p>' : `
+      ${modoAvaliador
+        ? `<div class="painel-cab"><div><button class="link voltar" data-auditoria="${esc(d.cronograma.id)}">Voltar à auditoria</button>
+            <span class="aud-ciclo">${ciclo(d.cronograma)} · resultado validado pela Qualidade em ${fmtData(d.cronograma.liberado_em)}</span><h1>Resultado · ${esc(f.nome)}</h1></div></div>`
+        : `<div class="painel-cab"><div><button class="link voltar" data-ver-filial="">Todas as filiais</button><h1>${esc(f.nome)}</h1></div>${filtros(d)}</div>${barraLiberacao(d)}`}
+      ${modoAvaliador ? '' : d.historico ? '<p class="aviso-hist">Semestre do histórico importado das planilhas (aba Acumulado): há só as notas por indicador, sem itens nem evidências.</p>' : `
       <div class="barra-planilha"><div><strong>Planilha de resultado</strong>
         <span class="suave">${d.planilha ? `Atualizada em ${fmtData(d.planilha.atualizado_em)}. Ela se atualiza sozinha até 10 minutos após cada envio.` : 'Gerada automaticamente até 10 minutos após o primeiro envio, no formato da Avaliação Limpeza.'}</span></div>
         <div class="acoes-inline">${d.planilha ? `<a class="btn sec" href="${esc(d.planilha.url)}" target="_blank" rel="noopener">Abrir planilha</a>` : ''}
@@ -640,6 +665,11 @@
     graficoAcumulado(d.acumulado);
     observarFotos();
   }
+
+  VIEWS.resultado = function (cid) {
+    app.innerHTML = topo('inicio') + `<main class="pagina"><div id="conteudo">${esqueleto()}</div></main>`;
+    carregarVista('meuResultado', { id: cid }, (d) => { if (!$('#conteudo')) return; limparGraficos(); renderPainelFilial(d, true); });
+  };
 
   function cardChecklist(k, c) {
     const titulo = CHECKLISTS[k].titulo;
@@ -747,9 +777,10 @@
   async function abrirDetalhe(id) {
     const corpo = modal(carregandoHTML('Carregando avaliação…'), true);
     try {
-      const kd = chaveC('detalhe', { id }); let d = lerC(kd);
-      if (!d) { d = await api('detalhe', { id }); gravarC(kd, d); }
-      const a = d.avaliacao;
+      const acaoDet = ehQualidade() ? 'detalhe' : 'meuEnvio';
+      const kd = chaveC(acaoDet, { id }); let d = lerC(kd);
+      if (!d) { d = await api(acaoDet, { id }); gravarC(kd, d); }
+      const a = d.avaliacao, comNotas = d.liberado !== false;
       const colunas = a.colunas.length ? a.colunas : [...new Map(d.respostas.map((r) => [r.coluna_id, { id: r.coluna_id, nome: r.coluna, grupo: r.grupo }])).values()];
       const secoes = [...new Set(d.respostas.map((r) => r.secao))];
       const mapa = {}; d.respostas.forEach((r) => { mapa[`${r.coluna_id}|${r.secao}|${r.item}`] = r; });
@@ -759,21 +790,23 @@
         const t = c.O + c.B + c.R + c.I; return t ? (c.O * 5 + c.B * 4.5 + c.R * 3 + c.I * 2) / (t * 5) * 100 : null; };
       const evid = d.respostas.filter((r) => r.justificativa || r.nota === 'R' || r.nota === 'I');
 
-      corpo.innerHTML = `<div class="det-cab"><div><h2>${esc(a.filial_nome)} · ${esc(a.checklist_nome)}</h2>
+      corpo.innerHTML = `<div class="det-cab"><div>${ehQualidade() ? '' : '<span class="aud-ciclo">Seu preenchimento</span>'}<h2>${esc(a.filial_nome)} · ${esc(a.checklist_nome)}</h2>
           <p class="suave">Inspeção ${fmtData(a.data_inspecao)} · ${esc(a.nome)} · enviado ${fmtData(a.enviado_em)} · ${esc(a.id)}</p></div>
-          <div class="det-nota"><small>Nota da aba</small><strong>${fmt(a.nota)}</strong></div></div>
-        <div class="det-resumo"><div class="donut pequeno"><canvas id="gDet"></canvas><div class="donut-centro"><strong>${fmt(a.positivo, 1)}%</strong><small>positivo</small></div></div>
+          ${comNotas ? `<div class="det-nota"><small>Nota da aba</small><strong>${fmt(a.nota)}</strong></div>` : ''}</div>
+        ${comNotas ? '' : '<p class="aviso-hist">Estas são as respostas que você enviou. As notas e porcentagens aparecem depois que a Qualidade validar o resultado.</p>'}
+        <div class="det-resumo ${comNotas ? '' : 'oculto'}"><div class="donut pequeno"><canvas id="gDet"></canvas><div class="donut-centro"><strong>${fmt(a.positivo, 1)}%</strong><small>positivo</small></div></div>
           <ul class="dist">${['O', 'B', 'R', 'I'].map((n) => `<li><i class="ponto n-${n}"></i><span>${NOMES[n]}</span><b>${pct(cont[n], total)}</b><em>${cont[n]}</em></li>`).join('')}
           <li class="na"><i class="ponto n-NA"></i><span>Não aplicável</span><b></b><em>${cont.NA}</em></li></ul></div>
         <div class="rolagem"><table class="tab-grade"><thead><tr><th>Item</th>${colunas.map((c) => `<th>${esc(c.nome)}<small>${c.grupo !== c.nome ? esc(c.grupo) : ''}</small></th>`).join('')}</tr></thead><tbody>
           ${secoes.map((s) => `<tr class="grupo-linha"><th colspan="${colunas.length + 1}">${esc(s)}</th></tr>` +
             [...new Set(d.respostas.filter((r) => r.secao === s).map((r) => r.item))].map((item) => `<tr><td>${esc(item)}</td>${colunas.map((c) => { const r = mapa[`${c.id}|${s}|${item}`];
               return `<td class="cel">${r ? `<b class="chip n-${r.nota}" title="${NOMES[r.nota]}${r.descricao ? ': ' + esc(r.descricao) : ''}">${r.nota}</b>` : ''}</td>`; }).join('')}</tr>`).join('')).join('')}
-          </tbody><tfoot><tr><th>Nota por coluna</th>${colunas.map((c) => `<th class="num">${fmt(notaCol(c.id))}</th>`).join('')}</tr></tfoot></table></div>
+          </tbody>${comNotas ? `<tfoot><tr><th>Nota por coluna</th>${colunas.map((c) => `<th class="num">${fmt(notaCol(c.id))}</th>`).join('')}</tr></tfoot>` : ''}</table></div>
         ${a.obs_gerais ? `<div class="bloco"><h3>Observações gerais</h3><p>${esc(a.obs_gerais)}</p></div>` : ''}
         <h3>Evidências</h3>
         ${evid.length ? `<div class="observacoes">${evid.map((o) => obsHTML(Object.assign({}, o, { checklist: a.checklist }), false)).join('')}</div>` : '<p class="suave">Nenhum item pontuado abaixo de Bom.</p>'}`;
-      if (total) state.chartsModal.push(donut($('#gDet'), cont));
+      if (!ehQualidade()) $$('[data-detalhe]', corpo).forEach((b) => b.remove());
+      if (total && comNotas) state.chartsModal.push(donut($('#gDet'), cont));
       observarFotos(corpo);
     } catch (e) { corpo.innerHTML = `<p class="erro-msg">${esc(e.message)}</p>`; }
   }
@@ -1036,6 +1069,8 @@
     if (el('[data-auditoria]')) { rota('auditoria', el('[data-auditoria]').dataset.auditoria); return; }
     if (el('[data-abrir]')) { abrirForm(state.rotaArg, el('[data-abrir]').dataset.abrir); return; }
     if (el('[data-detalhe]')) { abrirDetalhe(el('[data-detalhe]').dataset.detalhe); return; }
+    if (el('[data-ver-envio]')) { abrirDetalhe(el('[data-ver-envio]').dataset.verEnvio); return; }
+    if (el('[data-ver-resultado]')) { rota('resultado', el('[data-ver-resultado]').dataset.verResultado); return; }
     if (el('[data-ampliar]')) { ampliarFoto(el('[data-ampliar]').dataset.ampliar); return; }
     if (el('[data-ver-filial]')) { state.filial = el('[data-ver-filial]').dataset.verFilial; rota('painel'); return; }
     if (el('[data-novo-crono]')) { const [fid, ano, c] = el('[data-novo-crono]').dataset.novoCrono.split('|'); editarCrono({ filial_id: fid, ano: Number(ano), ciclo: Number(c), pontos: [], auditores: [] }); return; }
@@ -1054,6 +1089,17 @@
     if (acao === 'recarregar') { rota(state.rota, state.rotaArg); return; }
     if (acao === 'sugerir') { modalSugerir(); return; }
     if (acao === 'gerarPlanilha') { gerarPlanilha(); return; }
+    if (acao === 'liberarResultado' || acao === 'recolherResultado') {
+      const liberar = acao === 'liberarResultado', cid = el('[data-acao]').dataset.crono;
+      const ok = await confirmar(liberar ? 'Validar e liberar o resultado?' : 'Recolher o resultado?',
+        liberar ? 'O avaliador desta auditoria passa a ver as notas, porcentagens e gráficos pelo próprio login.' : 'O avaliador volta a ver só o próprio preenchimento, sem notas.',
+        liberar ? 'Validar e liberar' : 'Recolher');
+      if (!ok) return;
+      carregando(liberar ? 'Liberando resultado…' : 'Recolhendo…');
+      try { await api('liberarResultado', { id: cid, liberar }); carregando(); toast(liberar ? 'Resultado liberado para o avaliador.' : 'Resultado recolhido.', 'ok'); rota('painel'); }
+      catch (err) { carregando(); toast(err.message, 'erro'); }
+      return;
+    }
     if (acao === 'novaFilial') { editarFilial(null); return; }
     if (acao === 'limparUsuario') { const f = $('#fUsuario'); f.reset(); f.login.readOnly = false; $('#fuTitulo').textContent = 'Novo usuário'; return; }
 
