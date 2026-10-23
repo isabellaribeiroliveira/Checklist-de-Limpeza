@@ -441,3 +441,5 @@ html { scroll-behavior: smooth; }
 .rodape-card { justify-content: flex-start; gap: .75rem; }
 .rodape-card .ver { white-space: nowrap; }
 .aud-cab + .barra-planilha, .nota-crono + .barra-planilha { margin-top: 1rem; }
+.aviso-versao { position: sticky; top: 0; z-index: 40; background: #8A5D00; color: #fff; padding: .7rem clamp(1rem, 3vw, 2rem); font-size: .92rem; }
+.aviso-versao .link { color: #fff; margin-left: .5rem; }

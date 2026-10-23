@@ -34,16 +34,31 @@
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
+  const VERSAO_API_MIN = 8; // versão do Code.gs que este site espera
+  let avisouVersao = false;
+  function avisoVersao() {
+    if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
+    avisouVersao = true;
+    const b = document.createElement('div'); b.className = 'aviso-versao'; b.setAttribute('role', 'alert');
+    b.innerHTML = `<strong>O Apps Script está numa versão antiga.</strong> Cole o Code.gs novo e publique: Implantar › Gerenciar implantações › editar (lápis) › Versão: <em>Nova versão</em> › Implantar. <button class="link" aria-label="Fechar aviso">Fechar</button>`;
+    b.querySelector('button').addEventListener('click', () => b.remove());
+    document.body.prepend(b);
+  }
   async function api(action, dados = {}) {
     const url = window.CONFIG && CONFIG.API_URL;
     if (!url || url.includes('COLE_AQUI')) throw new Error('Configure a URL da API no arquivo config.js.');
     let res;
+    const ctrl = window.AbortController ? new AbortController() : null;
+    const limite = setTimeout(() => ctrl && ctrl.abort(), action === 'enviarChecklist' ? 180000 : 60000);
     try {
-      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, signal: ctrl ? ctrl.signal : undefined,
         body: JSON.stringify(Object.assign({ action, token: state.sessao && state.sessao.token }, dados)) });
-    } catch (e) { throw new Error('Sem conexão com o servidor. Verifique a internet e tente de novo.'); }
+    } catch (e) {
+      throw new Error(e && e.name === 'AbortError' ? 'O servidor demorou demais para responder. Tente de novo em instantes.' : 'Sem conexão com o servidor. Verifique a internet e tente de novo.');
+    } finally { clearTimeout(limite); }
     let data;
-    try { data = await res.json(); } catch (e) { throw new Error('Resposta inválida do servidor. Confira a implantação do Apps Script.'); }
+    try { data = await res.json(); } catch (e) { throw new Error('Resposta inválida do servidor. Confira se a URL em config.js termina em /exec e se a implantação está publicada.'); }
+    if ((data.v || 0) < VERSAO_API_MIN) avisoVersao();
     if (!data.ok) {
       if (data.erro === 'SESSAO') { salvarSessao(null); limparC(); rota('login'); throw new Error('Sua sessão expirou. Entre de novo.'); }
       if (data.erro === 'TROCAR_SENHA') { salvarSessao(Object.assign({}, state.sessao, { deveTrocar: true })); rota('primeiraSenha'); throw new Error('Crie sua senha para continuar.'); }
@@ -72,20 +87,28 @@
   }
   // carrega uma tela: desenha o cache (se houver) e redesenha só se os dados mudarem
   async function carregarVista(action, dados, render, alvo = '#conteudo') {
-    const nav = state.nav, k = chaveC(action, dados), velho = lerC(k);
-    if (velho) render(velho, false);
+    const nav = state.nav, k = chaveC(action, dados);
+    let velho = lerC(k), desenhou = false;
+    const desenhar = (d, refresh) => {
+      try { render(d, refresh); desenhou = true; return true; }
+      catch (err) { console.error(err); return false; }
+    };
+    if (velho && !desenhar(velho, false)) velho = null; // dado guardado incompatível: busca de novo
     try {
       const d = await api(action, dados);
       if (nav !== state.nav) return;
-      const mudou = !velho || JSON.stringify(velho) !== JSON.stringify(d);
+      const mudou = !desenhou || JSON.stringify(velho) !== JSON.stringify(d);
       gravarC(k, d);
       if (mudou && !$('#modal')) {
-        const el = $(alvo); if (el && velho) el.classList.add('quieto');
-        render(d, !!velho);
+        const el = $(alvo); if (el && desenhou) el.classList.add('quieto');
+        if (!desenhar(d, desenhou)) {
+          const el2 = $(alvo);
+          if (el2) el2.innerHTML = erroHTML('Não foi possível mostrar esta tela. Se o problema continuar, a Qualidade precisa publicar a versão nova do Apps Script.');
+        }
       }
     } catch (e) {
       if (nav !== state.nav) return;
-      if (!velho) { const el = $(alvo); if (el) el.innerHTML = erroHTML(e.message); }
+      if (!desenhou) { const el = $(alvo); if (el) el.innerHTML = erroHTML(e.message); }
       else if (!/sessão/i.test(e.message)) toast('Sem conexão: mostrando os últimos dados carregados.', 'aviso');
     }
   }
@@ -289,6 +312,7 @@
     carregarVista('minhasAuditorias', {}, (d) => {
       state.auditorias = new Map(d.auditorias.map((a) => [a.id, a]));
       const a = state.auditorias.get(id); const el = $('#conteudo'); if (!el) return;
+      if (a) { a.enviados = a.enviados || []; a.aplicaveis = a.aplicaveis || []; a.pontos = a.pontos || []; a.auditores = a.auditores || []; }
       if (!a) { el.innerHTML = '<div class="vazio"><p>Esta auditoria não está mais disponível.</p><button class="btn sec" data-rota="inicio">Voltar</button></div>'; return; }
       el.innerHTML = `<button class="link voltar" data-rota="inicio">Voltar</button>
         <div class="aud-cab"><span class="aud-ciclo">${ciclo(a)}</span><h1>${esc(a.filial_nome)}</h1>
@@ -300,11 +324,13 @@
         <div class="escolha">${a.aplicaveis.map((k) => {
           const c = CHECKLISTS[k]; const env = a.enviados.includes(k); const r = !env && lerRascunho(a.id, k);
           const cols = locaisDoModelo(c, a);
-          return `<button class="escolha-item ${env ? 'ja-enviado' : ''}" ${env ? `data-ver-envio="${esc(a.envios[k])}"` : `data-abrir="${k}"`}>
+          const idEnvio = env && a.envios ? a.envios[k] : '';
+          const tag = env && !idEnvio ? 'div' : 'button';
+          return `<${tag} class="escolha-item ${env ? 'ja-enviado' : ''}" ${env ? (idEnvio ? `data-ver-envio="${esc(idEnvio)}"` : '') : `data-abrir="${k}"`}>
             <span class="escolha-tipo">${c.tipo === 'veiculo' ? 'Veículos' : 'Predial'}</span>
             <strong>${esc(c.titulo)}</strong><small>${esc(cols.join(' · '))}</small>
-            ${env ? '<span class="rodape-card"><em class="ok">Enviado</em><span class="ver">Ver respostas</span></span>' : r ? `<em>Rascunho de ${fmtData(r.salvoEm)}</em>` : ''}
-          </button>`; }).join('')}</div>`;
+            ${env ? `<span class="rodape-card"><em class="ok">Enviado</em>${idEnvio ? '<span class="ver">Ver respostas</span>' : ''}</span>` : r ? `<em>Rascunho de ${fmtData(r.salvoEm)}</em>` : ''}
+          </${tag}>`; }).join('')}</div>`;
     });
   };
 
