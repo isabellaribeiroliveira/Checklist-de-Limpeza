@@ -45,10 +45,55 @@
     let data;
     try { data = await res.json(); } catch (e) { throw new Error('Resposta inválida do servidor. Confira a implantação do Apps Script.'); }
     if (!data.ok) {
-      if (data.erro === 'SESSAO') { salvarSessao(null); rota('login'); throw new Error('Sua sessão expirou. Entre de novo.'); }
+      if (data.erro === 'SESSAO') { salvarSessao(null); limparC(); rota('login'); throw new Error('Sua sessão expirou. Entre de novo.'); }
+      if (data.erro === 'TROCAR_SENHA') { salvarSessao(Object.assign({}, state.sessao, { deveTrocar: true })); rota('primeiraSenha'); throw new Error('Crie sua senha para continuar.'); }
       throw new Error(data.erro || 'Erro no servidor.');
     }
+    if (!LEITURAS.includes(action) && action !== 'foto' && action !== 'login') limparC(); // gravou algo: dados guardados ficam velhos
     return data;
+  }
+
+  /* ---------- cache local: telas abrem na hora com os últimos dados e atualizam em segundo plano ---------- */
+  const LEITURAS = ['painel', 'cronograma', 'minhasAuditorias', 'listarFiliais', 'listarUsuarios', 'detalhe'];
+  const memoria = new Map();
+  const chaveC = (action, dados) => 'ck_api_' + (state.sessao ? state.sessao.login : '') + '_' + action + '_' + JSON.stringify(dados || {});
+  function lerC(k) {
+    if (memoria.has(k)) return memoria.get(k);
+    try { const t = sessionStorage.getItem(k); if (t) { const d = JSON.parse(t); memoria.set(k, d); return d; } } catch (e) {}
+    return null;
+  }
+  function gravarC(k, d) {
+    memoria.set(k, d);
+    try { sessionStorage.setItem(k, JSON.stringify(d)); } catch (e) {}
+  }
+  function limparC() {
+    memoria.clear();
+    try { Object.keys(sessionStorage).filter((k) => k.indexOf('ck_api_') === 0).forEach((k) => sessionStorage.removeItem(k)); } catch (e) {}
+  }
+  // carrega uma tela: desenha o cache (se houver) e redesenha só se os dados mudarem
+  async function carregarVista(action, dados, render, alvo = '#conteudo') {
+    const nav = state.nav, k = chaveC(action, dados), velho = lerC(k);
+    if (velho) render(velho, false);
+    try {
+      const d = await api(action, dados);
+      if (nav !== state.nav) return;
+      const mudou = !velho || JSON.stringify(velho) !== JSON.stringify(d);
+      gravarC(k, d);
+      if (mudou && !$('#modal')) {
+        const el = $(alvo); if (el && velho) el.classList.add('quieto');
+        render(d, !!velho);
+      }
+    } catch (e) {
+      if (nav !== state.nav) return;
+      if (!velho) { const el = $(alvo); if (el) el.innerHTML = erroHTML(e.message); }
+      else if (!/sessão/i.test(e.message)) toast('Sem conexão: mostrando os últimos dados carregados.', 'aviso');
+    }
+  }
+  function preCarregar(lista) {
+    lista.forEach(([action, dados], i) => setTimeout(() => {
+      const k = chaveC(action, dados);
+      if (!memoria.has(k)) api(action, dados).then((d) => gravarC(k, d)).catch(() => {});
+    }, 300 * i));
   }
 
   /* ---------- feedback ---------- */
@@ -64,6 +109,7 @@
     o.innerHTML = `<div class="carregando-caixa"><span class="giro"></span><p>${esc(msg)}</p></div>`;
   }
   const carregandoHTML = (t = 'Carregando…') => `<div class="vazio"><span class="giro"></span><p>${t}</p></div>`;
+  const esqueleto = () => `<div class="esqueleto" aria-label="Carregando"><div class="esq titulo"></div><div class="esq-linha"><div class="esq bloco"></div><div class="esq bloco largo"></div></div><div class="esq-linha"><div class="esq card"></div><div class="esq card"></div><div class="esq card"></div></div></div>`;
   const erroHTML = (m) => `<div class="vazio erro"><p>${esc(m)}</p><button class="btn sec" data-acao="recarregar">Tentar de novo</button></div>`;
 
   function modal(html, largo = false) {
@@ -93,8 +139,9 @@
     state.charts.forEach((c) => c.destroy()); state.charts = [];
     fecharModal();
     if (!state.sessao) nome = 'login';
+    else if (state.sessao.deveTrocar && nome !== 'login') nome = 'primeiraSenha';
     if (SO_QUALIDADE.includes(nome) && !ehQualidade()) nome = 'inicio';
-    state.rota = nome; state.rotaArg = arg;
+    state.rota = nome; state.rotaArg = arg; state.nav = (state.nav || 0) + 1;
     VIEWS[nome](arg);
     medirTopo();
     window.scrollTo(0, 0);
@@ -110,7 +157,7 @@
       <div class="marca"><span class="marca-sinal" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><strong>Checklist de limpeza</strong><small>REG-UTL-176</small></div></div>
       <nav class="nav">${links.map(([r, l]) => `<button class="nav-link ${ativo === r ? 'ativo' : ''}" data-rota="${r}">${l}</button>`).join('')}</nav>
       <div class="usuario"><span>${esc(state.sessao.nome)}<small>${q ? 'Qualidade' : 'Avaliador'}</small></span>
-        <button class="link" data-acao="senha">Senha</button><button class="link" data-acao="sair">Sair</button></div>
+        <button class="link" data-acao="senha">Trocar senha</button><button class="link" data-acao="sair">Sair</button></div>
     </header>`;
   }
 
@@ -137,9 +184,72 @@
       btn.disabled = true; btn.textContent = 'Entrando…'; $('#loginErro').textContent = '';
       try {
         const r = await api('login', { login: fd.get('login'), senha: fd.get('senha') });
-        salvarSessao({ token: r.token, login: r.login, nome: r.nome, perfil: r.perfil });
+        limparC();
+        salvarSessao({ token: r.token, login: r.login, nome: r.nome, perfil: r.perfil, deveTrocar: !!r.trocarSenha });
+        if (r.trocarSenha) { rota('primeiraSenha'); return; }
         rota(r.perfil === 'QUALIDADE' ? 'painel' : 'inicio');
+        aquecer();
       } catch (err) { $('#loginErro').textContent = err.message; btn.disabled = false; btn.textContent = 'Entrar'; }
+    });
+  };
+
+  /* ---------- SENHA ---------- */
+  function forcaSenha(v) {
+    let p = 0;
+    if (v.length >= 6) p++;
+    if (v.length >= 10) p++;
+    if (/[A-Za-zÀ-ú]/.test(v) && /\d/.test(v)) p++;
+    if (/[^A-Za-z0-9À-ú]/.test(v) || (/[a-z]/.test(v) && /[A-Z]/.test(v))) p++;
+    return p; // 0 a 4
+  }
+  function erroNovaSenha(nova, conf) {
+    if (nova.length < 6) return 'A senha precisa ter pelo menos 6 caracteres.';
+    if (!/[A-Za-zÀ-ú]/.test(nova) || !/\d/.test(nova)) return 'Use letras e números na senha.';
+    if (nova !== conf) return 'As duas senhas não são iguais.';
+    return '';
+  }
+  const campoSenha = (nome, rotulo, auto) => `<label>${rotulo}<span class="campo-senha"><input type="password" name="${nome}" autocomplete="${auto}" required>
+    <button type="button" class="mostrar-senha" data-mostrar aria-label="Mostrar senha">Mostrar</button></span></label>`;
+  const medidor = () => `<div class="forca" aria-hidden="true"><span></span><span></span><span></span><span></span></div><p class="forca-txt suave">Mínimo 6 caracteres, com letras e números.</p>`;
+  function ligarMedidor(form) {
+    const inp = form.querySelector('input[name=novaSenha]');
+    inp.addEventListener('input', () => {
+      const p = forcaSenha(inp.value);
+      form.querySelectorAll('.forca span').forEach((s, i) => { s.className = i < p ? 'on f' + p : ''; });
+      form.querySelector('.forca-txt').textContent = !inp.value ? 'Mínimo 6 caracteres, com letras e números.' : ['Muito fraca', 'Fraca', 'Razoável', 'Boa', 'Forte'][p];
+    });
+  }
+
+  VIEWS.primeiraSenha = function () {
+    app.innerHTML = `<main class="login">
+      <section class="login-lado">
+        <span class="marca-sinal grande" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <h1>Bem-vindo, ${esc(state.sessao.nome.split(' ')[0])}</h1>
+        <p>Este é o seu primeiro acesso. Crie uma senha só sua: a senha que você recebeu deixa de valer.</p>
+      </section>
+      <form class="login-form" id="fPrimeira" autocomplete="on">
+        <h2>Crie sua senha</h2>
+        <input type="text" name="usuario" value="${esc(state.sessao.login)}" autocomplete="username" hidden>
+        ${campoSenha('novaSenha', 'Nova senha', 'new-password')}
+        ${medidor()}
+        ${campoSenha('conf', 'Repita a nova senha', 'new-password')}
+        <button class="btn primario largo">Salvar senha e entrar</button>
+        <p class="erro-msg" id="primErro" role="alert"></p>
+        <button type="button" class="link" data-acao="sair">Sair</button>
+      </form>
+    </main>`;
+    const form = $('#fPrimeira'); ligarMedidor(form);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nova = form.novaSenha.value, conf = form.conf.value, msg = erroNovaSenha(nova, conf);
+      if (msg) { $('#primErro').textContent = msg; return; }
+      const btn = form.querySelector('.btn'); btn.disabled = true; btn.textContent = 'Salvando…'; $('#primErro').textContent = '';
+      try {
+        await api('trocarSenha', { novaSenha: nova });
+        salvarSessao(Object.assign({}, state.sessao, { deveTrocar: false }));
+        toast('Senha criada. Use-a nos próximos acessos.', 'ok');
+        rota(ehQualidade() ? 'painel' : 'inicio'); aquecer();
+      } catch (err) { $('#primErro').textContent = err.message; btn.disabled = false; btn.textContent = 'Salvar senha e entrar'; }
     });
   };
 
@@ -147,21 +257,16 @@
   const chaveRascunho = (cid, k) => `ck_rascunho_${state.sessao.login}_${cid}_${k}`;
   function lerRascunho(cid, k) { try { return JSON.parse(localStorage.getItem(chaveRascunho(cid, k))); } catch (e) { return null; } }
 
-  async function carregarAuditorias() {
-    const d = await api('minhasAuditorias');
-    state.auditorias = new Map(d.auditorias.map((a) => [a.id, a]));
-    return d.auditorias;
-  }
   const locaisAud = (a) => [a.garagem].concat(a.pontos);
 
-  VIEWS.inicio = async function () {
+  VIEWS.inicio = function () {
     const q = ehQualidade();
     app.innerHTML = topo('inicio') + `<main class="pagina">
       <h1>${q ? 'Preencher checklist' : 'Minhas auditorias'}</h1>
       <p class="suave">${q ? 'Auditorias planejadas no cronograma. Escolha uma para preencher os checklists.' : 'Auditorias em que você foi escalado pela Qualidade.'}</p>
-      <div id="lista">${carregandoHTML()}</div></main>`;
-    try {
-      const lista = await carregarAuditorias();
+      <div id="lista">${esqueleto()}</div></main>`;
+    carregarVista('minhasAuditorias', {}, (d) => {
+      const lista = d.auditorias; state.auditorias = new Map(lista.map((a) => [a.id, a]));
       const el = $('#lista'); if (!el) return;
       if (!lista.length) {
         el.innerHTML = `<div class="vazio"><p>${q ? 'Nenhuma auditoria planejada. Monte o ciclo em Cronograma.' : 'Nenhuma auditoria programada para você. Quando a Qualidade escalar você no cronograma, ela aparece aqui.'}</p></div>`;
@@ -176,13 +281,13 @@
           <span class="aud-rodape"><span class="badge st-${a.status}">${STATUS[a.status]}</span><span>${feitos} de ${a.aplicaveis.length} checklists enviados</span></span>
           ${q ? `<small>Avaliador: ${esc(a.auditores.join(', '))}</small>` : ''}
         </button>`; }).join('')}</div>`;
-    } catch (e) { $('#lista') && ($('#lista').innerHTML = erroHTML(e.message)); }
+    }, '#lista');
   };
 
-  VIEWS.auditoria = async function (id) {
-    app.innerHTML = topo('inicio') + `<main class="pagina"><div id="conteudo">${carregandoHTML()}</div></main>`;
-    try {
-      await carregarAuditorias();
+  VIEWS.auditoria = function (id) {
+    app.innerHTML = topo('inicio') + `<main class="pagina"><div id="conteudo">${esqueleto()}</div></main>`;
+    carregarVista('minhasAuditorias', {}, (d) => {
+      state.auditorias = new Map(d.auditorias.map((a) => [a.id, a]));
       const a = state.auditorias.get(id); const el = $('#conteudo'); if (!el) return;
       if (!a) { el.innerHTML = '<div class="vazio"><p>Esta auditoria não está mais disponível.</p><button class="btn sec" data-rota="inicio">Voltar</button></div>'; return; }
       el.innerHTML = `<button class="link voltar" data-rota="inicio">Voltar</button>
@@ -200,7 +305,7 @@
             <strong>${esc(c.titulo)}</strong><small>${esc(cols.join(' · '))}</small>
             ${env ? '<em class="ok">Enviado</em>' : r ? `<em>Rascunho de ${fmtData(r.salvoEm)}</em>` : ''}
           </${tag}>`; }).join('')}</div>`;
-    } catch (e) { $('#conteudo') && ($('#conteudo').innerHTML = erroHTML(e.message)); }
+    });
   };
 
   function locaisDoModelo(ck, a) {
@@ -446,31 +551,34 @@
     return d.resumo.checklists[k].indicador;
   }
 
-  VIEWS.painel = async function () {
-    app.innerHTML = topo('painel') + `<main class="pagina"><div id="conteudo">${carregandoHTML()}</div></main>`;
-    try {
-      const d = await api('painel', { semestre: state.semestre, filial: state.filial });
-      state.semestre = d.semestre; if (!$('#conteudo')) return;
+  function limparGraficos() { state.charts.forEach((c) => c.destroy()); state.charts = []; }
+  VIEWS.painel = function () {
+    app.innerHTML = topo('painel') + `<main class="pagina"><div id="conteudo">${esqueleto()}</div></main>`;
+    carregarVista('painel', { semestre: state.semestre, filial: state.filial }, (d) => {
+      if (!$('#conteudo')) return;
+      state.semestre = d.semestre; limparGraficos();
       d.filial ? renderPainelFilial(d) : renderPainelGeral(d);
-    } catch (e) { $('#conteudo') && ($('#conteudo').innerHTML = erroHTML(e.message)); }
+      if (!d.filial) preCarregar([['painel', { semestre: d.semestre, filial: '' }]].concat(d.filiais.map((f) => ['painel', { semestre: d.semestre, filial: f.id }])));
+    });
   };
 
   function renderPainelGeral(d) {
     const el = $('#conteudo');
-    const comDados = d.porFilial.filter((f) => f.envios);
+    const comDados = d.porFilial.filter((f) => f.envios || (f.historico && f.final !== null));
     el.innerHTML = `<div class="painel-cab"><h1>Avaliação do serviço de limpeza</h1>${filtros(d)}</div>
-      ${!d.avaliacoes.length ? `<div class="vazio"><p>Nenhum checklist enviado em ${esc(d.semestre)}. Os resultados aparecem aqui assim que os avaliadores enviarem.</p></div>` : `
+      ${!d.avaliacoes.length && !d.historico ? `<div class="vazio"><p>Nenhum checklist enviado em ${esc(d.semestre)}. Os resultados aparecem aqui assim que os avaliadores enviarem.</p></div>` : `
+      ${d.historico ? '<p class="aviso-hist">Semestre do histórico importado das planilhas: há só as notas por indicador, sem itens nem evidências. A nota consolidada é a média das filiais.</p>' : ''}
       <section class="resultado">
-        <div class="nota-final"><span>Nota consolidada</span><strong>${fmt(d.resumo.final)}</strong><small>${esc(d.semestre)} · ${comDados.length} filial(is) · ${d.avaliacoes.length} envio(s)</small></div>
+        <div class="nota-final"><span>Nota consolidada</span><strong>${fmt(d.resumo.final)}</strong><small>${esc(d.semestre)} · ${comDados.length} filial(is)${d.avaliacoes.length ? ' · ' + d.avaliacoes.length + ' envio(s)' : ''}</small></div>
         <div class="bloco sem-margem"><div class="grafico-barras"><canvas id="gFiliais" aria-label="Nota final por filial"></canvas></div></div>
       </section>
       <h2 class="titulo-sec">Comparação entre filiais</h2>
       <div class="rolagem"><table class="tab-lista tab-filiais"><thead><tr><th>Filial</th>${ORDEM_CK.map((k) => `<th class="num">${esc(CHECKLISTS[k].titulo)}</th>`).join('')}<th class="num">Uniforme</th><th class="num">EPI</th><th class="num">Nota final</th><th></th></tr></thead><tbody>
-        ${d.porFilial.map((f) => `<tr class="${f.envios ? '' : 'apagado'}"><td><strong>${esc(f.nome)}</strong><small>${f.envios} envio(s)</small></td>
+        ${d.porFilial.map((f) => `<tr class="${f.envios || f.historico ? '' : 'apagado'}"><td><strong>${esc(f.nome)}</strong><small>${f.envios ? f.envios + ' envio(s)' : f.historico ? 'histórico' : 'sem envios'}</small></td>
           ${ORDEM_CK.map((k) => `<td class="num">${fmt(f.checklists[k])}</td>`).join('')}<td class="num">${fmt(f.uniforme)}</td><td class="num">${fmt(f.epi)}</td>
           <td class="num"><b>${fmt(f.final)}</b></td><td><button class="btn sec pequeno" data-ver-filial="${esc(f.id)}">Detalhar</button></td></tr>`).join('')}
       </tbody></table></div>
-      <h2 class="titulo-sec">Itens pontuados e evidências</h2>${listaObservacoes(d.observacoes, true)}`}
+      ${d.historico && !d.avaliacoes.length ? '' : `<h2 class="titulo-sec">Itens pontuados e evidências</h2>${listaObservacoes(d.observacoes, true)}`}`}
       ${d.acumuladoFiliais && d.acumuladoFiliais.length ? `<h2 class="titulo-sec">Acumulado por filial</h2>
       <section class="bloco"><div class="rolagem"><table class="tab-acum"><thead><tr><th>Filial</th>${d.acumuladoFiliais.map((a) => `<th class="num">${esc(a.semestre.replace(' Semestre', ' Sem.'))}</th>`).join('')}</tr></thead><tbody>
         ${d.filiais.map((f) => `<tr><td>${esc(f.nome)}</td>${d.acumuladoFiliais.map((a) => `<td class="num">${fmt(a.finais[f.id])}</td>`).join('')}</tr>`).join('')}
@@ -479,19 +587,19 @@
     if (window.Chart && $('#gFiliais')) {
       state.charts.push(new Chart($('#gFiliais'), { type: 'bar',
         data: { labels: comDados.map((f) => f.nome), datasets: [{ data: comDados.map((f) => f.final), backgroundColor: '#0E4D5C', borderRadius: 4 }] },
-        options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, suggestedMin: 70, max: 100 } } } }));
+        options: { maintainAspectRatio: false, animation: { duration: 350 }, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, suggestedMin: 70, max: 100 } } } }));
     }
     if (window.Chart && $('#gAcum')) {
       state.charts.push(new Chart($('#gAcum'), { type: 'line',
         data: { labels: d.acumuladoFiliais.map((a) => a.semestre), datasets: d.filiais.map((f, i) => ({ label: f.nome, data: d.acumuladoFiliais.map((a) => a.finais[f.id]), borderColor: PALETA[i % PALETA.length], backgroundColor: PALETA[i % PALETA.length], tension: .25, spanGaps: true })) },
-        options: { maintainAspectRatio: false, scales: { y: { suggestedMin: 70, max: 100 } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } } }));
+        options: { maintainAspectRatio: false, animation: { duration: 350 }, scales: { y: { suggestedMin: 70, max: 100 } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } } }));
     }
     observarFotos();
   }
 
   function renderPainelFilial(d) {
     const r = d.resumo, el = $('#conteudo'), f = nomeFilial(d);
-    if (!d.avaliacoes.length) {
+    if (!d.avaliacoes.length && !d.historico) {
       el.innerHTML = `<div class="painel-cab"><h1>${esc(f.nome || '')}</h1>${filtros(d)}</div>
         <div class="vazio"><p>Nenhum checklist de ${esc(f.nome || '')} enviado em ${esc(d.semestre)}.</p></div>`;
       return;
@@ -499,12 +607,13 @@
     const linha = (k) => `<tr><td>${esc(rotuloIndicador(k, d))}</td><td class="num">${fmt(r.checklists[k].nota)}</td></tr>`;
     el.innerHTML = `
       <div class="painel-cab"><div><button class="link voltar" data-ver-filial="">Todas as filiais</button><h1>${esc(f.nome)}</h1></div>${filtros(d)}</div>
+      ${d.historico ? '<p class="aviso-hist">Semestre do histórico importado das planilhas (aba Acumulado): há só as notas por indicador, sem itens nem evidências.</p>' : `
       <div class="barra-planilha"><div><strong>Planilha de resultado</strong>
         <span class="suave">${d.planilha ? `Atualizada em ${fmtData(d.planilha.atualizado_em)}. Ela se atualiza sozinha até 10 minutos após cada envio.` : 'Gerada automaticamente até 10 minutos após o primeiro envio, no formato da Avaliação Limpeza.'}</span></div>
         <div class="acoes-inline">${d.planilha ? `<a class="btn sec" href="${esc(d.planilha.url)}" target="_blank" rel="noopener">Abrir planilha</a>` : ''}
-        <button class="btn primario" data-acao="gerarPlanilha">${d.planilha ? 'Atualizar agora' : 'Gerar agora'}</button></div></div>
+        <button class="btn primario" data-acao="gerarPlanilha">${d.planilha ? 'Atualizar agora' : 'Gerar agora'}</button></div></div>`}
       <section class="resultado">
-        <div class="nota-final"><span>Nota final</span><strong>${fmt(r.final)}</strong><small>${esc(d.semestre)} · ${d.avaliacoes.length} envio(s)</small></div>
+        <div class="nota-final"><span>Nota final</span><strong>${fmt(r.final)}</strong><small>${esc(d.semestre)} · ${d.avaliacoes.length ? d.avaliacoes.length + ' envio(s)' : 'histórico'}</small></div>
         <table class="tab-resultado">
           <thead><tr><th>Item avaliado</th><th class="num">Nota</th></tr></thead>
           <tbody>
@@ -520,11 +629,11 @@
           <tfoot><tr><th>Nota final</th><th class="num">${fmt(r.final)}</th></tr></tfoot>
         </table>
       </section>
-      <h2 class="titulo-sec">Resultado por checklist</h2>
+      ${d.historico ? '' : `<h2 class="titulo-sec">Resultado por checklist</h2>
       <section class="cards">${ORDEM_CK.map((k) => cardChecklist(k, r.checklists[k])).join('')}
         ${cardSimples('Uniforme e higiene pessoal', r.uniforme)}${cardSimples('Uso de EPIs', r.epi)}</section>
       <h2 class="titulo-sec">Itens pontuados e evidências</h2>
-      ${listaObservacoes(d.observacoes, false)}
+      ${listaObservacoes(d.observacoes, false)}`}
       <h2 class="titulo-sec">Acumulado</h2>
       <section class="bloco">${tabelaAcumulado(d)}<div class="grafico-linha"><canvas id="gAcum"></canvas></div></section>`;
     ORDEM_CK.forEach((k) => { const c = r.checklists[k]; if (c.total) state.charts.push(donut($('#g-' + k), c.contagem)); });
@@ -555,7 +664,7 @@
     if (!canvas || !window.Chart) return { destroy() {} };
     return new Chart(canvas, { type: 'doughnut',
       data: { labels: ['Ótimo', 'Bom', 'Regular', 'Insatisfatório'], datasets: [{ data: [cont.O, cont.B, cont.R, cont.I], backgroundColor: [CORES.O, CORES.B, CORES.R, CORES.I], borderWidth: 2, borderColor: '#fff' }] },
-      options: { cutout: '70%', plugins: { legend: { display: false } }, animation: { duration: 500 } } });
+      options: { cutout: '70%', plugins: { legend: { display: false } }, animation: { duration: 350 } } });
   }
 
   function obsHTML(o, mostrarFilial) {
@@ -586,7 +695,7 @@
     const ds = ORDEM_CK.map((k, i) => ({ label: CHECKLISTS[k].titulo, data: ac.map((a) => a.checklists[k]), borderColor: PALETA[i], backgroundColor: PALETA[i], tension: .25, spanGaps: true }));
     ds.push({ label: 'Nota final', data: ac.map((a) => a.final), borderColor: '#14262B', backgroundColor: '#14262B', borderWidth: 3, tension: .25 });
     state.charts.push(new Chart(cv, { type: 'line', data: { labels: ac.map((a) => a.semestre), datasets: ds },
-      options: { maintainAspectRatio: false, scales: { y: { suggestedMin: 70, max: 100 } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } } }));
+      options: { maintainAspectRatio: false, animation: { duration: 350 }, scales: { y: { suggestedMin: 70, max: 100 } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } } }));
   }
 
   async function gerarPlanilha() {
@@ -622,23 +731,25 @@
   }
 
   /* ---------- AVALIAÇÕES ---------- */
-  VIEWS.avaliacoes = async function () {
-    app.innerHTML = topo('avaliacoes') + `<main class="pagina"><div id="conteudo">${carregandoHTML()}</div></main>`;
-    try {
-      const d = await api('painel', { semestre: state.semestre, filial: state.filial }); state.semestre = d.semestre;
+  VIEWS.avaliacoes = function () {
+    app.innerHTML = topo('avaliacoes') + `<main class="pagina"><div id="conteudo">${esqueleto()}</div></main>`;
+    carregarVista('painel', { semestre: state.semestre, filial: state.filial }, (d) => {
+      state.semestre = d.semestre; if (!$('#conteudo')) return;
       $('#conteudo').innerHTML = `<div class="painel-cab"><h1>Avaliações recebidas</h1>${filtros(d)}</div>
         ${d.avaliacoes.length ? `<div class="rolagem"><table class="tab-lista"><thead><tr><th>Filial</th><th>Checklist</th><th>Inspeção</th><th>Responsável</th><th>Veículos/locais</th><th class="num">Positivo</th><th class="num">Nota</th><th></th></tr></thead><tbody>
           ${d.avaliacoes.map((a) => `<tr><td>${esc(a.filial_nome)}</td><td><strong>${esc(a.checklist_nome)}</strong><small>${esc(a.id)}</small></td><td>${fmtData(a.data_inspecao)}</td><td>${esc(a.nome)}</td>
             <td>${esc(a.colunas.join(', '))}</td><td class="num">${a.positivo === null ? '—' : fmt(a.positivo, 1) + '%'}</td><td class="num"><b>${fmt(a.nota)}</b></td>
             <td><button class="btn sec pequeno" data-detalhe="${esc(a.id)}">Abrir</button></td></tr>`).join('')}
-        </tbody></table></div>` : `<div class="vazio"><p>Nenhum checklist enviado em ${esc(d.semestre)}.</p></div>`}`;
-    } catch (e) { $('#conteudo') && ($('#conteudo').innerHTML = erroHTML(e.message)); }
+        </tbody></table></div>` : `<div class="vazio"><p>${d.historico ? 'Este semestre veio do histórico das planilhas e só tem as notas por indicador. Veja no Painel.' : 'Nenhum checklist enviado em ' + esc(d.semestre) + '.'}</p></div>`}`;
+    });
   };
 
   async function abrirDetalhe(id) {
     const corpo = modal(carregandoHTML('Carregando avaliação…'), true);
     try {
-      const d = await api('detalhe', { id }); const a = d.avaliacao;
+      const kd = chaveC('detalhe', { id }); let d = lerC(kd);
+      if (!d) { d = await api('detalhe', { id }); gravarC(kd, d); }
+      const a = d.avaliacao;
       const colunas = a.colunas.length ? a.colunas : [...new Map(d.respostas.map((r) => [r.coluna_id, { id: r.coluna_id, nome: r.coluna, grupo: r.grupo }])).values()];
       const secoes = [...new Set(d.respostas.map((r) => r.secao))];
       const mapa = {}; d.respostas.forEach((r) => { mapa[`${r.coluna_id}|${r.secao}|${r.item}`] = r; });
@@ -668,10 +779,9 @@
   }
 
   /* ---------- CRONOGRAMA ---------- */
-  VIEWS.cronograma = async function () {
-    app.innerHTML = topo('cronograma') + `<main class="pagina"><div id="conteudo">${carregandoHTML()}</div></main>`;
-    try { state.crono = await api('cronograma'); renderCronograma(); }
-    catch (e) { $('#conteudo') && ($('#conteudo').innerHTML = erroHTML(e.message)); }
+  VIEWS.cronograma = function () {
+    app.innerHTML = topo('cronograma') + `<main class="pagina"><div id="conteudo">${esqueleto()}</div></main>`;
+    carregarVista('cronograma', {}, (d) => { state.crono = d; renderCronograma(); });
   };
 
   const nomeAud = (l) => (state.crono.nomes[l] || l);
@@ -809,10 +919,10 @@
   }
 
   /* ---------- FILIAIS ---------- */
-  VIEWS.filiais = async function () {
-    app.innerHTML = topo('filiais') + `<main class="pagina"><div id="conteudo">${carregandoHTML()}</div></main>`;
-    try {
-      const d = await api('listarFiliais'); state.filiais = d.filiais; state.usuarios = d.usuarios;
+  VIEWS.filiais = function () {
+    app.innerHTML = topo('filiais') + `<main class="pagina"><div id="conteudo">${esqueleto()}</div></main>`;
+    carregarVista('listarFiliais', {}, (d) => {
+      state.filiais = d.filiais; state.usuarios = d.usuarios; if (!$('#conteudo')) return;
       const nome = (l) => (d.usuarios.find((u) => u.login === l) || {}).nome || l;
       $('#conteudo').innerHTML = `<div class="painel-cab"><div><h1>Filiais</h1><p class="suave">Garagem, pontos de apoio e avaliadores que entram no rodízio de cada filial.</p></div>
         <button class="btn primario" data-acao="novaFilial">Nova filial</button></div>
@@ -822,7 +932,7 @@
           <p class="suave">Pontos de apoio (${f.pontos_por_ciclo} por ciclo): ${f.pontos.map((p) => esc(p.nome) + (p.ativo ? '' : ' (inativo)')).join(', ') || '—'}</p>
           <p class="suave">Avaliadores (${f.auditores_por_ciclo} por ciclo): ${f.auditores.map((a) => esc(nome(a))).join(', ') || '—'}</p>
           <footer><button class="btn sec pequeno" data-editar-filial="${esc(f.id)}">Editar</button></footer></article>`).join('')}</div>`;
-    } catch (e) { $('#conteudo') && ($('#conteudo').innerHTML = erroHTML(e.message)); }
+    });
   };
 
   const linhaPonto = (p = { nome: '', ativo: true }) => `<div class="ponto-linha"><input name="ponto_nome" value="${esc(p.nome)}" placeholder="Nome do ponto de apoio">
@@ -864,18 +974,19 @@
   /* ---------- USUÁRIOS ---------- */
   VIEWS.usuarios = async function () {
     app.innerHTML = topo('usuarios') + `<main class="pagina"><div class="painel-cab"><div><h1>Usuários</h1>
-      <p class="suave">Avaliadores marcados como “Sem acesso” ainda não podem entrar: defina uma senha e mude para Ativo.</p></div></div>
+      <p class="suave">Avaliadores marcados como “Sem acesso” ainda não podem entrar: defina uma senha e mude para Ativo.
+      Toda senha definida aqui é provisória: no primeiro acesso a pessoa cria a própria senha.</p></div></div>
       <section class="usuarios-grid">
         <form id="fUsuario" class="bloco form-usuario"><h2 id="fuTitulo">Novo usuário</h2>
           <label>Usuário (login)<input name="login" required autocapitalize="none" placeholder="ex.: joao.silva"></label>
           <label>Nome completo<input name="nome" required></label>
           <label>Perfil<select name="perfil"><option value="COLABORADOR">Avaliador (preenche)</option><option value="QUALIDADE">Qualidade (vê resultados)</option></select></label>
-          <label>Senha<input name="senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></label>
+          <label>Senha provisória<input name="senha" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres"></label>
           <label>Situação<select name="ativo"><option value="SIM">Ativo</option><option value="NAO">Sem acesso</option></select></label>
           <div class="acoes"><button type="button" class="btn sec" data-acao="limparUsuario">Limpar</button><button class="btn primario">Salvar usuário</button></div>
-          <p class="suave">Ao editar, deixe a senha em branco para manter a atual.</p>
+          <p class="suave">Ao editar, deixe a senha em branco para manter a atual. Preencher uma senha aqui obriga a pessoa a criar uma nova no próximo acesso (use para quem esqueceu a senha).</p>
         </form>
-        <div class="bloco"><div id="listaUsuarios">${carregandoHTML()}</div></div>
+        <div class="bloco"><div id="listaUsuarios">${esqueleto()}</div></div>
       </section></main>`;
     $('#fUsuario').addEventListener('submit', async (e) => {
       e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
@@ -886,31 +997,41 @@
     carregarUsuarios();
   };
 
-  async function carregarUsuarios() {
-    try {
-      const d = await api('listarUsuarios'); state.usuarios = d.usuarios;
+  function carregarUsuarios() {
+    carregarVista('listarUsuarios', {}, (d) => {
+      state.usuarios = d.usuarios; if (!$('#listaUsuarios')) return;
       $('#listaUsuarios').innerHTML = `<div class="rolagem"><table class="tab-lista"><thead><tr><th>Nome</th><th>Usuário</th><th>Perfil</th><th>Situação</th><th></th></tr></thead><tbody>
-        ${d.usuarios.map((u) => `<tr><td>${esc(u.nome)}</td><td>${esc(u.login)}</td><td>${u.perfil === 'QUALIDADE' ? 'Qualidade' : 'Avaliador'}</td><td>${u.ativo === 'SIM' ? 'Ativo' : '<span class="badge st-CANCELADO">Sem acesso</span>'}</td>
+        ${d.usuarios.map((u) => `<tr><td>${esc(u.nome)}</td><td>${esc(u.login)}</td><td>${u.perfil === 'QUALIDADE' ? 'Qualidade' : 'Avaliador'}</td><td>${u.ativo === 'SIM' ? (u.trocar_senha === 'SIM' ? '<span class="badge st-PLANEJADO">Aguardando 1º acesso</span>' : 'Ativo') : '<span class="badge st-CANCELADO">Sem acesso</span>'}</td>
           <td><button class="btn sec pequeno" data-editar-usuario="${esc(u.login)}">Editar</button></td></tr>`).join('')}</tbody></table></div>`;
-    } catch (e) { $('#listaUsuarios').innerHTML = erroHTML(e.message); }
+    }, '#listaUsuarios');
   }
 
   function modalSenha() {
     const corpo = modal(`<h2>Trocar senha</h2><form id="fSenha">
-      <label>Senha atual<input type="password" name="senhaAtual" autocomplete="current-password" required></label>
-      <label>Nova senha<input type="password" name="novaSenha" autocomplete="new-password" minlength="6" required></label>
-      <label>Repita a nova senha<input type="password" name="conf" autocomplete="new-password" required></label>
+      <input type="text" name="usuario" value="${esc(state.sessao.login)}" autocomplete="username" hidden>
+      ${campoSenha('senhaAtual', 'Senha atual', 'current-password')}
+      ${campoSenha('novaSenha', 'Nova senha', 'new-password')}
+      ${medidor()}
+      ${campoSenha('conf', 'Repita a nova senha', 'new-password')}
       <div class="acoes"><button class="btn primario">Salvar nova senha</button></div><p class="erro-msg" id="senhaErro"></p></form>`);
-    $('#fSenha', corpo).addEventListener('submit', async (e) => {
-      e.preventDefault(); const fd = Object.fromEntries(new FormData(e.target));
-      if (fd.novaSenha !== fd.conf) { $('#senhaErro').textContent = 'As senhas novas não são iguais.'; return; }
-      try { await api('trocarSenha', fd); fecharModal(); toast('Senha alterada.', 'ok'); } catch (err) { $('#senhaErro').textContent = err.message; }
+    const form = $('#fSenha', corpo); ligarMedidor(form);
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msg = erroNovaSenha(form.novaSenha.value, form.conf.value);
+      if (msg) { $('#senhaErro').textContent = msg; return; }
+      try { await api('trocarSenha', { senhaAtual: form.senhaAtual.value, novaSenha: form.novaSenha.value }); fecharModal(); toast('Senha alterada.', 'ok'); }
+      catch (err) { $('#senhaErro').textContent = err.message; }
     });
   }
 
   /* ---------- eventos globais ---------- */
   document.addEventListener('click', async (e) => {
     const t = e.target, el = (s) => t.closest(s);
+    if (el('[data-mostrar]')) {
+      const b = el('[data-mostrar]'), inp = b.previousElementSibling, ver = inp.type === 'password';
+      inp.type = ver ? 'text' : 'password'; b.textContent = ver ? 'Ocultar' : 'Mostrar'; b.setAttribute('aria-label', ver ? 'Ocultar senha' : 'Mostrar senha');
+      return;
+    }
     if (el('[data-rota]')) { rota(el('[data-rota]').dataset.rota); return; }
     if (el('[data-auditoria]')) { rota('auditoria', el('[data-auditoria]').dataset.auditoria); return; }
     if (el('[data-abrir]')) { abrirForm(state.rotaArg, el('[data-abrir]').dataset.abrir); return; }
@@ -927,7 +1048,7 @@
     }
 
     const acao = el('[data-acao]') && el('[data-acao]').dataset.acao;
-    if (acao === 'sair') { try { await api('logout'); } catch (err) {} salvarSessao(null); rota('login'); return; }
+    if (acao === 'sair') { api('logout').catch(() => {}); limparC(); salvarSessao(null); rota('login'); return; }
     if (acao === 'senha') { modalSenha(); return; }
     if (acao === 'fecharModal') { fecharModal(); return; }
     if (acao === 'recarregar') { rota(state.rota, state.rotaArg); return; }
@@ -985,5 +1106,12 @@
 
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const fc = $('.foto-cheia'); if (fc) fc.remove(); else fecharModal(); } });
 
+  // pré-carrega as telas mais usadas para a navegação ficar instantânea
+  function aquecer() {
+    if (!state.sessao || state.sessao.deveTrocar) return;
+    if (ehQualidade()) preCarregar([['cronograma', {}], ['minhasAuditorias', {}], ['listarFiliais', {}]]);
+  }
+
   rota(state.sessao ? (ehQualidade() ? 'painel' : 'inicio') : 'login');
+  aquecer();
 })();
