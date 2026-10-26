@@ -654,7 +654,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbzHDhcTF-1K7ZChKNOtn-o636FBnwOSqLwcsamuV-_qNW5RwliYuwnqdBMQFkC7CKMK/exec').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -776,7 +776,7 @@ window.CHECKLISTS = {
     state.rota = nome; state.rotaArg = arg; state.nav = (state.nav || 0) + 1;
     VIEWS[nome](arg);
     medirTopo();
-    window.scrollTo(0, 0);
+    .scrollTo(0, 0);
   }
   function medirTopo() { const h = $('.topo'); if (h) document.documentElement.style.setProperty('--topo', h.offsetHeight + 'px'); }
   window.addEventListener('resize', medirTopo);
