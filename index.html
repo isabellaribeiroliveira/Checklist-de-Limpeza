@@ -776,7 +776,7 @@ window.CHECKLISTS = {
     state.rota = nome; state.rotaArg = arg; state.nav = (state.nav || 0) + 1;
     VIEWS[nome](arg);
     medirTopo();
-    .scrollTo(0, 0);
+    scrollTo(0, 0);
   }
   function medirTopo() { const h = $('.topo'); if (h) document.documentElement.style.setProperty('--topo', h.offsetHeight + 'px'); }
   window.addEventListener('resize', medirTopo);
