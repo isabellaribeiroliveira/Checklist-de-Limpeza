@@ -444,6 +444,34 @@ tfoot th { background: var(--petroleo); color: #fff; font-size: 1.05rem; }
   .nav-link { padding: .45em .85em; font-size: .92rem; }
 }
 
+/* ============ Escala: prazo e confirmação ============ */
+.prazo { display: inline-flex; align-items: center; gap: .35em; align-self: flex-start; margin-top: .35rem; font-size: .82rem; font-weight: 700;
+  color: var(--petroleo-txt); background: var(--petroleo-claro); border-radius: 999px; padding: .2em .7em; }
+.prazo::before { content: "⏱"; font-size: .9em; }
+.prazo.urgente { color: #8A5D00; background: var(--r-claro); }
+.prazo.atrasado { color: var(--i); background: var(--i-claro); }
+.aud-card.atrasada::before { background: var(--i); }
+.escolha-item.fechado { cursor: default; opacity: .7; }
+.escolha-item.fechado:hover { transform: none; box-shadow: var(--sombra); }
+.escolha-item.fechado::before { background: var(--na); }
+.escolha-item em.fechado { color: var(--suave); background: var(--fundo-2); }
+.barra-planilha.atraso { border-left-color: var(--i); }
+.barra-planilha.prazo-ok { border-left-color: var(--petroleo); }
+.vazio-curto { padding: 1rem 1.25rem; }
+.vazio-curto p { margin: 0; }
+.badge.sit-aguardando { background: var(--r-claro); color: #8A5D00; }
+.badge.sit-agendada { background: var(--petroleo-claro); color: var(--petroleo-txt); }
+.badge.sit-em_andamento { background: var(--petroleo); color: #fff; }
+.badge.sit-atrasada { background: var(--i); color: #fff; }
+.badge.sit-realizada { background: var(--o-claro); color: var(--o); }
+.badge.sit-cancelada { background: var(--fundo-2); color: var(--suave); }
+.ciclo.sit-aguardando { border-style: dashed; border-color: color-mix(in srgb, var(--r) 60%, transparent); }
+.ciclo.sit-atrasada { border-color: var(--i); background: color-mix(in srgb, var(--i-claro) 40%, var(--superficie)); }
+.datas-escala { display: flex; flex-wrap: wrap; gap: .4rem .9rem; margin: 0; font-size: .86rem; color: var(--suave); }
+.datas-escala b { color: var(--tinta); }
+.acoes-ciclo { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: .2rem; }
+.resumo-escala { display: flex; gap: .5rem; flex-wrap: wrap; margin: .25rem 0 0; }
+
   </style>
 </head>
 <body>
@@ -453,11 +481,11 @@ tfoot th { background: var(--petroleo); color: #fff; font-size: 1.05rem; }
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <script>
     /* ==========================================================================
-     * CHECKLIST DE LIMPEZA · REG-UTL-176 · site (versão 30)
+     * CHECKLIST DE LIMPEZA · REG-UTL-176 · site (versão 31)
      * Pelo link do Apps Script não é preciso configurar nada.
      * Só se for publicar ESTE arquivo no GitHub Pages: cole abaixo o link da implantação (termina em /exec).
      * ========================================================================== */
-    window.CONFIG = { API_URL: 'https://script.google.com/macros/s/AKfycbySyF2Qz1Q2IJqn-JgMJluPVAne93l2IWAYb8LxMMvv8l6_HJOKf1cbV6-av0kuBW92/exec' };
+    window.CONFIG = { API_URL: '' };
   </script>
   <script>
 /*
@@ -564,7 +592,7 @@ window.CHECKLISTS = {
   const STATUS = { PLANEJADO: 'Planejado', REALIZADO: 'Realizado', CANCELADO: 'Cancelado' };
   const PALETA = ['#0E4D5C', '#4F8A99', '#8DAA3B', '#E0A21B', '#7A4E9C', '#C8372D', '#14262B'];
   const app = $('#app');
-  const VERSAO_SITE = '30';
+  const VERSAO_SITE = '31';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -588,11 +616,22 @@ window.CHECKLISTS = {
   const exigeEvidencia = (item, nota) => nota === 'R' || nota === 'I' || (nota === 'B' && categoria(item) !== 'limpeza');
   const iniciais = (n) => String(n || '').split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
+  const SITUACAO = { aguardando: 'Aguardando confirmação', agendada: 'Agendada', em_andamento: 'Em andamento', atrasada: 'Atrasada', realizada: 'Realizada', cancelada: 'Cancelada' };
+  const dataCurta = (iso) => { const m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}` : ''; };
+  function prazoHTML(a) { // selo de prazo para o avaliador
+    if (!a.prazo || a.finalizada) return '';
+    const d = a.dias_restantes;
+    if (d < 0) return `<span class="prazo atrasado">Prazo encerrado em ${dataCurta(a.prazo)}</span>`;
+    if (d === 0) return `<span class="prazo urgente">Prazo termina hoje</span>`;
+    return `<span class="prazo ${d <= 3 ? 'urgente' : ''}">Prazo ${dataCurta(a.prazo)} · ${d === 1 ? 'falta 1 dia' : 'faltam ' + d + ' dias'}</span>`;
+  }
+  const prazoEncerrado = (a) => !!(a && a.prazo && !a.finalizada && a.dias_restantes < 0);
+
   function lerSessao() { try { return JSON.parse(localStorage.getItem('ck_sessao')); } catch (e) { return null; } }
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
-  const VERSAO_API_MIN = 30; // versão do Code.gs que este site espera
+  const VERSAO_API_MIN = 31; // versão do Code.gs que este site espera
   let avisouVersao = false;
   function avisoVersao() {
     if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
@@ -892,19 +931,30 @@ window.CHECKLISTS = {
     carregarVista('minhasAuditorias', {}, (d) => {
       const lista = d.auditorias; state.auditorias = new Map(lista.map((a) => [a.id, a]));
       const el = $('#lista'); if (!el) return;
-      if (!lista.length) {
-        el.innerHTML = `<div class="vazio"><p>${q ? 'Nenhuma auditoria planejada. Monte o ciclo em Cronograma.' : 'Nenhuma auditoria programada para você. Quando a Qualidade escalar você no cronograma, ela aparece aqui.'}</p></div>`;
+      if (!lista.length && q) {
+        el.innerHTML = '<div class="vazio"><p>Nenhuma auditoria planejada. Monte o ciclo em Cronograma.</p></div>';
         return;
       }
-      el.innerHTML = `<div class="auditorias">${lista.map((a) => {
+      const card = (a) => {
         const feitos = a.aplicaveis.filter((k) => a.enviados.includes(k)).length;
-        return `<button class="aud-card st-${a.status}" data-auditoria="${esc(a.id)}">
+        const selo = a.liberado ? '<span class="badge st-REALIZADO">Resultado disponível</span>'
+          : a.finalizada ? '<span class="badge">Aguardando validação</span>'
+          : `<span class="badge st-${a.situacao === 'atrasada' ? 'CANCELADO' : 'PLANEJADO'}">${SITUACAO[a.situacao] || STATUS[a.status]}</span>`;
+        return `<button class="aud-card st-${a.finalizada ? 'REALIZADO' : a.status} ${a.situacao === 'atrasada' ? 'atrasada' : ''}" data-auditoria="${esc(a.id)}">
           <span class="aud-ciclo">${ciclo(a)}</span>
           <strong>${esc(a.filial_nome)}</strong>
           <span class="aud-locais">${locaisAud(a).map(esc).join(' · ')}</span>
-          <span class="aud-rodape">${a.liberado ? '<span class="badge st-REALIZADO">Resultado disponível</span>' : `<span class="badge st-${a.status}">${STATUS[a.status]}</span>`}<span>${feitos} de ${a.aplicaveis.length} checklists enviados</span></span>
+          ${prazoHTML(a)}
+          <span class="aud-rodape">${selo}<span>${a.sem_checklists ? 'Registrada nas planilhas' : feitos + ' de ' + a.aplicaveis.length + ' checklists enviados'}</span></span>
           ${q ? `<small>Avaliador: ${esc(a.auditores.join(', '))}</small>` : ''}
-        </button>`; }).join('')}</div>`;
+        </button>`;
+      };
+      const afazer = lista.filter((a) => !a.finalizada), feitas = lista.filter((a) => a.finalizada);
+      el.innerHTML = `<h2 class="titulo-sec">Para fazer</h2>
+        ${afazer.length ? `<div class="auditorias">${afazer.map(card).join('')}</div>`
+          : `<div class="bloco vazio-curto"><p class="suave">${q ? 'Nenhuma auditoria planejada.' : 'Nenhuma auditoria liberada para você agora. Quando a Qualidade confirmar a escala e chegar a data de liberação, ela aparece aqui.'}</p></div>`}
+        ${q ? '' : `<h2 class="titulo-sec">Finalizadas</h2>
+        ${feitas.length ? `<div class="auditorias">${feitas.map(card).join('')}</div>` : '<div class="bloco vazio-curto"><p class="suave">Você ainda não tem auditorias finalizadas.</p></div>'}`}`;
     }, '#lista');
   };
 
@@ -920,10 +970,14 @@ window.CHECKLISTS = {
           <p><strong>Locais:</strong> ${locaisAud(a).map(esc).join(', ')}</p>
           <p class="suave">Avaliador: ${esc(a.auditores.join(', '))}</p>
           ${a.observacao ? `<p class="nota-crono">${esc(a.observacao)}</p>` : ''}</div>
+        ${statusPrazo(a)}
         ${statusResultado(a)}
-        <h2 class="titulo-sec">Checklists desta auditoria</h2>
-        <div class="escolha">${a.aplicaveis.map((k) => {
+        ${a.sem_checklists ? '' : '<h2 class="titulo-sec">Checklists desta auditoria</h2>'}
+        <div class="escolha">${a.sem_checklists ? '' : a.aplicaveis.map((k) => {
           const c = CHECKLISTS[k]; const env = a.enviados.includes(k); const r = !env && lerRascunho(a.id, k);
+          const fechado = !env && (a.finalizada || prazoEncerrado(a));
+          if (fechado) return `<div class="escolha-item fechado"><span class="escolha-tipo">${c.tipo === 'veiculo' ? 'Veículos' : 'Predial'}</span>
+            <strong>${esc(c.titulo)}</strong><small>${esc(locaisDoModelo(c, a).join(' · '))}</small><em class="fechado">${a.finalizada ? 'Não enviado' : 'Prazo encerrado'}</em></div>`;
           const cols = locaisDoModelo(c, a);
           const idEnvio = env && a.envios ? a.envios[k] : '';
           const tag = env && !idEnvio ? 'div' : 'button';
@@ -934,6 +988,16 @@ window.CHECKLISTS = {
           </${tag}>`; }).join('')}</div>`;
     });
   };
+
+  function statusPrazo(a) {
+    if (a.sem_checklists) return `<div class="aviso-hist">Esta auditoria foi feita antes do sistema e está registrada nas planilhas antigas. O resultado está disponível abaixo.</div>`;
+    if (a.finalizada || !a.prazo) return '';
+    const d = a.dias_restantes;
+    if (d < 0) return `<div class="barra-planilha atraso"><div><strong>Prazo encerrado em ${fmtData(a.prazo)}</strong>
+      <span class="suave">Os checklists que faltam não podem mais ser enviados. Se precisar, peça à Qualidade para prorrogar o prazo.</span></div></div>`;
+    return `<div class="barra-planilha ${d <= 3 ? 'pendente' : 'prazo-ok'}"><div><strong>${d === 0 ? 'O prazo termina hoje' : 'Prazo de envio: ' + fmtData(a.prazo)}</strong>
+      <span class="suave">Liberada em ${fmtData(a.liberacao) || '—'}${d > 0 ? ' · ' + (d === 1 ? 'falta 1 dia' : 'faltam ' + d + ' dias') : ''}. Envie todos os checklists até essa data.</span></div></div>`;
+  }
 
   function statusResultado(a) {
     const feitos = a.aplicaveis.filter((k) => a.enviados.includes(k)).length;
@@ -952,6 +1016,7 @@ window.CHECKLISTS = {
   }
 
   async function abrirForm(cid, k) {
+    if (prazoEncerrado(state.auditorias.get(cid))) { toast('O prazo desta auditoria terminou. Fale com a Qualidade para prorrogar.', 'erro'); return; }
     const r = lerRascunho(cid, k);
     if (r && await confirmar('Continuar rascunho?', `Há um rascunho salvo em ${fmtData(r.salvoEm)}. Deseja continuar de onde parou?`, 'Continuar rascunho')) {
       state.form = r;
@@ -1470,7 +1535,10 @@ window.CHECKLISTS = {
     const anos = [...new Set(d.entradas.map((e) => e.ano).concat([anoAtual, anoAtual + 1]))].sort();
     const ano = state.anoCrono || anoAtual; state.anoCrono = ano;
     el.innerHTML = `<div class="painel-cab"><div><h1>Cronograma de auditorias</h1>
-        <p class="suave">Dois ciclos por ano. O rodízio sugere os pontos de apoio há mais tempo sem auditoria e alterna os avaliadores entre as filiais.</p></div>
+        <p class="suave">Dois ciclos por ano. O rodízio sugere os pontos de apoio há mais tempo sem auditoria e alterna os avaliadores entre as filiais.
+        O avaliador só vê a auditoria depois de <b>Confirmar escala</b>, a partir da data de liberação.</p>
+        ${(() => { const at = d.entradas.filter((e) => e.situacao === 'atrasada').length, ag = d.entradas.filter((e) => e.situacao === 'aguardando').length;
+          return at || ag ? `<p class="resumo-escala">${at ? `<span class="badge sit-atrasada">${at} atrasada(s)</span>` : ''}${ag ? `<span class="badge sit-aguardando">${ag} aguardando confirmação</span>` : ''}</p>` : ''; })()}</div>
       <div class="filtros"><label>Ano<select id="selAno">${anos.map((a) => `<option ${a === ano ? 'selected' : ''}>${a}</option>`).join('')}</select></label>
         <button class="btn primario" data-acao="sugerir">Sugerir rodízio</button></div></div>
       <div class="crono-lista">${d.filiais.filter((f) => f.ativo).map((f) => `
@@ -1485,12 +1553,18 @@ window.CHECKLISTS = {
   function celulaCrono(f, ano, c) {
     const e = entradaDe(f.id, ano, c);
     if (!e) return `<button class="ciclo vazio" data-novo-crono="${esc(f.id)}|${ano}|${c}"><span>${c === 1 ? 'Jun' : 'Dez'}/${ano}</span>+ Programar</button>`;
-    return `<div class="ciclo st-${e.status}">
-      <div class="ciclo-topo"><strong>${ciclo(e)}</strong><span class="badge st-${e.status}">${STATUS[e.status]}</span></div>
+    const sit = e.situacao || (e.status === 'REALIZADO' ? 'realizada' : 'aguardando');
+    const datas = e.prazo ? `<p class="datas-escala"><span>Libera <b>${dataCurta(e.liberacao) || '—'}</b></span><span>Prazo <b>${dataCurta(e.prazo)}</b></span>${e.status === 'PLANEJADO' ? `<span>${e.enviados || 0}/${e.aplicaveis || 4} enviados</span>` : ''}</p>` : '';
+    const acao = e.status !== 'PLANEJADO' ? '' : e.confirmado
+      ? `<button class="link" data-confirmar-escala="${esc(e.id)}">Alterar datas</button>`
+      : `<button class="btn primario pequeno" data-confirmar-escala="${esc(e.id)}">Confirmar escala</button>`;
+    return `<div class="ciclo st-${e.status} sit-${sit}">
+      <div class="ciclo-topo"><strong>${ciclo(e)}</strong><span class="badge sit-${sit}">${SITUACAO[sit]}</span></div>
       <ul class="locais"><li class="garagem">${esc(f.garagem)}</li>${e.pontos.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
       <p class="auds">${e.auditores.map((a) => `<span class="pessoa">${esc(nomeAud(a))}</span>`).join('')}</p>
+      ${datas}
       ${e.observacao ? `<p class="nota-crono">${esc(e.observacao)}</p>` : ''}
-      <button class="link" data-editar-crono="${esc(e.id)}">Editar</button></div>`;
+      <div class="acoes-ciclo">${acao}<button class="link" data-editar-crono="${esc(e.id)}">Editar</button></div></div>`;
   }
 
   function mapaRodizio(f) {
@@ -1511,6 +1585,38 @@ window.CHECKLISTS = {
     return f.auditores.map((a) => `<label class="check"><input type="checkbox" name="auditores" value="${esc(a)}" ${marcados.includes(a) ? 'checked' : ''}>${esc(nomeAud(a))}</label>`).join('') || '<p class="suave">Cadastre os avaliadores desta filial em Filiais.</p>';
   }
 
+  // último dia do mês do ciclo (sugestão de prazo)
+  const fimDoMes = (ano, mes) => { const d = new Date(ano, mes, 0); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+  const hojeLocal = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+
+  function modalConfirmarEscala(e) {
+    const f = state.crono.filiais.find((x) => x.id === e.filial_id);
+    const lib = e.liberacao || hojeLocal(), prz = e.prazo || fimDoMes(e.ano, e.mes || (e.ciclo === 1 ? 6 : 12));
+    const corpo = modal(`<h2>${e.confirmado ? 'Datas da escala' : 'Confirmar escala'} · ${esc(f.nome)} ${ciclo(e)}</h2>
+      <p class="suave">Avaliador: <b>${esc(e.auditores.map(nomeAud).join(', '))}</b> · Locais: ${esc([f.garagem].concat(e.pontos).join(', '))}</p>
+      <form id="fConf">
+        <div class="linha2"><label>Liberar para o avaliador em<input type="date" name="liberacao" value="${lib}" required></label>
+          <label>Prazo de envio (último dia)<input type="date" name="prazo" value="${prz}" required></label></div>
+        <p class="suave">A partir da data de liberação o avaliador vê esta auditoria e pode preencher. Depois do prazo, o envio fica bloqueado e a auditoria aparece como <b>Atrasada</b>; para prorrogar, é só voltar aqui e mudar a data.</p>
+        <div class="acoes">${e.confirmado && !e.enviados ? '<button type="button" class="btn sec perigo-txt" data-acao="desconfirmar">Desfazer confirmação</button>' : ''}
+          <button class="btn primario">${e.confirmado ? 'Salvar datas' : 'Confirmar escala'}</button></div>
+      </form>`);
+    const form = $('#fConf', corpo);
+    form.addEventListener('submit', async (ev) => {
+      ev.preventDefault();
+      if (form.prazo.value < form.liberacao.value) { toast('O prazo precisa ser depois da data de liberação.', 'erro'); return; }
+      carregando('Salvando…');
+      try { await api('confirmarEscala', { id: e.id, confirmar: true, liberacao: form.liberacao.value, prazo: form.prazo.value }); carregando(); toast(e.confirmado ? 'Datas atualizadas.' : 'Escala confirmada.', 'ok'); rota('cronograma'); }
+      catch (err) { carregando(); toast(err.message, 'erro'); }
+    });
+    const des = $('[data-acao=desconfirmar]', corpo);
+    if (des) des.addEventListener('click', async () => {
+      carregando('Desfazendo…');
+      try { await api('confirmarEscala', { id: e.id, confirmar: false }); carregando(); toast('Confirmação desfeita: o avaliador não vê mais esta auditoria.', 'ok'); rota('cronograma'); }
+      catch (err) { carregando(); toast(err.message, 'erro'); }
+    });
+  }
+
   function editarCrono(e) {
     const f = state.crono.filiais.find((x) => x.id === e.filial_id);
     const corpo = modal(`<h2>${e.id ? 'Editar' : 'Programar'} auditoria · ${esc(f.nome)}</h2>
@@ -1520,6 +1626,10 @@ window.CHECKLISTS = {
           <label>Mês<select name="mes">${MESES.map((m, i) => `<option value="${i + 1}" ${(e.mes || (e.ciclo === 1 ? 6 : 12)) === i + 1 ? 'selected' : ''}>${m}</option>`).join('')}</select></label></div>
         <fieldset><legend>Locais</legend><label class="check"><input type="checkbox" checked disabled>${esc(f.garagem)} (sempre)</label>${opcoesPontos(f, e.pontos || [])}</fieldset>
         <fieldset><legend>Avaliadores</legend>${opcoesAuditores(f, e.auditores || [])}</fieldset>
+        <fieldset><legend>Escala</legend>
+          <label class="check"><input type="checkbox" name="confirmado" ${e.confirmado ? 'checked' : ''}>Escala confirmada (o avaliador vê a auditoria a partir da data de liberação)</label>
+          <div class="linha2"><label>Liberar em<input type="date" name="liberacao" value="${e.liberacao || ''}"></label>
+            <label>Prazo de envio<input type="date" name="prazo" value="${e.prazo || ''}"></label></div></fieldset>
         <label>Situação<select name="status">${Object.keys(STATUS).map((s) => `<option value="${s}" ${(e.status || 'PLANEJADO') === s ? 'selected' : ''}>${STATUS[s]}</option>`).join('')}</select></label>
         <label>Observação<textarea name="observacao" rows="3" placeholder="Lembretes para este ciclo ou para o próximo">${esc(e.observacao || '')}</textarea></label>
         <div class="acoes">${e.id ? '<button type="button" class="btn sec perigo-txt" data-acao="excluirCrono">Excluir</button>' : ''}<button class="btn primario">Salvar</button></div>
@@ -1530,7 +1640,9 @@ window.CHECKLISTS = {
       ev.preventDefault();
       const entrada = { id: e.id, filial_id: f.id, ano: Number(form.ano.value), ciclo: Number(form.ciclo.value), mes: Number(form.mes.value),
         pontos: $$('input[name=pontos]:checked', form).map((i) => i.value), auditores: $$('input[name=auditores]:checked', form).map((i) => i.value),
-        status: form.status.value, observacao: form.observacao.value };
+        status: form.status.value, observacao: form.observacao.value,
+        confirmado: form.confirmado.checked, liberacao: form.liberacao.value, prazo: form.prazo.value };
+      if (entrada.confirmado && entrada.status === 'PLANEJADO' && !entrada.prazo) { toast('Para confirmar a escala, informe o prazo de envio.', 'erro'); return; }
       carregando('Salvando…');
       try {
         const r = await api('salvarCronograma', { entrada }); carregando();
@@ -1585,7 +1697,8 @@ window.CHECKLISTS = {
         const p = r.propostas[Number(art.dataset.i)];
         const entrada = { id: p.existente ? p.existente.id : '', filial_id: p.filial_id, ano: r.ano, ciclo: r.ciclo, mes: p.existente ? p.existente.mes : p.mes,
           pontos: $$('input[name=pontos]:checked', art).map((x) => x.value), auditores: $$('input[name=auditores]:checked', art).map((x) => x.value),
-          status: p.existente ? p.existente.status : 'PLANEJADO', observacao: p.existente ? p.existente.observacao : '' };
+          status: p.existente ? p.existente.status : 'PLANEJADO', observacao: p.existente ? p.existente.observacao : '',
+          confirmado: p.existente ? undefined : false };
         try { const res = await api('salvarCronograma', { entrada }); avisos.push(...(res.avisos || [])); }
         catch (err) { erros.push(`${p.filial_nome}: ${err.message}`); }
       }
@@ -1718,6 +1831,7 @@ window.CHECKLISTS = {
     if (el('[data-ampliar]')) { ampliarFoto(el('[data-ampliar]').dataset.ampliar); return; }
     if (el('[data-ver-filial]')) { state.filial = el('[data-ver-filial]').dataset.verFilial; rota('painel'); return; }
     if (el('[data-novo-crono]')) { const [fid, ano, c] = el('[data-novo-crono]').dataset.novoCrono.split('|'); editarCrono({ filial_id: fid, ano: Number(ano), ciclo: Number(c), pontos: [], auditores: [] }); return; }
+    if (el('[data-confirmar-escala]')) { modalConfirmarEscala(state.crono.entradas.find((x) => x.id === el('[data-confirmar-escala]').dataset.confirmarEscala)); return; }
     if (el('[data-editar-crono]')) { editarCrono(state.crono.entradas.find((x) => x.id === el('[data-editar-crono]').dataset.editarCrono)); return; }
     if (el('[data-editar-filial]')) { editarFilial(state.filiais.find((x) => x.id === el('[data-editar-filial]').dataset.editarFilial)); return; }
     if (el('[data-editar-usuario]')) {
