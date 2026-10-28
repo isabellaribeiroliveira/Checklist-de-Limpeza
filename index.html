@@ -1506,7 +1506,7 @@ window.CHECKLISTS = {
         ${d.filiais.map((f) => `<tr><td>${esc(f.nome)}</td>${d.acumuladoFiliais.map((a) => `<td class="num">${fmt(a.finais[f.id])}</td>`).join('')}</tr>`).join('')}
       </tbody></table></div><div class="grafico-linha"><canvas id="gAcum"></canvas></div></section>` : ''}`;
 
-    if (.Chart && $('#gFiliais')) {
+    if (Chart && $('#gFiliais')) {
       state.charts.push(new Chart($('#gFiliais'), { type: 'bar',
         data: { labels: comDados.map((f) => f.nome), datasets: [{ data: comDados.map((f) => f.final), backgroundColor: comDados.map((f, i) => PALETA[i % PALETA.length]), borderRadius: 8, maxBarThickness: 90 }] },
         options: { maintainAspectRatio: false, animation: { duration: 900, easing: 'easeOutQuart' }, onClick: (ev, els) => { if (els.length) { state.filial = comDados[els[0].index].id; rota(rotaPainel()); } },
