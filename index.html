@@ -858,7 +858,7 @@ main { overflow-wrap: break-word; }
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
   <script>
-    window.CONFIG = { API_URL: 'https://script.google.com/macros/s/AKfycbyVwsJgJ6KXzw6TN8pe-tfSebdfzTP7ROjGb8jP8dorCsuIY06t11em-4kIOL3XuGMJ/exec' };
+    window.CONFIG = { API_URL: 'https://script.google.com/macros/s/AKfycbwBEYWLER3eFon6rhNU1EUwmu2mXm9SCj5dt6v467sDKn-QAPjyjr-1ft9MA_Cy6FM1/exec' };
   </script>
 
   <div id="app"></div>
@@ -1296,7 +1296,7 @@ window.CHECKLISTS = {
       <div class="acoes" style="justify-content:flex-start"><button class="btn sec" data-acao="refazerDiag">Testar de novo</button><button class="btn primario" data-rota="login">Voltar ao site</button></div></main>`;
     const itens = [linha(true, 'Site carregado', `Versão do site ${VERSAO_SITE} · ${NO_APPS_SCRIPT ? 'aberto pelo link do Apps Script' : 'aberto fora do Apps Script (GitHub)'}`)];
     if (!NO_APPS_SCRIPT) {
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbyVwsJgJ6KXzw6TN8pe-tfSebdfzTP7ROjGb8jP8dorCsuIY06t11em-4kIOL3XuGMJ/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbwBEYWLER3eFon6rhNU1EUwmu2mXm9SCj5dt6v467sDKn-QAPjyjr-1ft9MA_Cy6FM1/exec').trim();
       if (!url) itens.push(linha(false, 'API_URL vazia', 'Fora do Apps Script, preencha API_URL no topo do index.html com o link da implantação (termina em /exec). Ou simplesmente use o link do Apps Script.'));
       else if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) itens.push(linha(false, 'API_URL parece errada', `Está assim: <code>${esc(url)}</code>. Ela deve terminar em <b>/exec</b>.`));
       else itens.push(linha(true, 'API_URL configurada', `<code>${esc(url)}</code>`));
