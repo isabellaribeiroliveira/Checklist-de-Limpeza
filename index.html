@@ -849,16 +849,28 @@ tr.rec-critico td:first-child { box-shadow: inset 4px 0 0 var(--i); } tr.rec-ate
 .config-email p, .config-email label, .aviso-hist, .erro-msg { overflow-wrap: anywhere; }
 main { overflow-wrap: break-word; }
 
+/* ============ v39 · plano de ação e versão oficial ============ */
+.etapas-apres { list-style: none; display: flex; gap: .4rem; flex-wrap: wrap; margin: .55rem 0 0; padding: 0; }
+.etapas-apres li { display: inline-flex; align-items: center; gap: .3rem; font-size: .8rem; font-weight: 700; padding: .25em .7em; border-radius: 999px; background: var(--fundo-2); color: var(--suave); }
+.etapas-apres li .ic { width: 14px; height: 14px; }
+.etapas-apres li.feito { background: var(--o-claro); color: var(--o); }
+.etapas-apres li.atual { background: var(--petroleo); color: #fff; }
+.plano-linha { display: grid; grid-template-columns: minmax(220px, 1fr) 150px 170px 150px 140px auto; gap: .5rem; align-items: start; padding: .55rem 0; border-bottom: 1px solid var(--linha); }
+.plano-linha textarea { min-height: 52px; resize: vertical; }
+.plano-linha input, .plano-linha select, .plano-linha textarea { min-height: 42px; }
+@media (max-width: 900px) { .plano-linha { grid-template-columns: 1fr 1fr; } .plano-linha textarea { grid-column: 1 / -1; } }
+.tab-plano td:first-child { min-width: 260px; }
+
   </style>
 </head>
 <body>
   <!-- ==========================================================================
-       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 38)
+       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 39)
        Só para o GitHub Pages: cole abaixo, entre as aspas, o link da implantação do Apps Script (termina em /exec).
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
   <script>
-    window.CONFIG = { API_URL: 'https://script.google.com/macros/s/AKfycbwBEYWLER3eFon6rhNU1EUwmu2mXm9SCj5dt6v467sDKn-QAPjyjr-1ft9MA_Cy6FM1/exec' };
+    window.CONFIG = { API_URL: '' };
   </script>
 
   <div id="app"></div>
@@ -988,7 +1000,7 @@ window.CHECKLISTS = {
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
   const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '38';
+  const VERSAO_SITE = '39';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -1063,7 +1075,7 @@ window.CHECKLISTS = {
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
-  const VERSAO_API_MIN = 38; // versão do Code.gs que este site espera
+  const VERSAO_API_MIN = 39; // versão do Code.gs que este site espera
   let avisouVersao = false;
   function avisoVersao() {
     if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
@@ -1296,7 +1308,7 @@ window.CHECKLISTS = {
       <div class="acoes" style="justify-content:flex-start"><button class="btn sec" data-acao="refazerDiag">Testar de novo</button><button class="btn primario" data-rota="login">Voltar ao site</button></div></main>`;
     const itens = [linha(true, 'Site carregado', `Versão do site ${VERSAO_SITE} · ${NO_APPS_SCRIPT ? 'aberto pelo link do Apps Script' : 'aberto fora do Apps Script (GitHub)'}`)];
     if (!NO_APPS_SCRIPT) {
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbwBEYWLER3eFon6rhNU1EUwmu2mXm9SCj5dt6v467sDKn-QAPjyjr-1ft9MA_Cy6FM1/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) itens.push(linha(false, 'API_URL vazia', 'Fora do Apps Script, preencha API_URL no topo do index.html com o link da implantação (termina em /exec). Ou simplesmente use o link do Apps Script.'));
       else if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) itens.push(linha(false, 'API_URL parece errada', `Está assim: <code>${esc(url)}</code>. Ela deve terminar em <b>/exec</b>.`));
       else itens.push(linha(true, 'API_URL configurada', `<code>${esc(url)}</code>`));
@@ -1941,6 +1953,91 @@ window.CHECKLISTS = {
       <div class="contagens">${it.I ? `<b class="chip n-I">I ×${it.I}</b>` : ''}${it.R ? `<b class="chip n-R">R ×${it.R}</b>` : ''}</div></article>`).join('')}</div>`;
   }
 
+  // Qualidade: gera o rascunho → ajusta no Drive → publica a versão oficial (é a que os gestores baixam)
+  function barraApresentacaoQualidade(d) {
+    const a = d.apresentacao, of = a && a.oficial;
+    const etapas = `<ol class="etapas-apres"><li class="${a ? 'feito' : 'atual'}">${ic('presentation')}<span>Gerar</span></li><li class="${a ? (of && of.igualRascunho ? 'feito' : 'atual') : ''}">${ic('pen-line')}<span>Ajustar no Drive</span></li><li class="${of && of.igualRascunho ? 'feito' : a ? 'atual' : ''}">${ic('send')}<span>Publicar para gestores</span></li></ol>`;
+    const status = !a ? 'Gere a apresentação: ela sai com o plano de ação (responsáveis e prazos) e fica no Drive como rascunho.'
+      : of && of.igualRascunho ? `<b>Publicada</b> em ${fmtData(of.publicada_em)} por ${esc(of.publicada_por)}. Os gestores baixam esta versão. Ajustes feitos no Drive entram automaticamente.`
+      : of ? `Novo rascunho gerado em ${fmtData(a.atualizado_em)}. Os gestores ainda baixam a versão publicada em ${fmtData(of.publicada_em)}; publique o novo rascunho para substituí-la.`
+      : `Rascunho gerado em ${fmtData(a.atualizado_em)}${a.por ? ' por ' + esc(a.por) : ''}. Abra no Drive, ajuste o que precisar e publique para os gestores.`;
+    return `<div class="barra-planilha apresentacao"><span class="barra-ic">${ic('presentation')}</span><div><strong>Apresentação do semestre</strong>
+        <span class="suave">${status}</span>${etapas}</div>
+      <div class="acoes-inline"><button class="btn ${a ? 'sec' : 'primario'}" data-acao="gerarApresentacao">${ic('presentation')} ${a ? 'Gerar de novo' : 'Gerar apresentação'}</button>
+        ${a ? `<a class="btn sec" href="${esc(a.url)}" target="_blank" rel="noopener">${ic('external-link')} Abrir no Drive</a>` : ''}
+        ${a && !(of && of.igualRascunho) ? `<button class="btn primario" data-acao="publicarApresentacao">${ic('send')} Publicar para gestores</button>` : ''}
+        ${of ? `<button class="btn sec" data-acao="baixarOficial">${ic('download')} Baixar oficial</button>` : ''}</div></div>`;
+  }
+  async function publicarApresentacao(d) {
+    if (!await confirmar('Publicar para os gestores?', 'Os gestores da filial passam a baixar esta versão (com os ajustes que você fez no Drive). Você pode gerar e publicar de novo quando quiser.', 'Publicar')) return;
+    carregando('Publicando…');
+    try { await api('publicarApresentacao', { filial: d.filial, semestre: d.semestre }); carregando(); toast('Apresentação publicada para os gestores.', 'ok'); rota(state.rota, state.rotaArg); }
+    catch (e) { carregando(); toast(e.message, 'erro'); }
+  }
+  async function baixarOficial(d) {
+    carregando('Baixando a apresentação…');
+    try {
+      const r = await api('baixarApresentacao', { filial: d.filial, semestre: d.semestre });
+      carregando();
+      const url = URL.createObjectURL(new Blob([Uint8Array.from(atob(r.base64), (ch) => ch.charCodeAt(0))], { type: r.mime }));
+      const a = document.createElement('a'); a.href = url; a.download = r.nome; document.body.appendChild(a); a.click(); a.remove();
+      modal(`<h2>${ic('download')} Apresentação</h2><p>${esc(r.nome)}</p><p class="suave">Versão oficial publicada pela Qualidade em ${fmtData(r.publicada_em)}.</p>
+        <div class="acoes"><a class="btn primario" href="${url}" download="${esc(r.nome)}">${ic('download')} Baixar de novo</a></div>`);
+    } catch (e) { carregando(); toast(e.message, 'erro'); }
+  }
+
+  /* ---------- PLANO DE AÇÃO da rodada ---------- */
+  const COR_STATUS = { 'Aberta': 'nivel-r', 'Em andamento': 'nivel-b', 'Concluída': 'nivel-o' };
+  function planoHTML(d) {
+    if (!d.rodada || !d.rodada.id || d.historico) return '';
+    const pl = d.plano || [], q = ehQualidade() && d.filial !== undefined;
+    if (!pl.length && !ehQualidade()) return '';
+    return `<h2 class="titulo-sec">${ic('list-todo')}Plano de ação</h2>
+      <p class="suave" style="margin-top:-.4rem">${d.rodada.fluig ? `Item de controle no Fluig nº <b>${esc(d.rodada.fluig)}</b>. ` : ''}As ações, os responsáveis e os prazos entram na apresentação do semestre.</p>
+      ${pl.length ? `<div class="rolagem"><table class="tab-lista tab-plano"><thead><tr><th>Ação</th><th>Item</th><th>Responsável</th><th>Prazo</th><th>Situação</th></tr></thead><tbody>
+        ${pl.map((a) => `<tr><td><strong>${esc(a.acao)}</strong></td><td>${esc(a.item || '—')}</td><td>${esc(a.responsavel || '—')}</td><td>${a.prazo ? fmtData(a.prazo) : '—'}</td><td><span class="badge ${COR_STATUS[a.status] || ''}">${esc(a.status)}</span></td></tr>`).join('')}
+        </tbody></table></div>` : '<div class="bloco vazio-curto"><p class="suave">Nenhuma ação registrada para esta rodada.</p></div>'}
+      ${q ? `<div class="acoes-inline" style="margin-top:.75rem"><button class="btn sec" data-acao="editarPlano">${ic('pen-line')} ${pl.length ? 'Editar plano de ação' : 'Montar plano de ação'}</button></div>` : ''}`;
+  }
+  function modalPlano(d) {
+    let linhas = (d.plano || []).map((a) => Object.assign({}, a));
+    const sugerir = () => {
+      const ja = linhas.map((a) => (a.item || '').toLowerCase());
+      ((d.estratificado && d.estratificado.itensCriticos) || []).forEach((it) => { if (ja.includes(it.item.toLowerCase())) return;
+        linhas.push({ acao: `Tratar ${it.item} em ${it.locais.join(', ')}${it.motivos[0] ? ': ' + it.motivos[0].replace(/\.$/, '') : ''}`, item: it.item, responsavel: '', prazo: '', status: 'Aberta' }); });
+      if (!linhas.length) linhas.push({ acao: '', item: '', responsavel: '', prazo: '', status: 'Aberta' });
+    };
+    if (!linhas.length) sugerir();
+    const desenhar = (corpo) => {
+      $('#planoLinhas', corpo).innerHTML = linhas.map((a, i) => `<div class="plano-linha" data-i="${i}">
+        <textarea data-c="acao" rows="2" placeholder="Ação">${esc(a.acao)}</textarea>
+        <input data-c="item" value="${esc(a.item || '')}" placeholder="Item relacionado">
+        <input data-c="responsavel" value="${esc(a.responsavel || '')}" placeholder="Responsável">
+        <input data-c="prazo" type="date" value="${esc(a.prazo || '')}">
+        <select data-c="status">${['Aberta', 'Em andamento', 'Concluída'].map((st) => `<option ${a.status === st ? 'selected' : ''}>${st}</option>`).join('')}</select>
+        <button type="button" class="link perigo" data-tira="${i}" title="Remover">✕</button></div>`).join('');
+    };
+    const ler = (corpo) => { $$('.plano-linha', corpo).forEach((el) => { const a = linhas[Number(el.dataset.i)]; $$('[data-c]', el).forEach((x) => { a[x.dataset.c] = x.value; }); }); };
+    const corpo = modal(`<div class="plano-modal"><span class="aud-ciclo">${esc(nomeFilial(d).nome)} · ${esc(d.semestre)}</span><h2>${ic('list-todo')} Plano de ação</h2>
+      <p class="suave">Registre as ações com responsável e prazo. Elas aparecem na apresentação e para os gestores da filial.</p>
+      <div id="planoLinhas"></div>
+      <div class="acoes" style="justify-content:space-between"><div class="acoes-inline"><button type="button" class="btn sec pequeno" data-p="nova">${ic('plus')} Ação</button><button type="button" class="btn sec pequeno" data-p="sugerir">${ic('wand-sparkles')} Sugerir dos itens críticos</button></div>
+        <button type="button" class="btn primario" data-p="salvar">${ic('check')} Salvar plano</button></div></div>`, true);
+    desenhar(corpo);
+    corpo.addEventListener('click', async (ev) => {
+      const t = ev.target.closest('[data-p],[data-tira]'); if (!t) return;
+      ler(corpo);
+      if (t.dataset.tira !== undefined) { linhas.splice(Number(t.dataset.tira), 1); desenhar(corpo); return; }
+      if (t.dataset.p === 'nova') { linhas.push({ acao: '', item: '', responsavel: '', prazo: '', status: 'Aberta' }); desenhar(corpo); $$('.plano-linha textarea', corpo).pop().focus(); return; }
+      if (t.dataset.p === 'sugerir') { sugerir(); desenhar(corpo); return; }
+      if (t.dataset.p === 'salvar') {
+        carregando('Salvando o plano…');
+        try { const r = await api('salvarPlano', { id: d.rodada.id, acoes: linhas.filter((a) => String(a.acao || '').trim()) }); carregando(); fecharModal(); toast(`Plano de ação salvo (${r.acoes} ações).`, 'ok'); rota(state.rota, state.rotaArg); }
+        catch (e) { carregando(); toast(e.message, 'erro'); }
+      }
+    });
+  }
+
   function barraLiberacao(d) {
     const c = d.cronograma;
     if (!c || d.historico || !d.avaliacoes.length) return '';
@@ -1973,13 +2070,10 @@ window.CHECKLISTS = {
       ${d.filial === 'teste' ? `<div class="faixa-teste">${ic('flask-conical')}<span><b>Ambiente de teste.</b> Estes dados não entram no painel, no resumo nem nas planilhas. <button class="link" data-rota="teste">Voltar ao teste</button></span></div>` : ''}
       ${rodadaHTML(d)}
       ${modoAvaliador === 'gestor' ? (d.historico ? '' : `<div class="barra-planilha apresentacao"><span class="barra-ic">${ic('presentation')}</span><div><strong>Apresentação do semestre</strong>
-        <span class="suave">Baixe a apresentação com os resultados, o estratificado por local e as evidências.</span></div>
-        <div class="acoes-inline">${d.apresentacao ? `<a class="btn sec" href="${esc(d.apresentacao.url)}" target="_blank" rel="noopener">Abrir a da Qualidade</a>` : ''}<button class="btn primario" data-acao="gerarApresentacao">${ic('download')} Baixar apresentação</button></div></div>`)
+        <span class="suave">${d.apresentacao && d.apresentacao.oficial ? `Versão oficial publicada pela Qualidade em ${fmtData(d.apresentacao.oficial.publicada_em)}, com o plano de ação, responsáveis e prazos.` : 'A Qualidade ainda não publicou a apresentação deste semestre. Ela aparece aqui assim que for publicada.'}</span></div>
+        ${d.apresentacao && d.apresentacao.oficial ? `<div class="acoes-inline"><button class="btn primario" data-acao="baixarOficial">${ic('download')} Baixar apresentação</button></div>` : ''}</div>`)
         : modoAvaliador ? '' : d.historico ? '<p class="aviso-hist">Semestre do histórico importado das planilhas (aba Acumulado): há só as notas por indicador, sem itens nem evidências.</p>' : `
-      <div class="barra-planilha apresentacao"><span class="barra-ic">${ic('presentation')}</span><div><strong>Apresentação do semestre</strong>
-        <span class="suave">${d.apresentacao ? `Última gerada em ${fmtData(d.apresentacao.atualizado_em)}. ` : ''}Monta um PowerPoint no modelo da apresentação de resultados, com gráficos, estratificado por local, evidências com fotos e plano de ação.</span></div>
-        <div class="acoes-inline">${d.apresentacao ? `<a class="btn sec" href="${esc(d.apresentacao.url)}" target="_blank" rel="noopener">Abrir a última</a>` : ''}
-        <button class="btn primario" data-acao="gerarApresentacao">${ic('presentation')} Gerar apresentação</button></div></div>
+      ${barraApresentacaoQualidade(d)}
       <div class="barra-planilha" ${d.filial === 'teste' ? 'hidden' : ''}><span class="barra-ic">${ic('sheet')}</span><div><strong>Planilha de resultado</strong>
         <span class="suave">${d.planilha ? `Atualizada em ${fmtData(d.planilha.atualizado_em)}. Ela se atualiza sozinha até 10 minutos após cada envio.` : 'Gerada automaticamente até 10 minutos após o primeiro envio, no formato da Avaliação Limpeza.'}</span></div>
         <div class="acoes-inline">${d.planilha ? `<a class="btn sec" href="${esc(d.planilha.url)}" target="_blank" rel="noopener">${ic('external-link')} Abrir planilha</a>` : ''}
@@ -2009,6 +2103,7 @@ window.CHECKLISTS = {
       ${estratificadoHTML(d)}
       ${criticosHTML(d.estratificado && d.estratificado.itensCriticos)}
       ${recorrentesHTML(d.recorrentes)}
+      ${planoHTML(d)}
       ${d.observacoes.length ? `<details class="mapa bloco" style="margin-top:1.5rem"><summary>Todas as evidências e motivos (${d.observacoes.length})</summary><div style="margin-top:1rem">${listaObservacoes(d.observacoes, false)}</div></details>` : ''}`}
       <h2 class="titulo-sec">${ic('history')}Acumulado</h2>
       <section class="bloco">${tabelaAcumulado(d)}<div class="grafico-linha"><canvas id="gAcum"></canvas></div></section>`;
@@ -2300,6 +2395,7 @@ window.CHECKLISTS = {
     const f = nomeFilial(d), r = d.resumo, ro = d.rodada || {}, est = d.estratificado || { locais: [], veiculos: [], itensCriticos: [] };
     const sem = d.semestre, m = String(sem).match(/(\d)º Semestre\/(\d{2})/), semLongo = m ? `${m[1]}º Semestre • 20${m[2]}` : sem;
     const locais = [f.garagem].concat(ro.pontos || []).filter(Boolean);
+    const geradaEm = new Date().toLocaleDateString('pt-BR'), geradaPor = (state.sessao && state.sessao.nome) || 'Qualidade';
     const pptx = new window.PptxGenJS();
     pptx.layout = 'LAYOUT_WIDE'; pptx.author = 'Qualidade · Univale'; pptx.company = 'Univale'; pptx.title = `Avaliação de Limpeza ${f.nome} ${sem}`;
     const W = 13.333, H = 7.5;
@@ -2319,6 +2415,7 @@ window.CHECKLISTS = {
     txt(sl, `Filial ${f.nome}`, { x: 1.05, y: 4.45, w: 7, h: 0.5, fontSize: 20, bold: true });
     txt(sl, listaBR(locais), { x: 1.05, y: 4.95, w: 7.2, h: 0.8, fontSize: 14, color: C.menta });
     bola(sl, 1.05, 6.55, 0.14, C.verm, 0); txt(sl, 'REG-UTL-176 · Checklist de Limpeza', { x: 1.3, y: 6.47, w: 5, h: 0.3, fontSize: 11, color: C.menta });
+    txt(sl, `Gerada em ${geradaEm} por ${geradaPor}`, { x: 1.05, y: 6.82, w: 7, h: 0.3, fontSize: 10, color: C.aqua });
     logo(sl, true, W - 2.6, H - 1.05, 2.1);
 
     /* 2. Avaliador, locais e período */
@@ -2545,18 +2642,24 @@ window.CHECKLISTS = {
     }
 
     /* 9. Plano de ação (pré-preenchido, para completar) */
-    const acoes = [`Apresentar os resultados do ${semLongo.replace(' • ', ' de ')} aos colaboradores de Serviços Gerais da filial ${f.nome}, destacando as observações pontuadas e os cuidados com estes itens durante a limpeza veicular e predial.`]
-      .concat(est.itensCriticos.slice(0, 5).map((it) => `Tratar "${it.item}" em ${listaBR(it.locais)}${it.motivos[0] ? ': ' + it.motivos[0].replace(/\.$/, '') : ''}. (Evidenciar com foto.)`));
+    // ações do plano registrado no sistema (com responsável, prazo e situação); sem plano, sugestões para completar
+    const doPlano = (d.plano || []).length > 0;
+    const acoes = doPlano ? d.plano.map((a) => ({ t: a.acao + (a.item ? ` (${a.item})` : ''), r: a.responsavel || '', p: a.prazo ? fmtData(a.prazo) : '', s: a.status || '' }))
+      : [{ t: `Apresentar os resultados do ${semLongo.replace(' • ', ' de ')} aos colaboradores de Serviços Gerais da filial ${f.nome}, destacando as observações pontuadas e os cuidados com estes itens durante a limpeza veicular e predial.`, r: '', p: '', s: '' }]
+        .concat(est.itensCriticos.slice(0, 5).map((it) => ({ t: `Tratar "${it.item}" em ${listaBR(it.locais)}${it.motivos[0] ? ': ' + it.motivos[0].replace(/\.$/, '') : ''}. (Evidenciar com foto.)`, r: '', p: '', s: '' })));
     for (let i = 0; i < acoes.length; i += 4) {
       sl = pptx.addSlide(); sl.background = { color: C.teal };
       bola(sl, -1.2, 5.2, 3.4, C.esc, 80); bola(sl, 11.4, -1.0, 3.0, C.aqua, 75);
       txt(sl, `Plano de Ação • ${m ? m[1] + 'º Semestre' : sem}`, { x: 0, y: 0.35, w: W, h: 0.7, fontSize: 30, align: 'center' });
       if (ro.fluig) txt(sl, `Item de controle no Fluig nº ${ro.fluig}`, { x: 0, y: 0.98, w: W, h: 0.35, fontSize: 14, align: 'center', bold: true, color: C.esc });
       const hc = (t) => ({ text: t, options: { bold: true, color: C.branco, fill: { color: C.esc }, align: 'center' } });
-      const linhasP = [[hc('Ação'), hc('Responsável'), hc('Prazo')]].concat(acoes.slice(i, i + 4).map((t) => [{ text: t, options: { align: 'left' } }, { text: '' }, { text: '' }]))
-        .concat(i + 4 >= acoes.length ? [[{ text: '' }, { text: '' }, { text: '' }]] : []);
-      sl.addTable(linhasP, { x: 0.9, y: 1.45, w: W - 1.8, colW: [7.6, 2.0, W - 1.8 - 9.6], fontFace: FT, fontSize: 11, color: C.tinta, fill: { color: C.branco },
+      const corS = { 'Concluída': '1E7A4C', 'Em andamento': '00857F', 'Aberta': 'B07A00' };
+      const linhasP = [[hc('Ação'), hc('Responsável'), hc('Prazo'), hc('Situação')]].concat(acoes.slice(i, i + 4).map((a) => [{ text: a.t, options: { align: 'left' } }, { text: a.r, options: { align: 'center', bold: !!a.r } },
+        { text: a.p, options: { align: 'center', bold: !!a.p } }, { text: a.s, options: { align: 'center', bold: true, color: corS[a.s] || C.tinta } }]))
+        .concat(!doPlano && i + 4 >= acoes.length ? [[{ text: '' }, { text: '' }, { text: '' }, { text: '' }]] : []);
+      sl.addTable(linhasP, { x: 0.9, y: 1.45, w: W - 1.8, colW: [6.9, 2.1, 1.3, W - 1.8 - 10.3], fontFace: FT, fontSize: 11, color: C.tinta, fill: { color: C.branco },
         border: { type: 'solid', pt: 0.8, color: C.esc }, rowH: 0.95, valign: 'middle' });
+      txt(sl, `Gerada em ${geradaEm} por ${geradaPor}${doPlano ? '' : ' · ações sugeridas: complete responsável e prazo'}`, { x: 0.9, y: H - 0.55, w: 8, h: 0.3, fontSize: 10, color: C.esc });
       logo(sl, true);
     }
 
@@ -2583,12 +2686,14 @@ window.CHECKLISTS = {
       const base64 = await pptx.write({ outputType: 'base64' });
       let salvo = null;
       if (ehQualidade()) { try { salvo = await api('salvarApresentacao', { filial: d.filial, semestre: d.semestre, nome, base64 }); } catch (e) { salvo = { erro: e.message }; } }
+      if (salvo && salvo.ok) { limparC(); rota(state.rota, state.rotaArg); await new Promise((ok) => setTimeout(ok, 900)); } // atualiza o quadro (rascunho → publicar)
       carregando();
       const blobUrl = URL.createObjectURL(new Blob([Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0))], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' }));
       modal(`<h2>Apresentação pronta</h2><p>${esc(nome)}.pptx</p>
-        <p class="suave">Slides: capa, avaliador e locais, um slide por checklist com gráfico, observações com fotos, resultado comparado ao semestre anterior, estratificado por local, acumulado, plano de ação pré-preenchido e encerramento. Abra no PowerPoint ou no Google Apresentações para ajustar o plano de ação.</p>
+        <p class="suave">${(d.plano || []).length ? 'Com o plano de ação registrado (responsáveis e prazos).' : 'Sem plano de ação registrado: as ações saíram como sugestão. Monte o plano no painel para sair com responsáveis e prazos.'} ${ehQualidade() ? 'Próximo passo: abra no Drive, ajuste o que precisar e clique em “Publicar para gestores”.' : ''}</p>
         ${!ehQualidade() ? '' : salvo && salvo.ok ? '<p class="aviso-hist">Uma cópia foi guardada no Drive, na pasta "Checklist de Limpeza - Apresentações".</p>' : `<p class="erro-msg">Não foi possível guardar no Drive${salvo && salvo.erro ? ': ' + esc(salvo.erro) : ''}. Use o botão Baixar.</p>`}
-        <div class="acoes"><a class="btn sec" href="${blobUrl}" download="${esc(nome)}.pptx">Baixar .pptx</a>${salvo && salvo.ok ? `<a class="btn primario" href="${esc(salvo.url)}" target="_blank" rel="noopener">Abrir no Drive</a>` : ''}</div>`);
+        <div class="acoes"><a class="btn sec" href="${blobUrl}" download="${esc(nome)}.pptx">Baixar .pptx</a>${salvo && salvo.ok ? `<a class="btn primario" href="${esc(salvo.url)}" target="_blank" rel="noopener">${ic('external-link')} Abrir no Drive para ajustar</a>` : ''}</div>`);
+
     } catch (e) { carregando(); toast(e.message, 'erro'); }
   }
 
@@ -3368,6 +3473,9 @@ window.CHECKLISTS = {
     if (acao === 'sugerir') { modalSugerir(); return; }
     if (acao === 'gerarPlanilha') { gerarPlanilha(); return; }
     if (acao === 'gerarApresentacao') { gerarApresentacao(state.painelAtual); return; }
+    if (acao === 'publicarApresentacao') { publicarApresentacao(state.painelAtual); return; }
+    if (acao === 'baixarOficial') { baixarOficial(state.painelAtual); return; }
+    if (acao === 'editarPlano') { modalPlano(state.painelAtual); return; }
     if (acao === 'editarFluig') { modalFluig(state.painelAtual); return; }
     if (acao === 'salvarForm') { salvarEditorForm(); return; }
     if (acao === 'restaurarForm') { restaurarEditorForm(); return; }
