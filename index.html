@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>try { var t = localStorage.getItem('ck_tema'); if (t === 'claro' || t === 'escuro') document.documentElement.setAttribute('data-tema', t); } catch (e) {}</script>
   <style>
 /* ============ Tokens ============ */
 :root {
@@ -32,7 +33,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-tema='claro']) {
     --tinta: #E3EEEC; --tinta-2: #BFD1CD; --suave: #8FA7A2;
     --fundo: #0A1A19; --fundo-2: #0F2422; --superficie: #122927; --superficie-2: #173230;
     --linha: #21403C; --linha-forte: #2D534E;
@@ -45,6 +46,18 @@
     color-scheme: dark;
   }
 }
+:root[data-tema='escuro'] {
+    --tinta: #E3EEEC; --tinta-2: #BFD1CD; --suave: #8FA7A2;
+    --fundo: #0A1A19; --fundo-2: #0F2422; --superficie: #122927; --superficie-2: #173230;
+    --linha: #21403C; --linha-forte: #2D534E;
+    --escuro: #021F1E; --verde-marca: #1CB5AE; --petroleo: #11ABA4; --petroleo-2: #1CCFC9; --aqua: #1CCFC9; --menta: #0F3B39;
+    --petroleo-claro: #0F3B39; --petroleo-txt: #5FE0D9;
+    --o: #38A26C; --b: #9BBB49; --r: #E8B032; --i: #E0574C; --na: #6E8085;
+    --o-claro: #163327; --r-claro: #3A2F14; --i-claro: #3B1C1A;
+    --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
+    --sombra-forte: 0 2px 6px rgba(0, 0, 0, .4), 0 16px 40px rgba(0, 0, 0, .45);
+    color-scheme: dark;
+  }
 
 /* ============ Base ============ */
 * { box-sizing: border-box; }
@@ -487,7 +500,12 @@ tfoot th { background: var(--escuro); color: #fff; font-size: 1.05rem; }
 /* ============ Marca, estratificado e KPIs clicáveis ============ */
 .logo-topo { height: 30px; width: auto; display: block; }
 .logo-topo.branca { display: none; }
-@media (prefers-color-scheme: dark) { .logo-topo.cor { display: none; } .logo-topo.branca { display: block; } }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) .logo-topo.cor { display: none; }
+  :root:not([data-tema='claro']) .logo-topo.branca { display: block; }
+}
+:root[data-tema='escuro'] .logo-topo.cor { display: none; }
+:root[data-tema='escuro'] .logo-topo.branca { display: block; }
 .marca-texto { display: flex; flex-direction: column; border-left: 1.5px solid var(--linha); padding-left: .75rem; }
 .marca-texto strong { font: 700 1.05rem/1.1 var(--fonte-titulo); }
 .marca-texto small { color: var(--suave); font-size: .72rem; letter-spacing: .04em; }
@@ -752,11 +770,90 @@ tr.rec-critico td:first-child { box-shadow: inset 4px 0 0 var(--i); } tr.rec-ate
 @media (max-width: 1560px) and (min-width: 761px) { .nav-link .ic { display: none; } .nav-link { padding: .45em .62em; font-size: .9rem; } }
 @media (max-width: 1240px) and (min-width: 761px) { .usuario .logo-topo, .sep-usuario { display: none !important; } .perfil-txt { display: none; } }
 
+/* tema escolhido pela pessoa (Meu perfil / botão no topo) */
+:root[data-tema='claro'] { color-scheme: light; }
+:root[data-tema='escuro'] { color-scheme: dark; }
+
+/* ============ v38 · celular, tema, gráficos, comparação, senha ============ */
+.usuarios-grid > * { min-width: 0; }
+.usuarios-grid { grid-template-columns: minmax(0, 340px) minmax(0, 1fr); }
+@media (max-width: 860px) { .usuarios-grid { grid-template-columns: minmax(0, 1fr); } }
+.config-email input { min-width: 0; width: 100%; }
+.acoes-linha { display: flex; gap: .4rem; justify-content: flex-end; flex-wrap: wrap; }
+
+/* tabelas viram cartões no celular */
+@media (max-width: 640px) {
+  .rolagem:has(> table.cartao-mobile) { overflow: visible; }
+  table.cartao-mobile { background: transparent !important; box-shadow: none !important; border: 0 !important; }
+  table.cartao-mobile, table.cartao-mobile tbody, table.cartao-mobile tfoot, table.cartao-mobile tr, table.cartao-mobile td, table.cartao-mobile th { display: block; width: 100%; }
+  table.cartao-mobile thead { display: none; }
+  table.cartao-mobile tr { margin: 0 0 .7rem; padding: .55rem .9rem; border: 1px solid var(--linha); border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); }
+  table.cartao-mobile tr.grupo-linha { background: var(--menta); box-shadow: none; padding: .45rem .9rem; }
+  table.cartao-mobile td, table.cartao-mobile tfoot th { display: flex; justify-content: space-between; align-items: center; gap: .9rem; padding: .4rem 0 !important; border: 0 !important; border-bottom: 1px dashed var(--linha) !important; text-align: right !important; }
+  table.cartao-mobile td:last-child { border-bottom: 0 !important; }
+  table.cartao-mobile td::before, table.cartao-mobile tfoot th::before { content: attr(data-label); flex: none; max-width: 48%; text-align: left; font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--suave); }
+  table.cartao-mobile td:first-child { display: block; text-align: left !important; font-size: 1.02rem; padding-top: .2rem !important; }
+  table.cartao-mobile td:first-child::before, table.cartao-mobile td[data-label=""]::before { display: none; }
+  table.cartao-mobile td[data-label=""] { justify-content: flex-end; }
+  table.cartao-mobile td .mini-barra { min-width: 80px; }
+  table.cartao-mobile td > div, table.cartao-mobile td > span { text-align: right; }
+  table.cartao-mobile .locais { justify-content: flex-end; }
+  table.cartao-mobile tr.apagado { opacity: .7; }
+  table.cartao-mobile tfoot tr { background: var(--escuro); color: #fff; }
+  table.cartao-mobile tfoot th::before { color: #9FD9D3; }
+  .card-corpo { grid-template-columns: 1fr; justify-items: center; }
+  .card-corpo .dist { width: 100%; }
+  .barra-planilha { flex-direction: column; align-items: stretch; text-align: left; }
+  .barra-planilha .barra-ic { display: none; }
+  .barra-planilha .acoes-inline, .barra-planilha > .btn { display: grid; grid-template-columns: 1fr; gap: .5rem; width: 100%; }
+  .barra-planilha .btn { width: 100%; }
+  .painel-cab { flex-direction: column; align-items: stretch; }
+  .filtros { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+  .filtros label, .filtros select { width: 100%; min-width: 0; }
+  .grafico-linha { height: 340px; }
+  .grafico-barras { height: 280px; }
+  .rodada { grid-template-columns: 1fr 1fr; }
+  .rodada > div:first-child { grid-column: 1 / -1; }
+  .critico { grid-template-columns: auto 1fr; }
+  .critico .contagens { grid-column: 2; }
+  .kpi-modal .kpis { grid-template-columns: 1fr 1fr; }
+  .modal { width: calc(100vw - 16px) !important; max-height: calc(100vh - 16px); padding: 1.1rem !important; }
+  .det-resumo { grid-template-columns: 1fr !important; justify-items: center; }
+  .det-resumo .dist { width: 100%; }
+  .passos-teste { grid-template-columns: 1fr 1fr; }
+  .teste-status .acoes-inline { width: 100%; display: grid; gap: .5rem; }
+  .nota-final strong { font-size: 3.2rem; }
+}
+/* gráfico: área um pouco maior para a legenda e os valores */
+.grafico-linha { height: 330px; }
+
+/* tema */
+.tema-escolha { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.tema-escolha > span { font-weight: 700; font-size: .9rem; margin-right: .3rem; }
+.tema-escolha button { display: inline-flex; align-items: center; gap: .35rem; border: 1.5px solid var(--linha); background: var(--superficie-2); color: var(--tinta-2); border-radius: 999px; padding: .38rem .8rem; font: 600 .88rem var(--fonte); cursor: pointer; }
+.tema-escolha button.ativo { background: var(--petroleo); border-color: var(--petroleo); color: #fff; }
+.tema-escolha button .ic { width: 16px; height: 16px; }
+.tema-login { position: absolute; top: 14px; right: 14px; }
+.login { position: relative; }
+.login-form .rodape-login .link { font-size: inherit; }
+
+/* comparação dos itens críticos com as rodadas anteriores */
+.comparacao { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; margin: .45rem 0 .2rem; padding: .45rem .6rem; border-radius: 10px; background: var(--superficie-2); border: 1px solid var(--linha); }
+.comparacao .comp-texto { font-size: .84rem; font-weight: 600; color: var(--tinta-2); flex: 1; min-width: 160px; }
+
+/* senha provisória */
+.senha-gerada { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; padding: .9rem 1rem; border-radius: 14px; background: var(--escuro); }
+.senha-gerada code { font: 700 1.6rem/1 ui-monospace, 'Cascadia Mono', Consolas, monospace; letter-spacing: .06em; color: #fff; flex: 1; user-select: all; }
+.config-email { grid-template-columns: minmax(0, 1fr); }
+.config-email input::placeholder { text-overflow: ellipsis; }
+.config-email p, .config-email label, .aviso-hist, .erro-msg { overflow-wrap: anywhere; }
+main { overflow-wrap: break-word; }
+
   </style>
 </head>
 <body>
   <!-- ==========================================================================
-       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 37)
+       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 38)
        Só para o GitHub Pages: cole abaixo, entre as aspas, o link da implantação do Apps Script (termina em /exec).
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
@@ -887,11 +984,11 @@ window.CHECKLISTS = {
   const app = $('#app');
   const LOGO_COR = window.LOGO_COR || '', LOGO_BRANCA = window.LOGO_BRANCA || '';
   // ícones Lucide (ISC), embutidos para funcionar sem depender de outro site
-  const ICONES = {"layout-dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />", "clipboard-list": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /> <path d=\"M12 11h4\" /> <path d=\"M12 16h4\" /> <path d=\"M8 11h.01\" /> <path d=\"M8 16h.01\" />", "calendar-days": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"M8 14h.01\" /> <path d=\"M12 14h.01\" /> <path d=\"M16 14h.01\" /> <path d=\"M8 18h.01\" /> <path d=\"M12 18h.01\" /> <path d=\"M16 18h.01\" />", "pen-line": "<path d=\"M12 20h9\" /> <path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\" />", "list-checks": "<path d=\"m3 17 2 2 4-4\" /> <path d=\"m3 7 2 2 4-4\" /> <path d=\"M13 6h8\" /> <path d=\"M13 12h8\" /> <path d=\"M13 18h8\" />", "building-2": "<path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\" /> <path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2\" /> <path d=\"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2\" /> <path d=\"M10 6h4\" /> <path d=\"M10 10h4\" /> <path d=\"M10 14h4\" /> <path d=\"M10 18h4\" />", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />", "user-round": "<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />", "log-out": "<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />", "key-round": "<path d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\" /> <circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\" />", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\" /> <path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\" />", "bell-ring": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\" /> <path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\" /> <path d=\"M4 2C2.8 3.7 2 5.7 2 8\" /> <path d=\"M22 8c0-2.3-.8-4.3-2-6\" />", "mail": "<rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" /> <path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\" />", "map-pin": "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\" /> <circle cx=\"12\" cy=\"10\" r=\"3\" />", "calendar-check": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />", "clock": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />", "badge-check": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <path d=\"m9 12 2 2 4-4\" />", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\" /> <path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\" />", "external-link": "<path d=\"M15 3h6v6\" /> <path d=\"M10 14 21 3\" /> <path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\" />", "file-text": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />", "sheet": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\" /> <line x1=\"3\" x2=\"21\" y1=\"9\" y2=\"9\" /> <line x1=\"3\" x2=\"21\" y1=\"15\" y2=\"15\" /> <line x1=\"9\" x2=\"9\" y1=\"9\" y2=\"21\" /> <line x1=\"15\" x2=\"15\" y1=\"9\" y2=\"21\" />", "download": "<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\" /> <polyline points=\"7 10 12 15 17 10\" /> <line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\" />", "send": "<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />", "check": "<path d=\"M20 6 9 17l-5-5\" />", "circle-alert": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" /> <line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" />", "triangle-alert": "<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />", "info": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"M12 16v-4\" /> <path d=\"M12 8h.01\" />", "camera": "<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\" /> <circle cx=\"12\" cy=\"13\" r=\"3\" />", "smartphone": "<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M12 18h.01\" />", "chart-column": "<path d=\"M3 3v16a2 2 0 0 0 2 2h16\" /> <path d=\"M18 17V9\" /> <path d=\"M13 17V5\" /> <path d=\"M8 17v-3\" />", "bus": "<path d=\"M8 6v6\" /> <path d=\"M15 6v6\" /> <path d=\"M2 12h19.6\" /> <path d=\"M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3\" /> <circle cx=\"7\" cy=\"18\" r=\"2\" /> <path d=\"M9 18h5\" /> <circle cx=\"16\" cy=\"18\" r=\"2\" />", "building": "<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M9 22v-4h6v4\" /> <path d=\"M8 6h.01\" /> <path d=\"M16 6h.01\" /> <path d=\"M12 6h.01\" /> <path d=\"M12 10h.01\" /> <path d=\"M12 14h.01\" /> <path d=\"M16 10h.01\" /> <path d=\"M16 14h.01\" /> <path d=\"M8 10h.01\" /> <path d=\"M8 14h.01\" />", "shield-check": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"m9 12 2 2 4-4\" />", "sparkles": "<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\" /> <path d=\"M20 3v4\" /> <path d=\"M22 5h-4\" /> <path d=\"M4 17v2\" /> <path d=\"M5 18H3\" />", "clipboard-check": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /> <path d=\"m9 14 2 2 4-4\" />", "arrow-right": "<path d=\"M5 12h14\" /> <path d=\"m12 5 7 7-7 7\" />", "arrow-left": "<path d=\"m12 19-7-7 7-7\" /> <path d=\"M19 12H5\" />", "chevron-right": "<path d=\"m9 18 6-6-6-6\" />", "x": "<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />", "plus": "<path d=\"M5 12h14\" /> <path d=\"M12 5v14\" />", "trash-2": "<path d=\"M3 6h18\" /> <path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\" /> <path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\" /> <line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\" /> <line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\" />", "refresh-cw": "<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />", "eye": "<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" />", "eye-off": "<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\" /> <path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\" /> <path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\" /> <path d=\"m2 2 20 20\" />", "lock": "<rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\" /> <path d=\"M7 11V7a5 5 0 0 1 10 0v4\" />", "route": "<circle cx=\"6\" cy=\"19\" r=\"3\" /> <path d=\"M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15\" /> <circle cx=\"18\" cy=\"5\" r=\"3\" />", "history": "<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\" /> <path d=\"M3 3v5h5\" /> <path d=\"M12 7v5l4 2\" />", "trophy": "<path d=\"M6 9H4.5a2.5 2.5 0 0 1 0-5H6\" /> <path d=\"M18 9h1.5a2.5 2.5 0 0 0 0-5H18\" /> <path d=\"M4 22h16\" /> <path d=\"M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22\" /> <path d=\"M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22\" /> <path d=\"M18 2H6v7a6 6 0 0 0 12 0V2Z\" />", "target": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <circle cx=\"12\" cy=\"12\" r=\"6\" /> <circle cx=\"12\" cy=\"12\" r=\"2\" />", "star": "<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\" />", "search": "<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />", "settings": "<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" />", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.93 4.93 1.41 1.41\" /> <path d=\"m17.66 17.66 1.41 1.41\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.34 17.66-1.41 1.41\" /> <path d=\"m19.07 4.93-1.41 1.41\" />", "moon": "<path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\" />", "image": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\" /> <circle cx=\"9\" cy=\"9\" r=\"2\" /> <path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\" />", "message-square": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\" />", "flag": "<path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\" /> <line x1=\"4\" x2=\"4\" y1=\"22\" y2=\"15\" />", "hourglass": "<path d=\"M5 22h14\" /> <path d=\"M5 2h14\" /> <path d=\"M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22\" /> <path d=\"M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2\" />", "list-todo": "<rect x=\"3\" y=\"5\" width=\"6\" height=\"6\" rx=\"1\" /> <path d=\"m3 17 2 2 4-4\" /> <path d=\"M13 6h8\" /> <path d=\"M13 12h8\" /> <path d=\"M13 18h8\" />", "circle-check-big": "<path d=\"M21.801 10A10 10 0 1 1 17 3.335\" /> <path d=\"m9 11 3 3L22 4\" />", "hash": "<line x1=\"4\" x2=\"20\" y1=\"9\" y2=\"9\" /> <line x1=\"4\" x2=\"20\" y1=\"15\" y2=\"15\" /> <line x1=\"10\" x2=\"8\" y1=\"3\" y2=\"21\" /> <line x1=\"16\" x2=\"14\" y1=\"3\" y2=\"21\" />", "layers": "<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\" /> <path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\" /> <path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\" />", "map": "<path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\" /> <path d=\"M15 5.764v15\" /> <path d=\"M9 3.236v15\" />", "presentation": "<path d=\"M2 3h20\" /> <path d=\"M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3\" /> <path d=\"m7 21 5-5 5 5\" />", "table": "<path d=\"M12 3v18\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M3 9h18\" /> <path d=\"M3 15h18\" />", "badge-info": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <line x1=\"12\" x2=\"12\" y1=\"16\" y2=\"12\" /> <line x1=\"12\" x2=\"12.01\" y1=\"8\" y2=\"8\" />", "user-check": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <polyline points=\"16 11 18 13 22 9\" />", "wand-sparkles": "<path d=\"m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72\" /> <path d=\"m14 7 3 3\" /> <path d=\"M5 6v4\" /> <path d=\"M19 14v4\" /> <path d=\"M10 2v2\" /> <path d=\"M7 8H3\" /> <path d=\"M21 16h-4\" /> <path d=\"M11 3H9\" />", "gauge": "<path d=\"m12 14 4-4\" /> <path d=\"M3.34 19a10 10 0 1 1 17.32 0\" />", "scan-search": "<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" /> <path d=\"m16 16-1.9-1.9\" />", "circle-check": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"m9 12 2 2 4-4\" />", "flask-conical": "<path d=\"M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2\" /> <path d=\"M8.5 2h7\" /> <path d=\"M7 16h10\" />", "wifi-off": "<path d=\"M12 20h.01\" /> <path d=\"M8.5 16.429a5 5 0 0 1 7 0\" /> <path d=\"M5 12.859a10 10 0 0 1 5.17-2.69\" /> <path d=\"M19 12.859a10 10 0 0 0-2.007-1.523\" /> <path d=\"M2 8.82a15 15 0 0 1 4.177-2.643\" /> <path d=\"M22 8.82a15 15 0 0 0-11.288-3.764\" /> <path d=\"m2 2 20 20\" />", "cloud-upload": "<path d=\"M12 13v8\" /> <path d=\"M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242\" /> <path d=\"m8 17 4-4 4 4\" />", "repeat": "<path d=\"m17 2 4 4-4 4\" /> <path d=\"M3 11v-1a4 4 0 0 1 4-4h14\" /> <path d=\"m7 22-4-4 4-4\" /> <path d=\"M21 13v1a4 4 0 0 1-4 4H3\" />", "file-down": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M12 18v-6\" /> <path d=\"m9 15 3 3 3-3\" />", "user-plus": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <line x1=\"19\" x2=\"19\" y1=\"8\" y2=\"14\" /> <line x1=\"22\" x2=\"16\" y1=\"11\" y2=\"11\" />", "users-round": "<path d=\"M18 21a8 8 0 0 0-16 0\" /> <circle cx=\"10\" cy=\"8\" r=\"5\" /> <path d=\"M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3\" />", "circle-dot": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <circle cx=\"12\" cy=\"12\" r=\"1\" />", "circle": "<circle cx=\"12\" cy=\"12\" r=\"10\" />"};
+  const ICONES = {"layout-dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />", "clipboard-list": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /> <path d=\"M12 11h4\" /> <path d=\"M12 16h4\" /> <path d=\"M8 11h.01\" /> <path d=\"M8 16h.01\" />", "calendar-days": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"M8 14h.01\" /> <path d=\"M12 14h.01\" /> <path d=\"M16 14h.01\" /> <path d=\"M8 18h.01\" /> <path d=\"M12 18h.01\" /> <path d=\"M16 18h.01\" />", "pen-line": "<path d=\"M12 20h9\" /> <path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\" />", "list-checks": "<path d=\"m3 17 2 2 4-4\" /> <path d=\"m3 7 2 2 4-4\" /> <path d=\"M13 6h8\" /> <path d=\"M13 12h8\" /> <path d=\"M13 18h8\" />", "building-2": "<path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\" /> <path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2\" /> <path d=\"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2\" /> <path d=\"M10 6h4\" /> <path d=\"M10 10h4\" /> <path d=\"M10 14h4\" /> <path d=\"M10 18h4\" />", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />", "user-round": "<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />", "log-out": "<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />", "key-round": "<path d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\" /> <circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\" />", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\" /> <path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\" />", "bell-ring": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\" /> <path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\" /> <path d=\"M4 2C2.8 3.7 2 5.7 2 8\" /> <path d=\"M22 8c0-2.3-.8-4.3-2-6\" />", "mail": "<rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" /> <path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\" />", "map-pin": "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\" /> <circle cx=\"12\" cy=\"10\" r=\"3\" />", "calendar-check": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />", "clock": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />", "badge-check": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <path d=\"m9 12 2 2 4-4\" />", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\" /> <path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\" />", "external-link": "<path d=\"M15 3h6v6\" /> <path d=\"M10 14 21 3\" /> <path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\" />", "file-text": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />", "sheet": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\" /> <line x1=\"3\" x2=\"21\" y1=\"9\" y2=\"9\" /> <line x1=\"3\" x2=\"21\" y1=\"15\" y2=\"15\" /> <line x1=\"9\" x2=\"9\" y1=\"9\" y2=\"21\" /> <line x1=\"15\" x2=\"15\" y1=\"9\" y2=\"21\" />", "download": "<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\" /> <polyline points=\"7 10 12 15 17 10\" /> <line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\" />", "send": "<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />", "check": "<path d=\"M20 6 9 17l-5-5\" />", "circle-alert": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" /> <line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" />", "triangle-alert": "<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />", "info": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"M12 16v-4\" /> <path d=\"M12 8h.01\" />", "camera": "<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\" /> <circle cx=\"12\" cy=\"13\" r=\"3\" />", "smartphone": "<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M12 18h.01\" />", "chart-column": "<path d=\"M3 3v16a2 2 0 0 0 2 2h16\" /> <path d=\"M18 17V9\" /> <path d=\"M13 17V5\" /> <path d=\"M8 17v-3\" />", "bus": "<path d=\"M8 6v6\" /> <path d=\"M15 6v6\" /> <path d=\"M2 12h19.6\" /> <path d=\"M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3\" /> <circle cx=\"7\" cy=\"18\" r=\"2\" /> <path d=\"M9 18h5\" /> <circle cx=\"16\" cy=\"18\" r=\"2\" />", "building": "<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M9 22v-4h6v4\" /> <path d=\"M8 6h.01\" /> <path d=\"M16 6h.01\" /> <path d=\"M12 6h.01\" /> <path d=\"M12 10h.01\" /> <path d=\"M12 14h.01\" /> <path d=\"M16 10h.01\" /> <path d=\"M16 14h.01\" /> <path d=\"M8 10h.01\" /> <path d=\"M8 14h.01\" />", "shield-check": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"m9 12 2 2 4-4\" />", "sparkles": "<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\" /> <path d=\"M20 3v4\" /> <path d=\"M22 5h-4\" /> <path d=\"M4 17v2\" /> <path d=\"M5 18H3\" />", "clipboard-check": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /> <path d=\"m9 14 2 2 4-4\" />", "arrow-right": "<path d=\"M5 12h14\" /> <path d=\"m12 5 7 7-7 7\" />", "arrow-left": "<path d=\"m12 19-7-7 7-7\" /> <path d=\"M19 12H5\" />", "chevron-right": "<path d=\"m9 18 6-6-6-6\" />", "x": "<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />", "plus": "<path d=\"M5 12h14\" /> <path d=\"M12 5v14\" />", "trash-2": "<path d=\"M3 6h18\" /> <path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\" /> <path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\" /> <line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\" /> <line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\" />", "refresh-cw": "<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />", "eye": "<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" />", "eye-off": "<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\" /> <path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\" /> <path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\" /> <path d=\"m2 2 20 20\" />", "lock": "<rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\" /> <path d=\"M7 11V7a5 5 0 0 1 10 0v4\" />", "route": "<circle cx=\"6\" cy=\"19\" r=\"3\" /> <path d=\"M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15\" /> <circle cx=\"18\" cy=\"5\" r=\"3\" />", "history": "<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\" /> <path d=\"M3 3v5h5\" /> <path d=\"M12 7v5l4 2\" />", "trophy": "<path d=\"M6 9H4.5a2.5 2.5 0 0 1 0-5H6\" /> <path d=\"M18 9h1.5a2.5 2.5 0 0 0 0-5H18\" /> <path d=\"M4 22h16\" /> <path d=\"M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22\" /> <path d=\"M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22\" /> <path d=\"M18 2H6v7a6 6 0 0 0 12 0V2Z\" />", "target": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <circle cx=\"12\" cy=\"12\" r=\"6\" /> <circle cx=\"12\" cy=\"12\" r=\"2\" />", "star": "<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\" />", "search": "<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />", "settings": "<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" />", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.93 4.93 1.41 1.41\" /> <path d=\"m17.66 17.66 1.41 1.41\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.34 17.66-1.41 1.41\" /> <path d=\"m19.07 4.93-1.41 1.41\" />", "moon": "<path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\" />", "image": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\" /> <circle cx=\"9\" cy=\"9\" r=\"2\" /> <path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\" />", "message-square": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\" />", "flag": "<path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\" /> <line x1=\"4\" x2=\"4\" y1=\"22\" y2=\"15\" />", "hourglass": "<path d=\"M5 22h14\" /> <path d=\"M5 2h14\" /> <path d=\"M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22\" /> <path d=\"M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2\" />", "list-todo": "<rect x=\"3\" y=\"5\" width=\"6\" height=\"6\" rx=\"1\" /> <path d=\"m3 17 2 2 4-4\" /> <path d=\"M13 6h8\" /> <path d=\"M13 12h8\" /> <path d=\"M13 18h8\" />", "circle-check-big": "<path d=\"M21.801 10A10 10 0 1 1 17 3.335\" /> <path d=\"m9 11 3 3L22 4\" />", "hash": "<line x1=\"4\" x2=\"20\" y1=\"9\" y2=\"9\" /> <line x1=\"4\" x2=\"20\" y1=\"15\" y2=\"15\" /> <line x1=\"10\" x2=\"8\" y1=\"3\" y2=\"21\" /> <line x1=\"16\" x2=\"14\" y1=\"3\" y2=\"21\" />", "layers": "<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\" /> <path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\" /> <path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\" />", "map": "<path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\" /> <path d=\"M15 5.764v15\" /> <path d=\"M9 3.236v15\" />", "presentation": "<path d=\"M2 3h20\" /> <path d=\"M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3\" /> <path d=\"m7 21 5-5 5 5\" />", "table": "<path d=\"M12 3v18\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M3 9h18\" /> <path d=\"M3 15h18\" />", "badge-info": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <line x1=\"12\" x2=\"12\" y1=\"16\" y2=\"12\" /> <line x1=\"12\" x2=\"12.01\" y1=\"8\" y2=\"8\" />", "user-check": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <polyline points=\"16 11 18 13 22 9\" />", "wand-sparkles": "<path d=\"m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72\" /> <path d=\"m14 7 3 3\" /> <path d=\"M5 6v4\" /> <path d=\"M19 14v4\" /> <path d=\"M10 2v2\" /> <path d=\"M7 8H3\" /> <path d=\"M21 16h-4\" /> <path d=\"M11 3H9\" />", "gauge": "<path d=\"m12 14 4-4\" /> <path d=\"M3.34 19a10 10 0 1 1 17.32 0\" />", "scan-search": "<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" /> <path d=\"m16 16-1.9-1.9\" />", "circle-check": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"m9 12 2 2 4-4\" />", "flask-conical": "<path d=\"M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2\" /> <path d=\"M8.5 2h7\" /> <path d=\"M7 16h10\" />", "wifi-off": "<path d=\"M12 20h.01\" /> <path d=\"M8.5 16.429a5 5 0 0 1 7 0\" /> <path d=\"M5 12.859a10 10 0 0 1 5.17-2.69\" /> <path d=\"M19 12.859a10 10 0 0 0-2.007-1.523\" /> <path d=\"M2 8.82a15 15 0 0 1 4.177-2.643\" /> <path d=\"M22 8.82a15 15 0 0 0-11.288-3.764\" /> <path d=\"m2 2 20 20\" />", "cloud-upload": "<path d=\"M12 13v8\" /> <path d=\"M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242\" /> <path d=\"m8 17 4-4 4 4\" />", "repeat": "<path d=\"m17 2 4 4-4 4\" /> <path d=\"M3 11v-1a4 4 0 0 1 4-4h14\" /> <path d=\"m7 22-4-4 4-4\" /> <path d=\"M21 13v1a4 4 0 0 1-4 4H3\" />", "file-down": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M12 18v-6\" /> <path d=\"m9 15 3 3 3-3\" />", "user-plus": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <line x1=\"19\" x2=\"19\" y1=\"8\" y2=\"14\" /> <line x1=\"22\" x2=\"16\" y1=\"11\" y2=\"11\" />", "users-round": "<path d=\"M18 21a8 8 0 0 0-16 0\" /> <circle cx=\"10\" cy=\"8\" r=\"5\" /> <path d=\"M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3\" />", "circle-dot": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <circle cx=\"12\" cy=\"12\" r=\"1\" />", "circle": "<circle cx=\"12\" cy=\"12\" r=\"10\" />", "monitor": "<rect width=\"20\" height=\"14\" x=\"2\" y=\"3\" rx=\"2\" /> <line x1=\"8\" x2=\"16\" y1=\"21\" y2=\"21\" /> <line x1=\"12\" x2=\"12\" y1=\"17\" y2=\"21\" />", "copy": "<rect width=\"14\" height=\"14\" x=\"8\" y=\"8\" rx=\"2\" ry=\"2\" /> <path d=\"M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2\" />", "sun-moon": "<path d=\"M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.9 4.9 1.4 1.4\" /> <path d=\"m17.7 17.7 1.4 1.4\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.3 17.7-1.4 1.4\" /> <path d=\"m19.1 4.9-1.4 1.4\" />"};
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
   const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '37';
+  const VERSAO_SITE = '38';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -916,6 +1013,18 @@ window.CHECKLISTS = {
   const categoria = (item) => /uniforme/i.test(item) ? 'uniforme' : (/\bEPI/i.test(item) ? 'epi' : 'limpeza');
   const catItem = (it) => (it && it.categoria) || categoria(it && it.nome !== undefined ? it.nome : it);
   const exigeEvidencia = (item, nota, it) => nota === 'R' || nota === 'I' || (nota === 'B' && (it ? catItem(it) : categoria(item)) !== 'limpeza');
+  const TEMAS = { auto: ['Automático', 'monitor'], claro: ['Claro', 'sun'], escuro: ['Escuro', 'moon'] };
+  const temaAtual = () => { try { return localStorage.getItem('ck_tema') || 'auto'; } catch (e) { return 'auto'; } };
+  function aplicarTema(t, redesenhar) {
+    t = TEMAS[t] ? t : 'auto';
+    try { localStorage.setItem('ck_tema', t); } catch (e) {}
+    if (t === 'auto') document.documentElement.removeAttribute('data-tema'); else document.documentElement.setAttribute('data-tema', t);
+    const escuro = t === 'escuro' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+    document.querySelectorAll('meta[name=theme-color]').forEach((mt) => mt.setAttribute('content', escuro ? '#0A1A19' : '#E6EFEC'));
+    $$('[data-acao=tema]').forEach((b) => { b.innerHTML = ic(TEMAS[t][1]); b.title = 'Tema: ' + TEMAS[t][0] + ' (toque para trocar)'; });
+    if (redesenhar) { temaGraficos(); if (state.rota && state.sessao) rota(state.rota, state.rotaArg); else if (state.rota === 'login') rota('login'); }
+  }
+  const botaoTema = () => `<button class="icone-btn" data-acao="tema" title="Tema: ${TEMAS[temaAtual()][0]} (toque para trocar)">${ic(TEMAS[temaAtual()][1])}</button>`;
   const iniciais = (n) => String(n || '').split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0]).join('').toUpperCase();
 
   // formulário: o padrão vem do checklists.js; a Qualidade pode editar (aba Formulário da planilha)
@@ -954,7 +1063,7 @@ window.CHECKLISTS = {
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
-  const VERSAO_API_MIN = 37; // versão do Code.gs que este site espera
+  const VERSAO_API_MIN = 38; // versão do Code.gs que este site espera
   let avisouVersao = false;
   function avisoVersao() {
     if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
@@ -978,7 +1087,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbwiD3ynik-GNWEgjD8YrTnx3g-Qn2f6wm5i_31pgbXVBD8fD-ahZmyisomtpELfGOwA/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -1129,7 +1238,7 @@ window.CHECKLISTS = {
       <div class="usuario"><img class="logo-topo cor" src="${LOGO_COR}" alt="Univale"><img class="logo-topo branca" src="${LOGO_BRANCA}" alt="Univale"><span class="sep-usuario"></span>
         <button class="perfil-btn" data-acao="perfil" title="Meu perfil e avisos por e-mail"><span class="avatar">${esc(iniciais(state.sessao.nome))}${state.sessao.email ? '' : '<i class="ponto-aviso"></i>'}</span>
           <span class="perfil-txt">${esc(state.sessao.nome)}<small>${q ? 'Qualidade' : ehGestor() ? 'Gestor' : 'Avaliador'}</small></span></button>
-        <button class="icone-btn" data-acao="sair" title="Sair">${ic('log-out')}</button></div>
+        ${botaoTema()}<button class="icone-btn" data-acao="sair" title="Sair">${ic('log-out')}</button></div>
     </header>${['inicio', 'resultados', 'painel'].includes(ativo) ? faixaEmail() : ''}`;
   }
 
@@ -1154,7 +1263,8 @@ window.CHECKLISTS = {
         <label>Senha<input type="password" name="senha" autocomplete="current-password" required></label>
         <button class="btn primario largo">Entrar ${ic('arrow-right')}</button>
         <p class="erro-msg" id="loginErro" role="alert"></p>
-        <p class="rodape-login suave"><a href="#diagnostico" data-rota="diagnostico">Diagnóstico</a></p>
+        <p class="rodape-login suave"><button type="button" class="link" data-acao="esqueci">Esqueci minha senha</button> · <a href="#diagnostico" data-rota="diagnostico">Diagnóstico</a></p>
+        <div class="tema-login">${botaoTema()}</div>
       </form>
     </main>`;
     if (!NO_APPS_SCRIPT && window.CONFIG && window.CONFIG.configInvalida) {
@@ -1679,6 +1789,18 @@ window.CHECKLISTS = {
     return d.resumo.checklists[k].indicador;
   }
 
+  // no celular, cada linha de tabela vira um cartão com o nome da coluna ao lado do valor
+  function rotularTabelas(raiz) {
+    $$('table.tab-lista, table.tab-acum, table.tab-local, table.tab-rec, table.tab-filiais', raiz || document).forEach((tb) => {
+      if (tb.dataset.rotulada === '1' && tb.querySelector('tbody td[data-label]')) return;
+      const cab = $$('thead th', tb).map((th) => th.textContent.trim());
+      $$('tbody tr, tfoot tr', tb).forEach((tr) => { const cels = [...tr.children]; if (cels.length === 1) return;
+        let i = 0; cels.forEach((td) => { td.dataset.label = cab[i] || ''; i += Number(td.getAttribute('colspan') || 1); }); });
+      tb.classList.add('cartao-mobile'); tb.dataset.rotulada = '1';
+    });
+  }
+  let _rotTimer = 0;
+  new MutationObserver(() => { cancelAnimationFrame(_rotTimer); _rotTimer = requestAnimationFrame(() => rotularTabelas(document)); }).observe(document.body, { childList: true, subtree: true });
   function animarNumeros(raiz) {
     if (matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     $$('[data-contar]', raiz || document).forEach((el) => {
@@ -1727,15 +1849,19 @@ window.CHECKLISTS = {
 
     if (window.Chart && $('#gFiliais')) {
       state.charts.push(new Chart($('#gFiliais'), { type: 'bar',
-        data: { labels: comDados.map((f) => f.nome), datasets: [{ data: comDados.map((f) => f.final), backgroundColor: comDados.map((f, i) => PALETA[i % PALETA.length]), borderRadius: 8, maxBarThickness: 90 }] },
-        options: { maintainAspectRatio: false, animation: { duration: 900, easing: 'easeOutQuart' }, onClick: (ev, els) => { if (els.length) { state.filial = comDados[els[0].index].id; rota(rotaPainel()); } },
-          onHover: (ev, els) => { ev.native.target.style.cursor = els.length ? 'pointer' : 'default'; }, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, suggestedMin: 70, max: 100 } } } }));
+        data: { labels: comDados.map((f) => f.nome), datasets: [{ label: 'Nota final', data: comDados.map((f) => f.final), backgroundColor: comDados.map((f, i) => PALETA[i % PALETA.length]), borderRadius: 10, maxBarThickness: 72, categoryPercentage: .7 }] },
+        options: { maintainAspectRatio: false, animation: { duration: 900, easing: 'easeOutQuart' }, layout: { padding: { top: 18 } }, onClick: (ev, els) => { if (els.length) { state.filial = comDados[els[0].index].id; rota(rotaPainel()); } },
+          onHover: (ev, els) => { ev.native.target.style.cursor = els.length ? 'pointer' : 'default'; }, plugins: { legend: { display: false }, rotulos: { ativo: true } },
+          scales: { y: eixoNota(comDados.map((f) => f.final)), x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: false, font: { size: estreito() ? 10 : 12 }, callback(v) { return rotuloQuebrado(this.getLabelForValue(v)); } } } } } }));
     }
     if (window.Chart && $('#gAcum')) {
       animarNumeros(el);
-      state.charts.push(new Chart($('#gAcum'), { type: 'line',
-        data: { labels: d.acumuladoFiliais.map((a) => a.semestre), datasets: d.filiais.map((f, i) => ({ label: f.nome, data: d.acumuladoFiliais.map((a) => a.finais[f.id]), borderColor: PALETA[i % PALETA.length], backgroundColor: PALETA[i % PALETA.length], tension: .35, spanGaps: true, borderWidth: 3, pointRadius: 5, pointHoverRadius: 8 })) },
-        options: { maintainAspectRatio: false, animation: { duration: 900, easing: 'easeOutQuart' }, scales: { y: { suggestedMin: 70, max: 100 } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } } }));
+      const semsF = d.acumuladoFiliais.slice(-4), tons = tonsSemestres(semsF.length);
+      state.charts.push(new Chart($('#gAcum'), { type: 'bar',
+        data: { labels: d.filiais.map((f) => f.nome), datasets: semsF.map((a, i) => ({ label: a.semestre.replace(' Semestre/', 'º sem. 20').replace('ºº', 'º'), data: d.filiais.map((f) => a.finais[f.id] === undefined ? null : a.finais[f.id]), backgroundColor: tons[i], borderRadius: 6, maxBarThickness: 34, categoryPercentage: .78, barPercentage: .92 })) },
+        options: { maintainAspectRatio: false, animation: { duration: 900, easing: 'easeOutQuart' }, layout: { padding: { top: 20 } },
+          scales: { y: eixoNota(semsF.flatMap((a) => Object.values(a.finais))), x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: false, font: { size: estreito() ? 10 : 12 }, callback(v) { return rotuloQuebrado(this.getLabelForValue(v)); } } } },
+          plugins: { legend: { position: 'bottom' }, rotulos: { ativo: !estreito(), min: 26 } } } }));
     }
     observarFotos();
   }
@@ -1782,10 +1908,34 @@ window.CHECKLISTS = {
       </tbody></table></div>`;
   }
 
+  // compara cada item crítico com as rodadas anteriores registradas no sistema
+  function comparacaoCritico(it) {
+    const rec = state.painelAtual && state.painelAtual.recorrentes;
+    if (!rec || !rec.itens) return '';
+    const r = rec.itens.find((x) => x.checklist === it.checklist && x.item === it.item);
+    if (!r) return '';
+    const curto = (sx) => sx.replace(' Semestre/', 'º/').replace('ºº', 'º');
+    const anteriores = r.historico.slice(0, -1);
+    const texto = !anteriores.length ? 'Primeira rodada com itens registrados no sistema'
+      : r.seguidas >= 3 ? `Crítico: falhou nas últimas ${r.seguidas} rodadas seguidas`
+      : r.seguidas === 2 ? 'Repetiu a falha da rodada anterior'
+      : r.total > 1 ? 'Voltou a falhar (já tinha falhado antes)' : 'Novo: não falhou nas rodadas anteriores';
+    const nv = NIVEL_REC[r.nivel] || ['', 'b'];
+    return `<div class="comparacao"><span class="badge nivel-${nv[1]}">${nv[0]}</span><span class="comp-texto">${esc(texto)}</span>
+      <span class="linha-tempo">${r.historico.map((h) => `<i class="${h.ocorreu ? 'sim' : 'nao'}" title="${esc(h.semestre)}${h.ocorreu ? ': ' + esc(h.locais.join(', ')) : ': sem falha'}">${esc(curto(h.semestre))}</i>`).join('')}</span></div>`;
+  }
   function criticosHTML(its, titulo) {
     if (!its || !its.length) return '';
-    return `${titulo === false ? '' : `<h2 class="titulo-sec">${titulo || 'Itens críticos da rodada'}</h2>`}<div class="criticos">${its.map((it, i) => `<article class="critico"><span class="pos">${i + 1}</span>
+    const rec = state.painelAtual && state.painelAtual.recorrentes;
+    if (rec && rec.itens) { // mais recorrentes primeiro
+      const seg = (it) => { const r = rec.itens.find((x) => x.checklist === it.checklist && x.item === it.item); return r ? r.seguidas * 10 + r.total : 0; };
+      its = its.slice().sort((a, b) => seg(b) - seg(a) || (b.I * 2 + b.R) - (a.I * 2 + a.R));
+    }
+    const nSem = rec && rec.semestres ? rec.semestres.length : 0;
+    return `${titulo === false ? '' : `<h2 class="titulo-sec">${ic('triangle-alert')}${titulo || 'Itens críticos da rodada'}</h2>
+      <p class="suave" style="margin-top:-.4rem">${nSem > 1 ? `Cada item comparado com as ${nSem - 1} rodada(s) anterior(es) registradas no sistema.` : 'Comparação com rodadas anteriores: os itens detalhados existem no sistema a partir do 1º semestre de 2026; a partir da próxima rodada cada item mostra se repetiu.'}</p>`}<div class="criticos">${its.map((it, i) => `<article class="critico"><span class="pos">${i + 1}</span>
       <div><h4>${esc(it.item)}</h4><span class="suave" style="font-size:.84rem">${esc(nomeCk(it.checklist))} · ${esc(it.locais.join(', '))}</span>
+        ${comparacaoCritico(it)}
         ${it.motivos.map((m) => `<p>“${esc(m)}”</p>`).join('')}
         ${it.fotos && it.fotos.length ? `<div class="critico-fotos">${it.fotos.map((id) => `<div class="foto-lazy" data-foto="${esc(id)}"><span>foto</span></div>`).join('')}</div>` : ''}</div>
       <div class="contagens">${it.I ? `<b class="chip n-I">I ×${it.I}</b>` : ''}${it.R ? `<b class="chip n-R">R ×${it.R}</b>` : ''}</div></article>`).join('')}</div>`;
@@ -2015,11 +2165,35 @@ window.CHECKLISTS = {
   }
 
   const corTema = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  // tons da marca para comparar semestres: o mais antigo mais claro, o mais recente mais forte
+  const TONS_SEM = ['#BFE6E2', '#7FD0C9', '#2DB8B0', '#00857F', '#023D3A'];
+  const tonsSemestres = (n) => TONS_SEM.slice(Math.max(0, TONS_SEM.length - n));
+  const estreito = () => innerWidth < 640;
+  // escreve o valor em cima de cada barra (quando cabe)
+  const ROTULOS = { id: 'rotulos', afterDatasetsDraw(chart, args, op) {
+    if (!op || !op.ativo) return;
+    const ctx = chart.ctx; ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    chart.data.datasets.forEach((ds, i) => { const meta = chart.getDatasetMeta(i); if (meta.hidden) return;
+      meta.data.forEach((bar, j) => { const v = ds.data[j]; if (v === null || v === undefined) return;
+        const larg = bar.width || 0; if (larg < (op.min || 18)) return;
+        ctx.font = `600 ${larg < 30 ? 10 : 11.5}px Barlow, sans-serif`; ctx.fillStyle = corTema('--tinta-2');
+        ctx.fillText(Number(v).toLocaleString('pt-BR', { minimumFractionDigits: op.casas === undefined ? 2 : op.casas, maximumFractionDigits: op.casas === undefined ? 2 : op.casas }), bar.x, bar.y - 3); }); });
+    ctx.restore(); } };
   function temaGraficos() {
     if (!window.Chart) return;
+    if (!temaGraficos.registrado) { Chart.register(ROTULOS); temaGraficos.registrado = true; }
     Chart.defaults.color = corTema('--suave'); Chart.defaults.borderColor = corTema('--linha');
-    Chart.defaults.font.family = 'Barlow, "Segoe UI", sans-serif';
+    Chart.defaults.font.family = 'Barlow, "Segoe UI", sans-serif'; Chart.defaults.font.size = 12;
+    Chart.defaults.plugins.legend.labels.usePointStyle = true; Chart.defaults.plugins.legend.labels.pointStyle = 'rectRounded';
+    Chart.defaults.plugins.legend.labels.boxWidth = 10; Chart.defaults.plugins.legend.labels.padding = 14;
+    Object.assign(Chart.defaults.plugins.tooltip, { backgroundColor: corTema('--escuro') || '#023D3A', titleColor: '#fff', bodyColor: '#E3EEEC', padding: 10, cornerRadius: 10, boxPadding: 4,
+      callbacks: Object.assign({}, Chart.defaults.plugins.tooltip.callbacks, { label: (c) => ` ${c.dataset.label ? c.dataset.label + ': ' : ''}${c.parsed.y === null || c.parsed.y === undefined ? '—' : Number(c.parsed.y).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` }) });
   }
+  // eixo das notas: começa um pouco abaixo da menor nota, para as diferenças ficarem visíveis
+  const eixoNota = (valores) => { const v = valores.filter((x) => x !== null && x !== undefined); const min = v.length ? Math.min(...v) : 80;
+    return { min: Math.max(0, Math.floor((min - 6) / 5) * 5), max: 100, ticks: { stepSize: 5 }, grid: { color: corTema('--linha') } }; };
+  // nomes longos quebrados em duas linhas no eixo
+  const rotuloQuebrado = (t) => { const p = String(t).split(' '); if (p.length < 2 || String(t).length < 11) return t; const m = Math.ceil(p.length / 2); return [p.slice(0, m).join(' '), p.slice(m).join(' ')]; };
   function donut(canvas, cont) {
     if (!canvas || !window.Chart) return { destroy() {} };
     return new Chart(canvas, { type: 'doughnut',
@@ -2053,10 +2227,15 @@ window.CHECKLISTS = {
 
   function graficoAcumulado(ac) {
     const cv = $('#gAcum'); if (!cv || !window.Chart) return;
-    const ds = ORDEM_CK.map((k, i) => ({ label: CHECKLISTS[k].titulo, data: ac.map((a) => a.checklists[k]), borderColor: PALETA[i], backgroundColor: PALETA[i], tension: .35, spanGaps: true, borderWidth: 2.5, pointRadius: 4, pointHoverRadius: 7 }));
-    ds.push({ label: 'Nota final', data: ac.map((a) => a.final), borderColor: corTema('--tinta'), backgroundColor: corTema('--tinta'), borderWidth: 3, tension: .25 });
-    state.charts.push(new Chart(cv, { type: 'line', data: { labels: ac.map((a) => a.semestre), datasets: ds },
-      options: { maintainAspectRatio: false, animation: { duration: 900, easing: 'easeOutQuart' }, scales: { y: { suggestedMin: 70, max: 100 } }, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } } }));
+    const sems = ac.slice(-4), tons = tonsSemestres(sems.length);
+    const ind = [['Geral', (a) => a.checklists.geral], ['Predial Garagem', (a) => a.checklists.predial_garagem], ['Predial Ponto de Apoio', (a) => a.checklists.predial_pa],
+      ['Parcial', (a) => a.checklists.parcial], ['Uniforme', (a) => a.uniforme], ['EPI', (a) => a.epi], ['Nota final', (a) => a.final]];
+    const valores = sems.flatMap((a) => ind.map(([, fn]) => fn(a)));
+    state.charts.push(new Chart(cv, { type: 'bar',
+      data: { labels: ind.map(([n]) => n), datasets: sems.map((a, i) => ({ label: a.semestre.replace(' Semestre/', 'º sem. 20').replace('ºº', 'º'), data: ind.map(([, fn]) => { const v = fn(a); return v === undefined ? null : v; }), backgroundColor: tons[i], borderRadius: 6, maxBarThickness: 30, categoryPercentage: .8, barPercentage: .92 })) },
+      options: { maintainAspectRatio: false, animation: { duration: 900, easing: 'easeOutQuart' }, layout: { padding: { top: 20 } },
+        scales: { y: eixoNota(valores), x: { grid: { display: false }, ticks: { maxRotation: 0, autoSkip: false, font: { size: estreito() ? 10 : 12 }, callback(v) { return rotuloQuebrado(this.getLabelForValue(v)); } } } },
+        plugins: { legend: { position: 'bottom' }, rotulos: { ativo: !estreito(), min: 24, casas: 1 } } } }));
   }
 
   async function gerarPlanilha() {
@@ -3026,7 +3205,7 @@ window.CHECKLISTS = {
       state.usuarios = d.usuarios; if (!$('#listaUsuarios')) return;
       $('#listaUsuarios').innerHTML = `<div class="rolagem"><table class="tab-lista"><thead><tr><th>Nome</th><th>Usuário</th><th>Perfil</th><th>Situação</th><th></th></tr></thead><tbody>
         ${d.usuarios.map((u) => `<tr><td>${esc(u.nome)}<small class="email-u">${u.email ? ic(u.notificar ? 'mail' : 'bell') + esc(u.email) + (u.notificar ? '' : ' · avisos desligados') : '<span class="sem-email">' + ic('circle-alert') + 'sem e-mail</span>'}</small></td><td>${esc(u.login)}</td><td>${u.perfil === 'QUALIDADE' ? 'Qualidade' : u.perfil === 'GESTOR' ? `Gestor<small>${esc((u.filiais || []).indexOf('todas') >= 0 ? 'todas as filiais' : (u.filiais || []).map((id) => (state.filiais.find((f) => f.id === id) || {}).nome || id).join(', '))}</small>` : 'Avaliador'}</td><td>${u.ativo === 'SIM' ? (u.trocar_senha === 'SIM' ? '<span class="badge st-PLANEJADO">Aguardando 1º acesso</span>' : 'Ativo') : '<span class="badge st-CANCELADO">Sem acesso</span>'}</td>
-          <td><button class="btn sec pequeno" data-editar-usuario="${esc(u.login)}">Editar</button></td></tr>`).join('')}</tbody></table></div>`;
+          <td class="acoes-linha"><button class="btn sec pequeno" data-editar-usuario="${esc(u.login)}">Editar</button><button class="btn sec pequeno" data-senha-prov="${esc(u.login)}" title="Gerar senha provisória (esqueceu a senha)">${ic('key-round')} Senha</button></td></tr>`).join('')}</tbody></table></div>`;
     }, '#listaUsuarios');
   }
 
@@ -3055,6 +3234,7 @@ window.CHECKLISTS = {
         <p class="suave">${esc(se.nome)} · ${esc(se.login)} · ${ehQualidade() ? 'Qualidade' : ehGestor() ? 'Gestor' : 'Avaliador'}</p></div></div>
       ${convite ? `<p class="convite">${ic('bell-ring')}<span>Para ser avisado pelo e-mail, <b>cadastre seu e-mail abaixo</b>. Sem ele, os avisos não chegam até você.</span></p>` : ''}
       <ul class="lista-avisos">${avisosDoPerfil().map((t) => `<li>${ic('mail')}${esc(t)}</li>`).join('')}</ul>
+      <div class="tema-escolha"><span>Tema</span>${Object.keys(TEMAS).map((t) => `<button type="button" class="${temaAtual() === t ? 'ativo' : ''}" data-tema-escolha="${t}">${ic(TEMAS[t][1])}${TEMAS[t][0]}</button>`).join('')}</div>
       <form id="fPerfil"><label>Seu e-mail<input type="email" name="email" value="${esc(se.email || '')}" placeholder="nome@univale.com" autocomplete="email" ${convite ? 'autofocus' : ''}></label>
         <label class="check"><input type="checkbox" name="notificar" ${se.notificar !== false ? 'checked' : ''}>Quero receber avisos por e-mail</label>
         <div class="acoes">${convite ? '<button type="button" class="btn sec" data-r="0">Agora não</button>' : `<button type="button" class="btn sec" data-acao="senha">${ic('key-round')} Trocar senha</button>`}
@@ -3080,6 +3260,33 @@ window.CHECKLISTS = {
     setTimeout(() => { if (!$('.modal')) modalPerfil(true); }, 700);
   }
   const faixaEmail = () => state.sessao && !state.sessao.email ? `<div class="faixa-email">${ic('bell')}<span><b>Receba avisos por e-mail.</b> Cadastre seu e-mail para ser avisado de ${ehGestor() ? 'resultados validados' : ehQualidade() ? 'resultados validados' : 'novas auditorias, prazos e resultados'}.</span><button class="btn primario pequeno" data-acao="perfil">${ic('mail')} Cadastrar e-mail</button></div>` : '';
+
+  function modalEsqueci() {
+    const corpo = modal(`<h2>${ic('key-round')} Esqueci minha senha</h2>
+      <p class="suave">Digite seu usuário. Se você tiver e-mail cadastrado, enviamos uma <b>senha provisória</b>; no primeiro acesso o sistema pede para você criar uma nova.</p>
+      <form id="fEsq"><label>Usuário<input name="login" autocapitalize="none" autocomplete="username" required value="${esc(($('#fLogin input[name=login]') || {}).value || '')}"></label>
+        <div class="acoes"><button class="btn primario">${ic('send')} Enviar senha provisória</button></div></form>
+      <p class="suave" style="font-size:.86rem">Sem e-mail cadastrado? Peça à Qualidade para gerar uma senha provisória em Usuários.</p>`);
+    $('#fEsq', corpo).addEventListener('submit', async (ev) => {
+      ev.preventDefault(); carregando('Enviando…');
+      try { const r = await api('esqueciSenha', { login: ev.target.login.value.trim().toLowerCase() }); carregando(); corpo.innerHTML = `<h2>${ic('mail')} Verifique seu e-mail</h2><p>${esc(r.mensagem)}</p><div class="acoes"><button class="btn primario" data-acao="fecharModal">Entendi</button></div>`; }
+      catch (err) { carregando(); toast(err.message, 'erro'); }
+    });
+  }
+  async function modalSenhaProvisoria(login) {
+    const u = (state.usuarios || []).find((x) => x.login === login) || { login, nome: login };
+    if (!await confirmar('Gerar senha provisória?', `Uma senha aleatória será criada para ${u.nome}. A senha atual deixa de valer e ${u.nome.split(' ')[0]} terá que criar uma nova no próximo acesso.`, 'Gerar senha')) return;
+    carregando('Gerando…');
+    try {
+      const r = await api('senhaProvisoria', { login, enviarEmail: !!u.email });
+      carregando(); rota(state.rota, state.rotaArg);
+      await new Promise((ok) => setTimeout(ok, 350));
+      modal(`<h2>${ic('key-round')} Senha provisória</h2><p>${esc(r.nome)} · usuário <b>${esc(r.login)}</b></p>
+        <div class="senha-gerada"><code id="senhaGerada">${esc(r.senha)}</code><button class="btn sec pequeno" data-acao="copiarSenha">${ic('copy')} Copiar</button></div>
+        <p class="${r.email ? 'aviso-hist' : 'suave'}">${r.email ? 'Também enviamos por e-mail para ' + esc(r.email) + '.' : 'Esta pessoa não tem e-mail cadastrado: passe a senha para ela (WhatsApp ou pessoalmente).'} No primeiro acesso, o sistema pede para criar uma senha nova.</p>
+        <div class="acoes"><button class="btn primario" data-acao="fecharModal">Pronto</button></div>`);
+    } catch (err) { carregando(); toast(err.message, 'erro'); }
+  }
 
   async function salvarEmails() {
     carregando('Salvando…');
@@ -3113,6 +3320,8 @@ window.CHECKLISTS = {
   /* ---------- eventos globais ---------- */
   document.addEventListener('click', async (e) => {
     const t = e.target, el = (s) => t.closest(s);
+    if (el('[data-tema-escolha]')) { aplicarTema(el('[data-tema-escolha]').dataset.temaEscolha, true); $$('[data-tema-escolha]').forEach((x) => x.classList.toggle('ativo', x.dataset.temaEscolha === temaAtual())); return; }
+    if (el('[data-senha-prov]')) { modalSenhaProvisoria(el('[data-senha-prov]').dataset.senhaProv); return; }
     if (el('[data-mostrar]')) {
       const b = el('[data-mostrar]'), inp = b.previousElementSibling, ver = inp.type === 'password';
       inp.type = ver ? 'text' : 'password'; b.textContent = ver ? 'Ocultar' : 'Mostrar'; b.setAttribute('aria-label', ver ? 'Ocultar senha' : 'Mostrar senha');
@@ -3146,6 +3355,9 @@ window.CHECKLISTS = {
     if (acao === 'senha') { fecharModal(); modalSenha(); return; }
     if (acao === 'perfil') { modalPerfil(!state.sessao.email); return; }
     if (acao === 'tentarFila') { processarFila(false); return; }
+    if (acao === 'tema') { const ordem = ['auto', 'claro', 'escuro'], t = ordem[(ordem.indexOf(temaAtual()) + 1) % 3]; aplicarTema(t, true); toast('Tema: ' + TEMAS[t][0] + (t === 'auto' ? ' (segue o aparelho)' : ''), 'ok'); return; }
+    if (acao === 'esqueci') { modalEsqueci(); return; }
+    if (acao === 'copiarSenha') { const t = $('#senhaGerada').textContent; try { await navigator.clipboard.writeText(t); toast('Senha copiada.', 'ok'); } catch (e) { toast('Selecione e copie: ' + t, 'aviso'); } return; }
     if (acao === 'descartarFila') { if (await confirmar('Descartar o checklist guardado?', 'Ele foi recusado pelo servidor e será apagado deste aparelho.', 'Descartar')) { const it = (await fila.todos()).find((i) => i.erro); if (it) { await fila.remover(it.uid); localStorage.setItem(chaveRascunho(it.cid, it.chave), JSON.stringify({ descartado: true })); localStorage.removeItem(chaveRascunho(it.cid, it.chave)); } atualizarFaixaFila(); } return; }
     if (acao === 'baixarPdf') { gerarPdfChecklist(state.detalheAtual); return; }
     if (acao === 'criarTeste') { criarTeste(); return; }
@@ -3243,7 +3455,7 @@ window.CHECKLISTS = {
   }
 
   temaGraficos();
-  if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { temaGraficos(); if (state.rota === 'painel' || state.rota === 'resultado') rota(state.rota, state.rotaArg); });
+  if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (temaAtual() !== 'auto') return; temaGraficos(); if (state.rota === 'painel' || state.rota === 'resultado') rota(state.rota, state.rotaArg); });
   const iniciar = (hash) => {
     if (hash === 'diagnostico' || hash === '#diagnostico') rota('diagnostico');
     else { rota(state.sessao ? (ehQualidade() ? 'painel' : ehGestor() ? 'resultados' : 'inicio') : 'login'); aquecer(); }
