@@ -1087,7 +1087,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbyJRYOE5eES1hT1cdjozydfMTu_5uuq-R7DqleEOsXn7WvP56wIzzmbS3yNVSVXhwYL/exec').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
