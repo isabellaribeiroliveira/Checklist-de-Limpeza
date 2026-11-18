@@ -718,11 +718,45 @@ input:focus, select:focus, textarea:focus { background-color: var(--superficie);
 .topo { background: color-mix(in srgb, var(--superficie) 86%, transparent); backdrop-filter: blur(12px); }
 [hidden] { display: none !important; }
 
+/* ============ v37 · teste, fila sem internet, recorrentes, acompanhante ============ */
+.acomp { grid-column: 1 / -1; }
+.acomp .check { display: inline-flex; align-items: center; gap: .4rem; font-weight: 500; font-size: .88rem; margin-top: .35rem; color: var(--tinta-2); }
+.acomp-det { display: flex; align-items: center; gap: .35rem; margin: .2rem 0 .5rem; font-size: .9rem; color: var(--tinta-2); }
+.acomp-det .ic { color: var(--petroleo); }
+.faixa-fila { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 60; width: min(680px, calc(100% - 24px)); display: flex; align-items: center; gap: .8rem;
+  padding: .8rem 1rem; border-radius: 16px; background: var(--escuro); color: #E6F4F2; box-shadow: 0 14px 40px rgba(0, 0, 0, .3); animation: subir .4s ease both; }
+.faixa-fila > .ic { width: 26px; height: 26px; color: var(--aqua); flex: none; }
+.faixa-fila.erro { background: #5A1E19; } .faixa-fila.erro > .ic { color: #FFB4A9; }
+.faixa-fila div { flex: 1; display: flex; flex-direction: column; font-size: .9rem; }
+.faixa-fila span { color: #A8D9D3; font-size: .82rem; }
+.faixa-fila.erro span { color: #FFD4CD; }
+.escolha-item.na-fila { cursor: default; border-style: dashed; }
+.escolha-item em.fila { display: inline-flex; align-items: center; gap: .3rem; color: #8A5D00; background: var(--r-claro); font-style: normal; font-size: .8rem; font-weight: 700; padding: .25em .6em; border-radius: 8px; margin-top: .4rem; }
+.selo.pendente { background: var(--r-claro); color: #B07A00; } .selo.pendente .ic { width: 42px; height: 42px; }
+.tab-rec td small { display: block; color: var(--suave); font-size: .76rem; }
+.linha-tempo { display: inline-flex; gap: .3rem; flex-wrap: wrap; }
+.linha-tempo i { font-style: normal; font-size: .72rem; font-weight: 700; padding: .2em .5em; border-radius: 999px; border: 1.5px solid var(--linha); color: var(--suave); }
+.linha-tempo i.sim { background: var(--i); border-color: var(--i); color: #fff; }
+.badge.nivel-i { background: var(--i); color: #fff; } .badge.nivel-r { background: var(--r-claro); color: #8A5D00; }
+.badge.nivel-b { background: var(--menta); color: var(--petroleo-txt); } .badge.nivel-o { background: var(--o-claro); color: var(--o); }
+tr.rec-critico td:first-child { box-shadow: inset 4px 0 0 var(--i); } tr.rec-atencao td:first-child, tr.rec-voltou td:first-child { box-shadow: inset 4px 0 0 var(--r); }
+.passos-teste { list-style: none; padding: 0; margin: 0 0 1.25rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: .75rem; }
+.passos-teste li { display: flex; flex-direction: column; gap: .3rem; padding: .9rem 1rem; border-radius: 14px; background: var(--superficie); border: 1px solid var(--linha); box-shadow: var(--sombra); }
+.passos-teste span:not(.passo-ic) { color: var(--suave); font-size: .85rem; line-height: 1.35; }
+.passo-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--menta); color: var(--petroleo-txt); margin-bottom: .2rem; }
+.teste-status { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.teste-rodape { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--linha); }
+.badge-teste { display: inline-block; background: #6C5CE7; color: #fff; font-size: .68rem; font-weight: 700; letter-spacing: .06em; padding: .1em .5em; border-radius: 6px; vertical-align: middle; }
+.faixa-teste { display: flex; gap: .7rem; align-items: center; padding: .75rem 1rem; border-radius: 14px; margin-bottom: 1rem; background: color-mix(in srgb, #6C5CE7 14%, var(--superficie)); border: 1px solid color-mix(in srgb, #6C5CE7 40%, var(--linha)); }
+.faixa-teste .ic { color: #6C5CE7; width: 22px; height: 22px; }
+@media (max-width: 1560px) and (min-width: 761px) { .nav-link .ic { display: none; } .nav-link { padding: .45em .62em; font-size: .9rem; } }
+@media (max-width: 1240px) and (min-width: 761px) { .usuario .logo-topo, .sep-usuario { display: none !important; } .perfil-txt { display: none; } }
+
   </style>
 </head>
 <body>
   <!-- ==========================================================================
-       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 36)
+       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 37)
        Só para o GitHub Pages: cole abaixo, entre as aspas, o link da implantação do Apps Script (termina em /exec).
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
@@ -853,11 +887,11 @@ window.CHECKLISTS = {
   const app = $('#app');
   const LOGO_COR = window.LOGO_COR || '', LOGO_BRANCA = window.LOGO_BRANCA || '';
   // ícones Lucide (ISC), embutidos para funcionar sem depender de outro site
-  const ICONES = {"layout-dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />", "clipboard-list": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /> <path d=\"M12 11h4\" /> <path d=\"M12 16h4\" /> <path d=\"M8 11h.01\" /> <path d=\"M8 16h.01\" />", "calendar-days": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"M8 14h.01\" /> <path d=\"M12 14h.01\" /> <path d=\"M16 14h.01\" /> <path d=\"M8 18h.01\" /> <path d=\"M12 18h.01\" /> <path d=\"M16 18h.01\" />", "pen-line": "<path d=\"M12 20h9\" /> <path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\" />", "list-checks": "<path d=\"m3 17 2 2 4-4\" /> <path d=\"m3 7 2 2 4-4\" /> <path d=\"M13 6h8\" /> <path d=\"M13 12h8\" /> <path d=\"M13 18h8\" />", "building-2": "<path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\" /> <path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2\" /> <path d=\"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2\" /> <path d=\"M10 6h4\" /> <path d=\"M10 10h4\" /> <path d=\"M10 14h4\" /> <path d=\"M10 18h4\" />", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />", "user-round": "<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />", "log-out": "<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />", "key-round": "<path d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\" /> <circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\" />", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\" /> <path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\" />", "bell-ring": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\" /> <path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\" /> <path d=\"M4 2C2.8 3.7 2 5.7 2 8\" /> <path d=\"M22 8c0-2.3-.8-4.3-2-6\" />", "mail": "<rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" /> <path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\" />", "map-pin": "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\" /> <circle cx=\"12\" cy=\"10\" r=\"3\" />", "calendar-check": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />", "clock": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />", "badge-check": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <path d=\"m9 12 2 2 4-4\" />", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\" /> <path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\" />", "external-link": "<path d=\"M15 3h6v6\" /> <path d=\"M10 14 21 3\" /> <path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\" />", "file-text": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />", "sheet": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\" /> <line x1=\"3\" x2=\"21\" y1=\"9\" y2=\"9\" /> <line x1=\"3\" x2=\"21\" y1=\"15\" y2=\"15\" /> <line x1=\"9\" x2=\"9\" y1=\"9\" y2=\"21\" /> <line x1=\"15\" x2=\"15\" y1=\"9\" y2=\"21\" />", "download": "<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\" /> <polyline points=\"7 10 12 15 17 10\" /> <line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\" />", "send": "<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />", "check": "<path d=\"M20 6 9 17l-5-5\" />", "circle-alert": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" /> <line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" />", "triangle-alert": "<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />", "info": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"M12 16v-4\" /> <path d=\"M12 8h.01\" />", "camera": "<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\" /> <circle cx=\"12\" cy=\"13\" r=\"3\" />", "smartphone": "<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M12 18h.01\" />", "chart-column": "<path d=\"M3 3v16a2 2 0 0 0 2 2h16\" /> <path d=\"M18 17V9\" /> <path d=\"M13 17V5\" /> <path d=\"M8 17v-3\" />", "bus": "<path d=\"M8 6v6\" /> <path d=\"M15 6v6\" /> <path d=\"M2 12h19.6\" /> <path d=\"M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3\" /> <circle cx=\"7\" cy=\"18\" r=\"2\" /> <path d=\"M9 18h5\" /> <circle cx=\"16\" cy=\"18\" r=\"2\" />", "building": "<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M9 22v-4h6v4\" /> <path d=\"M8 6h.01\" /> <path d=\"M16 6h.01\" /> <path d=\"M12 6h.01\" /> <path d=\"M12 10h.01\" /> <path d=\"M12 14h.01\" /> <path d=\"M16 10h.01\" /> <path d=\"M16 14h.01\" /> <path d=\"M8 10h.01\" /> <path d=\"M8 14h.01\" />", "shield-check": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"m9 12 2 2 4-4\" />", "sparkles": "<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\" /> <path d=\"M20 3v4\" /> <path d=\"M22 5h-4\" /> <path d=\"M4 17v2\" /> <path d=\"M5 18H3\" />", "clipboard-check": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /> <path d=\"m9 14 2 2 4-4\" />", "arrow-right": "<path d=\"M5 12h14\" /> <path d=\"m12 5 7 7-7 7\" />", "arrow-left": "<path d=\"m12 19-7-7 7-7\" /> <path d=\"M19 12H5\" />", "chevron-right": "<path d=\"m9 18 6-6-6-6\" />", "x": "<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />", "plus": "<path d=\"M5 12h14\" /> <path d=\"M12 5v14\" />", "trash-2": "<path d=\"M3 6h18\" /> <path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\" /> <path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\" /> <line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\" /> <line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\" />", "refresh-cw": "<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />", "eye": "<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" />", "eye-off": "<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\" /> <path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\" /> <path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\" /> <path d=\"m2 2 20 20\" />", "lock": "<rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\" /> <path d=\"M7 11V7a5 5 0 0 1 10 0v4\" />", "route": "<circle cx=\"6\" cy=\"19\" r=\"3\" /> <path d=\"M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15\" /> <circle cx=\"18\" cy=\"5\" r=\"3\" />", "history": "<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\" /> <path d=\"M3 3v5h5\" /> <path d=\"M12 7v5l4 2\" />", "trophy": "<path d=\"M6 9H4.5a2.5 2.5 0 0 1 0-5H6\" /> <path d=\"M18 9h1.5a2.5 2.5 0 0 0 0-5H18\" /> <path d=\"M4 22h16\" /> <path d=\"M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22\" /> <path d=\"M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22\" /> <path d=\"M18 2H6v7a6 6 0 0 0 12 0V2Z\" />", "target": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <circle cx=\"12\" cy=\"12\" r=\"6\" /> <circle cx=\"12\" cy=\"12\" r=\"2\" />", "star": "<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\" />", "search": "<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />", "settings": "<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" />", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.93 4.93 1.41 1.41\" /> <path d=\"m17.66 17.66 1.41 1.41\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.34 17.66-1.41 1.41\" /> <path d=\"m19.07 4.93-1.41 1.41\" />", "moon": "<path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\" />", "image": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\" /> <circle cx=\"9\" cy=\"9\" r=\"2\" /> <path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\" />", "message-square": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\" />", "flag": "<path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\" /> <line x1=\"4\" x2=\"4\" y1=\"22\" y2=\"15\" />", "hourglass": "<path d=\"M5 22h14\" /> <path d=\"M5 2h14\" /> <path d=\"M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22\" /> <path d=\"M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2\" />", "list-todo": "<rect x=\"3\" y=\"5\" width=\"6\" height=\"6\" rx=\"1\" /> <path d=\"m3 17 2 2 4-4\" /> <path d=\"M13 6h8\" /> <path d=\"M13 12h8\" /> <path d=\"M13 18h8\" />", "circle-check-big": "<path d=\"M21.801 10A10 10 0 1 1 17 3.335\" /> <path d=\"m9 11 3 3L22 4\" />", "hash": "<line x1=\"4\" x2=\"20\" y1=\"9\" y2=\"9\" /> <line x1=\"4\" x2=\"20\" y1=\"15\" y2=\"15\" /> <line x1=\"10\" x2=\"8\" y1=\"3\" y2=\"21\" /> <line x1=\"16\" x2=\"14\" y1=\"3\" y2=\"21\" />", "layers": "<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\" /> <path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\" /> <path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\" />", "map": "<path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\" /> <path d=\"M15 5.764v15\" /> <path d=\"M9 3.236v15\" />", "presentation": "<path d=\"M2 3h20\" /> <path d=\"M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3\" /> <path d=\"m7 21 5-5 5 5\" />", "table": "<path d=\"M12 3v18\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M3 9h18\" /> <path d=\"M3 15h18\" />", "badge-info": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <line x1=\"12\" x2=\"12\" y1=\"16\" y2=\"12\" /> <line x1=\"12\" x2=\"12.01\" y1=\"8\" y2=\"8\" />", "user-check": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <polyline points=\"16 11 18 13 22 9\" />", "wand-sparkles": "<path d=\"m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72\" /> <path d=\"m14 7 3 3\" /> <path d=\"M5 6v4\" /> <path d=\"M19 14v4\" /> <path d=\"M10 2v2\" /> <path d=\"M7 8H3\" /> <path d=\"M21 16h-4\" /> <path d=\"M11 3H9\" />", "gauge": "<path d=\"m12 14 4-4\" /> <path d=\"M3.34 19a10 10 0 1 1 17.32 0\" />", "scan-search": "<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" /> <path d=\"m16 16-1.9-1.9\" />", "circle-check": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"m9 12 2 2 4-4\" />"};
+  const ICONES = {"layout-dashboard": "<rect width=\"7\" height=\"9\" x=\"3\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"14\" y=\"3\" rx=\"1\" /> <rect width=\"7\" height=\"9\" x=\"14\" y=\"12\" rx=\"1\" /> <rect width=\"7\" height=\"5\" x=\"3\" y=\"16\" rx=\"1\" />", "clipboard-list": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /> <path d=\"M12 11h4\" /> <path d=\"M12 16h4\" /> <path d=\"M8 11h.01\" /> <path d=\"M8 16h.01\" />", "calendar-days": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"M8 14h.01\" /> <path d=\"M12 14h.01\" /> <path d=\"M16 14h.01\" /> <path d=\"M8 18h.01\" /> <path d=\"M12 18h.01\" /> <path d=\"M16 18h.01\" />", "pen-line": "<path d=\"M12 20h9\" /> <path d=\"M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z\" />", "list-checks": "<path d=\"m3 17 2 2 4-4\" /> <path d=\"m3 7 2 2 4-4\" /> <path d=\"M13 6h8\" /> <path d=\"M13 12h8\" /> <path d=\"M13 18h8\" />", "building-2": "<path d=\"M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z\" /> <path d=\"M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2\" /> <path d=\"M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2\" /> <path d=\"M10 6h4\" /> <path d=\"M10 10h4\" /> <path d=\"M10 14h4\" /> <path d=\"M10 18h4\" />", "users": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <path d=\"M22 21v-2a4 4 0 0 0-3-3.87\" /> <path d=\"M16 3.13a4 4 0 0 1 0 7.75\" />", "user-round": "<circle cx=\"12\" cy=\"8\" r=\"5\" /> <path d=\"M20 21a8 8 0 0 0-16 0\" />", "log-out": "<path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\" /> <polyline points=\"16 17 21 12 16 7\" /> <line x1=\"21\" x2=\"9\" y1=\"12\" y2=\"12\" />", "key-round": "<path d=\"M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z\" /> <circle cx=\"16.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\" />", "bell": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\" /> <path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\" />", "bell-ring": "<path d=\"M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9\" /> <path d=\"M10.3 21a1.94 1.94 0 0 0 3.4 0\" /> <path d=\"M4 2C2.8 3.7 2 5.7 2 8\" /> <path d=\"M22 8c0-2.3-.8-4.3-2-6\" />", "mail": "<rect width=\"20\" height=\"16\" x=\"2\" y=\"4\" rx=\"2\" /> <path d=\"m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7\" />", "map-pin": "<path d=\"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0\" /> <circle cx=\"12\" cy=\"10\" r=\"3\" />", "calendar-check": "<path d=\"M8 2v4\" /> <path d=\"M16 2v4\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"4\" rx=\"2\" /> <path d=\"M3 10h18\" /> <path d=\"m9 16 2 2 4-4\" />", "clock": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <polyline points=\"12 6 12 12 16 14\" />", "badge-check": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <path d=\"m9 12 2 2 4-4\" />", "link": "<path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\" /> <path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\" />", "external-link": "<path d=\"M15 3h6v6\" /> <path d=\"M10 14 21 3\" /> <path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\" />", "file-text": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M10 9H8\" /> <path d=\"M16 13H8\" /> <path d=\"M16 17H8\" />", "sheet": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\" /> <line x1=\"3\" x2=\"21\" y1=\"9\" y2=\"9\" /> <line x1=\"3\" x2=\"21\" y1=\"15\" y2=\"15\" /> <line x1=\"9\" x2=\"9\" y1=\"9\" y2=\"21\" /> <line x1=\"15\" x2=\"15\" y1=\"9\" y2=\"21\" />", "download": "<path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\" /> <polyline points=\"7 10 12 15 17 10\" /> <line x1=\"12\" x2=\"12\" y1=\"15\" y2=\"3\" />", "send": "<path d=\"M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z\" /> <path d=\"m21.854 2.147-10.94 10.939\" />", "check": "<path d=\"M20 6 9 17l-5-5\" />", "circle-alert": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <line x1=\"12\" x2=\"12\" y1=\"8\" y2=\"12\" /> <line x1=\"12\" x2=\"12.01\" y1=\"16\" y2=\"16\" />", "triangle-alert": "<path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\" /> <path d=\"M12 9v4\" /> <path d=\"M12 17h.01\" />", "info": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"M12 16v-4\" /> <path d=\"M12 8h.01\" />", "camera": "<path d=\"M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z\" /> <circle cx=\"12\" cy=\"13\" r=\"3\" />", "smartphone": "<rect width=\"14\" height=\"20\" x=\"5\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M12 18h.01\" />", "chart-column": "<path d=\"M3 3v16a2 2 0 0 0 2 2h16\" /> <path d=\"M18 17V9\" /> <path d=\"M13 17V5\" /> <path d=\"M8 17v-3\" />", "bus": "<path d=\"M8 6v6\" /> <path d=\"M15 6v6\" /> <path d=\"M2 12h19.6\" /> <path d=\"M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3\" /> <circle cx=\"7\" cy=\"18\" r=\"2\" /> <path d=\"M9 18h5\" /> <circle cx=\"16\" cy=\"18\" r=\"2\" />", "building": "<rect width=\"16\" height=\"20\" x=\"4\" y=\"2\" rx=\"2\" ry=\"2\" /> <path d=\"M9 22v-4h6v4\" /> <path d=\"M8 6h.01\" /> <path d=\"M16 6h.01\" /> <path d=\"M12 6h.01\" /> <path d=\"M12 10h.01\" /> <path d=\"M12 14h.01\" /> <path d=\"M16 10h.01\" /> <path d=\"M16 14h.01\" /> <path d=\"M8 10h.01\" /> <path d=\"M8 14h.01\" />", "shield-check": "<path d=\"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z\" /> <path d=\"m9 12 2 2 4-4\" />", "sparkles": "<path d=\"M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z\" /> <path d=\"M20 3v4\" /> <path d=\"M22 5h-4\" /> <path d=\"M4 17v2\" /> <path d=\"M5 18H3\" />", "clipboard-check": "<rect width=\"8\" height=\"4\" x=\"8\" y=\"2\" rx=\"1\" ry=\"1\" /> <path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\" /> <path d=\"m9 14 2 2 4-4\" />", "arrow-right": "<path d=\"M5 12h14\" /> <path d=\"m12 5 7 7-7 7\" />", "arrow-left": "<path d=\"m12 19-7-7 7-7\" /> <path d=\"M19 12H5\" />", "chevron-right": "<path d=\"m9 18 6-6-6-6\" />", "x": "<path d=\"M18 6 6 18\" /> <path d=\"m6 6 12 12\" />", "plus": "<path d=\"M5 12h14\" /> <path d=\"M12 5v14\" />", "trash-2": "<path d=\"M3 6h18\" /> <path d=\"M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6\" /> <path d=\"M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2\" /> <line x1=\"10\" x2=\"10\" y1=\"11\" y2=\"17\" /> <line x1=\"14\" x2=\"14\" y1=\"11\" y2=\"17\" />", "refresh-cw": "<path d=\"M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8\" /> <path d=\"M21 3v5h-5\" /> <path d=\"M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16\" /> <path d=\"M8 16H3v5\" />", "eye": "<path d=\"M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" />", "eye-off": "<path d=\"M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49\" /> <path d=\"M14.084 14.158a3 3 0 0 1-4.242-4.242\" /> <path d=\"M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143\" /> <path d=\"m2 2 20 20\" />", "lock": "<rect width=\"18\" height=\"11\" x=\"3\" y=\"11\" rx=\"2\" ry=\"2\" /> <path d=\"M7 11V7a5 5 0 0 1 10 0v4\" />", "route": "<circle cx=\"6\" cy=\"19\" r=\"3\" /> <path d=\"M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15\" /> <circle cx=\"18\" cy=\"5\" r=\"3\" />", "history": "<path d=\"M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8\" /> <path d=\"M3 3v5h5\" /> <path d=\"M12 7v5l4 2\" />", "trophy": "<path d=\"M6 9H4.5a2.5 2.5 0 0 1 0-5H6\" /> <path d=\"M18 9h1.5a2.5 2.5 0 0 0 0-5H18\" /> <path d=\"M4 22h16\" /> <path d=\"M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22\" /> <path d=\"M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22\" /> <path d=\"M18 2H6v7a6 6 0 0 0 12 0V2Z\" />", "target": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <circle cx=\"12\" cy=\"12\" r=\"6\" /> <circle cx=\"12\" cy=\"12\" r=\"2\" />", "star": "<path d=\"M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z\" />", "search": "<circle cx=\"11\" cy=\"11\" r=\"8\" /> <path d=\"m21 21-4.3-4.3\" />", "settings": "<path d=\"M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" />", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4\" /> <path d=\"M12 2v2\" /> <path d=\"M12 20v2\" /> <path d=\"m4.93 4.93 1.41 1.41\" /> <path d=\"m17.66 17.66 1.41 1.41\" /> <path d=\"M2 12h2\" /> <path d=\"M20 12h2\" /> <path d=\"m6.34 17.66-1.41 1.41\" /> <path d=\"m19.07 4.93-1.41 1.41\" />", "moon": "<path d=\"M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z\" />", "image": "<rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" ry=\"2\" /> <circle cx=\"9\" cy=\"9\" r=\"2\" /> <path d=\"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\" />", "message-square": "<path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\" />", "flag": "<path d=\"M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z\" /> <line x1=\"4\" x2=\"4\" y1=\"22\" y2=\"15\" />", "hourglass": "<path d=\"M5 22h14\" /> <path d=\"M5 2h14\" /> <path d=\"M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22\" /> <path d=\"M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2\" />", "list-todo": "<rect x=\"3\" y=\"5\" width=\"6\" height=\"6\" rx=\"1\" /> <path d=\"m3 17 2 2 4-4\" /> <path d=\"M13 6h8\" /> <path d=\"M13 12h8\" /> <path d=\"M13 18h8\" />", "circle-check-big": "<path d=\"M21.801 10A10 10 0 1 1 17 3.335\" /> <path d=\"m9 11 3 3L22 4\" />", "hash": "<line x1=\"4\" x2=\"20\" y1=\"9\" y2=\"9\" /> <line x1=\"4\" x2=\"20\" y1=\"15\" y2=\"15\" /> <line x1=\"10\" x2=\"8\" y1=\"3\" y2=\"21\" /> <line x1=\"16\" x2=\"14\" y1=\"3\" y2=\"21\" />", "layers": "<path d=\"m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z\" /> <path d=\"m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65\" /> <path d=\"m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65\" />", "map": "<path d=\"M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z\" /> <path d=\"M15 5.764v15\" /> <path d=\"M9 3.236v15\" />", "presentation": "<path d=\"M2 3h20\" /> <path d=\"M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3\" /> <path d=\"m7 21 5-5 5 5\" />", "table": "<path d=\"M12 3v18\" /> <rect width=\"18\" height=\"18\" x=\"3\" y=\"3\" rx=\"2\" /> <path d=\"M3 9h18\" /> <path d=\"M3 15h18\" />", "badge-info": "<path d=\"M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z\" /> <line x1=\"12\" x2=\"12\" y1=\"16\" y2=\"12\" /> <line x1=\"12\" x2=\"12.01\" y1=\"8\" y2=\"8\" />", "user-check": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <polyline points=\"16 11 18 13 22 9\" />", "wand-sparkles": "<path d=\"m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72\" /> <path d=\"m14 7 3 3\" /> <path d=\"M5 6v4\" /> <path d=\"M19 14v4\" /> <path d=\"M10 2v2\" /> <path d=\"M7 8H3\" /> <path d=\"M21 16h-4\" /> <path d=\"M11 3H9\" />", "gauge": "<path d=\"m12 14 4-4\" /> <path d=\"M3.34 19a10 10 0 1 1 17.32 0\" />", "scan-search": "<path d=\"M3 7V5a2 2 0 0 1 2-2h2\" /> <path d=\"M17 3h2a2 2 0 0 1 2 2v2\" /> <path d=\"M21 17v2a2 2 0 0 1-2 2h-2\" /> <path d=\"M7 21H5a2 2 0 0 1-2-2v-2\" /> <circle cx=\"12\" cy=\"12\" r=\"3\" /> <path d=\"m16 16-1.9-1.9\" />", "circle-check": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <path d=\"m9 12 2 2 4-4\" />", "flask-conical": "<path d=\"M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2\" /> <path d=\"M8.5 2h7\" /> <path d=\"M7 16h10\" />", "wifi-off": "<path d=\"M12 20h.01\" /> <path d=\"M8.5 16.429a5 5 0 0 1 7 0\" /> <path d=\"M5 12.859a10 10 0 0 1 5.17-2.69\" /> <path d=\"M19 12.859a10 10 0 0 0-2.007-1.523\" /> <path d=\"M2 8.82a15 15 0 0 1 4.177-2.643\" /> <path d=\"M22 8.82a15 15 0 0 0-11.288-3.764\" /> <path d=\"m2 2 20 20\" />", "cloud-upload": "<path d=\"M12 13v8\" /> <path d=\"M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242\" /> <path d=\"m8 17 4-4 4 4\" />", "repeat": "<path d=\"m17 2 4 4-4 4\" /> <path d=\"M3 11v-1a4 4 0 0 1 4-4h14\" /> <path d=\"m7 22-4-4 4-4\" /> <path d=\"M21 13v1a4 4 0 0 1-4 4H3\" />", "file-down": "<path d=\"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z\" /> <path d=\"M14 2v4a2 2 0 0 0 2 2h4\" /> <path d=\"M12 18v-6\" /> <path d=\"m9 15 3 3 3-3\" />", "user-plus": "<path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\" /> <circle cx=\"9\" cy=\"7\" r=\"4\" /> <line x1=\"19\" x2=\"19\" y1=\"8\" y2=\"14\" /> <line x1=\"22\" x2=\"16\" y1=\"11\" y2=\"11\" />", "users-round": "<path d=\"M18 21a8 8 0 0 0-16 0\" /> <circle cx=\"10\" cy=\"8\" r=\"5\" /> <path d=\"M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3\" />", "circle-dot": "<circle cx=\"12\" cy=\"12\" r=\"10\" /> <circle cx=\"12\" cy=\"12\" r=\"1\" />", "circle": "<circle cx=\"12\" cy=\"12\" r=\"10\" />"};
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
-  const ICONE_ROTA = { painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '36';
+  const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
+  const VERSAO_SITE = '37';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -920,7 +954,7 @@ window.CHECKLISTS = {
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
-  const VERSAO_API_MIN = 36; // versão do Code.gs que este site espera
+  const VERSAO_API_MIN = 37; // versão do Code.gs que este site espera
   let avisouVersao = false;
   function avisoVersao() {
     if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
@@ -934,21 +968,22 @@ window.CHECKLISTS = {
   const NO_APPS_SCRIPT = !!(window.google && google.script && google.script.run);
   function chamarServidor(pacote, limiteMs) {
     return new Promise((resolve, reject) => {
-      const t = setTimeout(() => reject(new Error('O servidor demorou demais para responder. Tente de novo em instantes.')), limiteMs);
+      const erroRede = (msg) => { const e = new Error(msg); e.rede = true; return e; };
+      const t = setTimeout(() => reject(erroRede('O servidor demorou demais para responder. Tente de novo em instantes.')), limiteMs);
       const fim = (fn) => (x) => { clearTimeout(t); fn(x); };
       if (NO_APPS_SCRIPT) {
         google.script.run
           .withSuccessHandler(fim((txt) => { try { resolve(JSON.parse(txt)); } catch (e) { reject(new Error('Resposta inválida do servidor.')); } }))
-          .withFailureHandler(fim((e) => reject(new Error((e && e.message) || 'Erro no servidor.'))))
+          .withFailureHandler(fim((e) => { const msg = (e && e.message) || 'Erro no servidor.'; const er = new Error(msg); er.rede = !navigator.onLine || /network|rede|connection|http 0|failed to fetch/i.test(msg); reject(er); }))
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbxxwkfilbqu-CLt_X79jIpcUkeh3yt3s0rGoWEHdfJaRtk_EyXHsEO9OkpPIp0HYZDl/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
         .then(fim((txt) => { try { resolve(JSON.parse(txt)); } catch (e) { reject(new Error('Resposta inválida do servidor. Confira se API_URL termina em /exec e se a implantação está com acesso "Qualquer pessoa".')); } }))
-        .catch(fim(() => reject(new Error('Sem conexão com o servidor. Verifique a internet e tente de novo.'))));
+        .catch(fim(() => reject(erroRede('Sem conexão com o servidor. Verifique a internet e tente de novo.'))));
     });
   }
 
@@ -959,9 +994,9 @@ window.CHECKLISTS = {
     if (!data.ok) {
       if (data.erro === 'SESSAO') { salvarSessao(null); limparC(); rota('login'); throw new Error('Sua sessão expirou. Entre de novo.'); }
       if (data.erro === 'TROCAR_SENHA') { salvarSessao(Object.assign({}, state.sessao, { deveTrocar: true })); rota('primeiraSenha'); throw new Error('Crie sua senha para continuar.'); }
-      throw new Error(data.erro || 'Erro no servidor.');
+      const er = new Error(data.erro || 'Erro no servidor.'); er.servidor = true; throw er;
     }
-    if (!LEITURAS.includes(action) && action !== 'foto' && action !== 'login') limparC(); // gravou algo: dados guardados ficam velhos
+    if (!LEITURAS.includes(action) && action !== 'foto' && action !== 'login' && action !== 'salvarPdf') envelhecerC(); // gravou algo: dados guardados ficam velhos
     return data;
   }
 
@@ -987,6 +1022,11 @@ window.CHECKLISTS = {
   function limparC() {
     memoria.clear();
     try { Object.keys(sessionStorage).filter((k) => k.indexOf('ck_api_') === 0).forEach((k) => sessionStorage.removeItem(k)); } catch (e) {}
+  }
+  // depois de gravar: os dados guardados ficam "velhos" (são atualizados quando houver internet), mas continuam disponíveis sem sinal
+  function envelhecerC() {
+    idadeC.clear();
+    try { Object.keys(sessionStorage).filter((k) => k.indexOf('ck_api_') === 0 && /#t$/.test(k)).forEach((k) => sessionStorage.setItem(k, '0')); } catch (e) {}
   }
   // carrega uma tela: desenha o cache (se houver) e redesenha só se os dados mudarem
   async function carregarVista(action, dados, render, alvo = '#conteudo') {
@@ -1061,7 +1101,7 @@ window.CHECKLISTS = {
 
   /* ---------- rotas ---------- */
   const VIEWS = {};
-  const SO_QUALIDADE = ['painel', 'avaliacoes', 'cronograma', 'filiais', 'usuarios', 'formulario'];
+  const SO_QUALIDADE = ['painel', 'avaliacoes', 'cronograma', 'filiais', 'usuarios', 'formulario', 'teste'];
   function rota(nome, arg) {
     state.charts.forEach((c) => c.destroy()); state.charts = [];
     fecharModal();
@@ -1081,7 +1121,7 @@ window.CHECKLISTS = {
 
   function topo(ativo) {
     const q = ehQualidade();
-    const links = q ? [['painel', 'Painel'], ['avaliacoes', 'Avaliações'], ['cronograma', 'Cronograma'], ['inicio', 'Preencher'], ['formulario', 'Formulário'], ['filiais', 'Filiais'], ['usuarios', 'Usuários']]
+    const links = q ? [['painel', 'Painel'], ['avaliacoes', 'Avaliações'], ['cronograma', 'Cronograma'], ['inicio', 'Preencher'], ['formulario', 'Formulário'], ['filiais', 'Filiais'], ['usuarios', 'Usuários'], ['teste', 'Teste']]
       : ehGestor() ? [['resultados', 'Resultados']] : [['inicio', 'Minhas auditorias']];
     return `<header class="topo">
       <div class="marca">${MARCA}<div class="marca-texto"><strong>Checklist de limpeza</strong><small>REG-UTL-176</small></div></div>
@@ -1133,7 +1173,7 @@ window.CHECKLISTS = {
         if (r.trocarSenha) { rota('primeiraSenha'); return; }
         if (r.perfil === 'QUALIDADE') { btn.textContent = 'Carregando o painel…'; await aquecer(); }
         rota(r.perfil === 'QUALIDADE' ? 'painel' : r.perfil === 'GESTOR' ? 'resultados' : 'inicio');
-        talvezConvidarEmail();
+        talvezConvidarEmail(); setTimeout(() => processarFila(true), 1500);
       } catch (err) { clearTimeout(demora); $('#loginErro').textContent = err.message; btn.disabled = false; btn.innerHTML = 'Entrar ' + ic('arrow-right'); }
     });
   };
@@ -1221,7 +1261,7 @@ window.CHECKLISTS = {
         await api('trocarSenha', { novaSenha: nova });
         salvarSessao(Object.assign({}, state.sessao, { deveTrocar: false }));
         toast('Senha criada. Use-a nos próximos acessos.', 'ok');
-        rota(ehQualidade() ? 'painel' : ehGestor() ? 'resultados' : 'inicio'); aquecer(); talvezConvidarEmail();
+        rota(ehQualidade() ? 'painel' : ehGestor() ? 'resultados' : 'inicio'); aquecer(); talvezConvidarEmail(); setTimeout(() => processarFila(true), 1500);
       } catch (err) { $('#primErro').textContent = err.message; btn.disabled = false; btn.textContent = 'Salvar senha e entrar'; }
     });
   };
@@ -1251,7 +1291,7 @@ window.CHECKLISTS = {
           : a.finalizada ? '<span class="badge">Aguardando validação</span>'
           : `<span class="badge st-${a.situacao === 'atrasada' ? 'CANCELADO' : 'PLANEJADO'}">${SITUACAO[a.situacao] || STATUS[a.status]}</span>`;
         return `<button class="aud-card st-${a.finalizada ? 'REALIZADO' : a.status} ${a.situacao === 'atrasada' ? 'atrasada' : ''}" data-auditoria="${esc(a.id)}">
-          <span class="aud-ciclo">${ciclo(a)}</span>
+          <span class="aud-ciclo">${ciclo(a)}${a.teste ? ' <span class="badge-teste">TESTE</span>' : ''}</span>
           <strong>${esc(a.filial_nome)}</strong>
           <span class="aud-locais">${ic('map-pin')}${locaisAud(a).map(esc).join(' · ')}</span>
           ${prazoHTML(a)}
@@ -1296,8 +1336,14 @@ window.CHECKLISTS = {
             <strong>${esc(c.titulo)}</strong><small>${esc(cols.join(' · '))}</small>
             ${env ? `<span class="rodape-card"><em class="ok">Enviado</em>${idEnvio ? '<span class="ver">Ver respostas</span>' : ''}</span>` : r ? `<em>Rascunho de ${fmtData(r.salvoEm)}</em>` : ''}
           </${tag}>`; }).join('')}</div>`;
+      marcarFila(a.id);
     });
   };
+  async function marcarFila(cid) {
+    let itens = []; try { itens = (await fila.todos()).filter((i) => i.cid === cid); } catch (e) { return; }
+    itens.forEach((it) => { const b = $(`[data-abrir="${it.chave}"]`); if (!b) return;
+      b.removeAttribute('data-abrir'); b.classList.add('na-fila'); b.insertAdjacentHTML('beforeend', `<em class="fila">${ic(it.erro ? 'triangle-alert' : 'wifi-off')}${it.erro ? 'Recusado: ' + esc(it.erro) : 'Guardado no aparelho · será enviado quando a internet voltar'}</em>`); });
+  }
 
   function statusPrazo(a) {
     if (a.sem_checklists) return `<div class="aviso-hist">Esta auditoria foi feita antes do sistema e está registrada nas planilhas antigas. O resultado está disponível abaixo.</div>`;
@@ -1404,6 +1450,8 @@ window.CHECKLISTS = {
         <div class="meta">
           <label>Data da inspeção<input type="date" id="fData" value="${f.dataInspecao}" max="${hojeISO()}"></label>
           <label>Responsável pela inspeção<input value="${esc(state.sessao.nome)}" disabled></label>
+          <label class="acomp">Quem acompanhou a inspeção<input id="fAcomp" value="${esc(f.semAcompanhante ? '' : (f.acompanhante || ''))}" placeholder="Nome e função (ex.: João Silva · encarregado)" ${f.semAcompanhante ? 'disabled' : ''}>
+            <span class="check"><input type="checkbox" id="fSemAcomp" ${f.semAcompanhante ? 'checked' : ''}>Inspeção sem acompanhante</span></label>
         </div>
       </div>
       <div class="legenda">
@@ -1494,6 +1542,7 @@ window.CHECKLISTS = {
   function validar() {
     const f = state.form, ck = ckAtual();
     if (!f.dataInspecao) return { msg: 'Informe a data da inspeção.', alvo: '#fData' };
+    if (!f.semAcompanhante && !String(f.acompanhante || '').trim()) return { msg: 'Informe quem acompanhou a inspeção, ou marque "Inspeção sem acompanhante".', alvo: '#fAcomp' };
     const prefixos = {};
     for (const c of f.colunas) {
       if (ck.tipo === 'veiculo') {
@@ -1528,8 +1577,10 @@ window.CHECKLISTS = {
   async function enviarChecklist() {
     const erro = validar(); if (erro) return irParaErro(erro);
     const f = state.form, ck = ckAtual();
-    if (!await confirmar('Enviar checklist?', 'Depois do envio as respostas não podem ser alteradas.', 'Enviar checklist')) return;
-    const dados = { cronogramaId: f.cronogramaId, checklist: f.chave, dataInspecao: f.dataInspecao, obsGerais: f.obs,
+    if (!await confirmar('Enviar checklist?', 'Depois do envio as respostas não podem ser alteradas. Se estiver sem internet, o checklist fica guardado no aparelho e é enviado sozinho quando a conexão voltar.', 'Enviar checklist')) return;
+    if (!f.envioUid) { f.envioUid = 'E' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10) + '-' + (state.sessao.login || ''); salvarRascunho(); }
+    const dados = { cronogramaId: f.cronogramaId, checklist: f.chave, dataInspecao: f.dataInspecao, obsGerais: f.obs, envioUid: f.envioUid, feitoEm: hojeISO(),
+      acompanhante: f.semAcompanhante ? 'Sem acompanhante' : String(f.acompanhante || '').trim(),
       colunas: f.colunas.map((c) => ({ id: c.id, grupo: c.grupo, nome: c.nome.trim() })), respostas: [] };
     f.colunas.forEach((c) => ck.secoes.forEach((s, si) => s.itens.forEach((it, ii) => {
       const r = f.respostas[c.id][`${si}-${ii}`]; const precisa = exigeEvidencia(it.nome, r.nota, it);
@@ -1537,19 +1588,79 @@ window.CHECKLISTS = {
         descricao: it.outros ? (r.descricao || '') : '', nota: r.nota, justificativa: precisa ? r.justificativa.trim() : '',
         foto: precisa && r.foto ? { mime: 'image/jpeg', base64: r.foto.split(',')[1] } : null });
     })));
-    carregando('Enviando checklist e fotos…');
-    try {
-      await api('enviarChecklist', { dados });
-      localStorage.removeItem(chaveRascunho(f.cronogramaId, f.chave));
-      const cid = f.cronogramaId; state.form = null; carregando(); rota('enviado', { titulo: ck.titulo, cid });
-    } catch (e) { carregando(); toast(e.message, 'erro'); }
+    const cid = f.cronogramaId;
+    const item = { uid: f.envioUid, dados, titulo: ck.titulo, filial: f.filial, ciclo: f.ciclo, cid, chave: f.chave, criado: new Date().toISOString(), tentativas: 0 };
+    // 1º guarda no aparelho; só sai da fila quando o servidor confirmar o recebimento
+    try { await fila.guardar(item); } catch (e) { toast('Não foi possível guardar no aparelho: ' + e.message, 'erro'); return; }
+    localStorage.removeItem(chaveRascunho(cid, f.chave));
+    carregando(navigator.onLine === false ? 'Sem internet: guardando no aparelho…' : 'Enviando checklist e fotos…');
+    const r = await enviarDaFila(item);
+    carregando(); state.form = null; atualizarFaixaFila();
+    if (r === 'ok') rota('enviado', { titulo: ck.titulo, cid });
+    else if (r === 'rede') rota('enviado', { titulo: ck.titulo, cid, pendente: true });
+    else { rota('auditoria', cid); }
   }
 
+  /* ---------- FILA DE ENVIO NO APARELHO (sem internet) ----------
+     O checklist fica guardado no aparelho (IndexedDB) até o servidor confirmar o recebimento.
+     Cada envio tem um código único: se chegar duas vezes, o servidor guarda só uma. */
+  const fila = (() => {
+    const abrir = () => new Promise((res, rej) => { const r = indexedDB.open('checklist-limpeza', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('envios', { keyPath: 'uid' }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+    const op = async (modo, fn) => { const db = await abrir(); return new Promise((res, rej) => { const tx = db.transaction('envios', modo), st = tx.objectStore('envios'); const r = fn(st);
+      tx.oncomplete = () => res(r && r.result); tx.onerror = () => rej(tx.error); }); };
+    return { guardar: (it) => op('readwrite', (st) => st.put(it)), remover: (uid) => op('readwrite', (st) => st.delete(uid)), todos: () => op('readonly', (st) => st.getAll()) };
+  })();
+  let enviandoFila = false;
+  async function enviarDaFila(item) {
+    try {
+      const r = await api('enviarChecklist', { dados: item.dados });
+      await fila.remover(item.uid);
+      return 'ok';
+    } catch (e) {
+      if (e.rede) { item.tentativas = (item.tentativas || 0) + 1; item.ultimaTentativa = new Date().toISOString(); await fila.guardar(item).catch(() => {}); return 'rede'; }
+      // recusado pelo servidor (ex.: prazo encerrado): continua guardado e mostra o motivo
+      item.erro = e.message; await fila.guardar(item).catch(() => {}); toast(e.message, 'erro'); return 'erro';
+    }
+  }
+  async function processarFila(silencioso) {
+    if (enviandoFila || !state.sessao) return;
+    let itens = []; try { itens = await fila.todos(); } catch (e) { return; }
+    itens = itens.filter((i) => !i.erro);
+    if (!itens.length) { atualizarFaixaFila(); return; }
+    enviandoFila = true; let ok = 0;
+    for (const it of itens) { const r = await enviarDaFila(it); if (r === 'ok') ok++; if (r === 'rede') break; }
+    enviandoFila = false;
+    if (ok) { toast(ok === 1 ? 'Checklist guardado no aparelho foi enviado.' : ok + ' checklists guardados foram enviados.', 'ok'); envelhecerC(); if (['inicio', 'auditoria'].includes(state.rota)) rota(state.rota, state.rotaArg); }
+    else if (!silencioso) toast('Ainda sem conexão. O checklist continua guardado e será enviado assim que a internet voltar.', 'aviso');
+    atualizarFaixaFila();
+  }
+  new MutationObserver(() => { if (!$('#faixaFila') && state.sessao) atualizarFaixaFilaLeve(); }).observe(document.getElementById('app'), { childList: true });
+  let _ultimoFila = 0;
+  function atualizarFaixaFilaLeve() { const t = Date.now(); if (t - _ultimoFila < 1500) return; _ultimoFila = t; atualizarFaixaFila(); }
+  async function atualizarFaixaFila() {
+    let itens = []; try { itens = await fila.todos(); } catch (e) {}
+    let faixa = $('#faixaFila');
+    if (!itens.length) { if (faixa) faixa.remove(); return; }
+    if (!faixa) { faixa = document.createElement('div'); faixa.id = 'faixaFila'; document.body.appendChild(faixa); }
+    const comErro = itens.filter((i) => i.erro);
+    faixa.className = 'faixa-fila' + (comErro.length ? ' erro' : '');
+    faixa.innerHTML = `${ic(comErro.length ? 'triangle-alert' : 'wifi-off')}<div><b>${itens.length === 1 ? '1 checklist guardado no aparelho' : itens.length + ' checklists guardados no aparelho'}</b>
+      <span>${comErro.length ? esc(comErro[0].titulo + ': ' + comErro[0].erro) + ' Fale com a Qualidade.' : 'Será enviado sozinho quando a internet voltar. Não limpe os dados do navegador até lá.'}</span></div>
+      ${comErro.length ? `<button class="btn sec pequeno" data-acao="descartarFila">Descartar</button>` : `<button class="btn primario pequeno" data-acao="tentarFila">${ic('cloud-upload')} Tentar agora</button>`}`;
+  }
+  window.addEventListener('online', () => processarFila(true));
+  setInterval(() => { if (navigator.onLine !== false) processarFila(true); }, 60000);
+
   VIEWS.enviado = function (arg) {
-    app.innerHTML = topo('inicio') + `<main class="pagina enviado">
+    app.innerHTML = topo('inicio') + (arg.pendente ? `<main class="pagina enviado">
+      <div class="selo pendente" aria-hidden="true">${ic('wifi-off')}</div>
+      <h1>Guardado no aparelho</h1>
+      <p>Sem conexão agora. <b>${esc(arg.titulo)}</b> ficou guardado com segurança e será enviado sozinho quando a internet voltar, assim que o sistema estiver aberto.</p>
+      <p class="suave">Mantenha o sistema aberto ou abra de novo quando tiver sinal. Não limpe os dados do navegador até a faixa de “guardado no aparelho” sumir.</p>` : `<main class="pagina enviado">
       <div class="selo" aria-hidden="true">✓</div>
       <h1>Checklist enviado</h1>
-      <p>${esc(arg.titulo)} foi recebido pela Qualidade. O resultado será apresentado na reunião de avaliação.</p>
+      <p>${esc(arg.titulo)} foi recebido pela Qualidade. O resultado será apresentado na reunião de avaliação.</p>`) + `
       <button class="btn primario" data-auditoria="${esc(arg.cid)}">Voltar à auditoria</button>
     </main>`;
   };
@@ -1608,6 +1719,7 @@ window.CHECKLISTS = {
           <td class="num"><b>${fmt(f.final)}</b>${deltaHTML(f.final, f.anterior, d.semestreAnterior)}</td><td><button class="btn sec pequeno" data-ver-filial="${esc(f.id)}">Detalhar</button></td></tr>`).join('')}
       </tbody></table></div>
       ${d.historico && !d.avaliacoes.length ? '' : `<details class="mapa bloco" style="margin-top:1.25rem"><summary>Itens pontuados e evidências (${d.observacoes.length})</summary><div style="margin-top:1rem">${listaObservacoes(d.observacoes, true)}</div></details>`}`}
+      ${recorrentesHTML(d.recorrentesGeral, true)}
       ${d.acumuladoFiliais && d.acumuladoFiliais.length ? `<h2 class="titulo-sec">${ic('history')}Acumulado por filial</h2>
       <section class="bloco"><div class="rolagem"><table class="tab-acum"><thead><tr><th>Filial</th>${d.acumuladoFiliais.map((a) => `<th class="num">${esc(a.semestre.replace(' Semestre', ' Sem.'))}</th>`).join('')}</tr></thead><tbody>
         ${d.filiais.map((f) => `<tr><td>${esc(f.nome)}</td>${d.acumuladoFiliais.map((a) => `<td class="num">${fmt(a.finais[f.id])}</td>`).join('')}</tr>`).join('')}
@@ -1708,6 +1820,7 @@ window.CHECKLISTS = {
         : modoAvaliador === 'gestor'
         ? `<div class="painel-cab"><div>${(d.permitidas || []).length > 1 ? '<button class="link voltar" data-ver-filial="">Minhas filiais</button>' : ''}<span class="aud-ciclo">Resultado validado pela Qualidade</span><h1>${esc(f.nome)}</h1></div>${filtros(d)}</div>`
         : `<div class="painel-cab"><div><button class="link voltar" data-ver-filial="">Todas as filiais</button><h1>${esc(f.nome)}</h1></div>${filtros(d)}</div>${barraLiberacao(d)}`}
+      ${d.filial === 'teste' ? `<div class="faixa-teste">${ic('flask-conical')}<span><b>Ambiente de teste.</b> Estes dados não entram no painel, no resumo nem nas planilhas. <button class="link" data-rota="teste">Voltar ao teste</button></span></div>` : ''}
       ${rodadaHTML(d)}
       ${modoAvaliador === 'gestor' ? (d.historico ? '' : `<div class="barra-planilha apresentacao"><span class="barra-ic">${ic('presentation')}</span><div><strong>Apresentação do semestre</strong>
         <span class="suave">Baixe a apresentação com os resultados, o estratificado por local e as evidências.</span></div>
@@ -1717,7 +1830,7 @@ window.CHECKLISTS = {
         <span class="suave">${d.apresentacao ? `Última gerada em ${fmtData(d.apresentacao.atualizado_em)}. ` : ''}Monta um PowerPoint no modelo da apresentação de resultados, com gráficos, estratificado por local, evidências com fotos e plano de ação.</span></div>
         <div class="acoes-inline">${d.apresentacao ? `<a class="btn sec" href="${esc(d.apresentacao.url)}" target="_blank" rel="noopener">Abrir a última</a>` : ''}
         <button class="btn primario" data-acao="gerarApresentacao">${ic('presentation')} Gerar apresentação</button></div></div>
-      <div class="barra-planilha"><span class="barra-ic">${ic('sheet')}</span><div><strong>Planilha de resultado</strong>
+      <div class="barra-planilha" ${d.filial === 'teste' ? 'hidden' : ''}><span class="barra-ic">${ic('sheet')}</span><div><strong>Planilha de resultado</strong>
         <span class="suave">${d.planilha ? `Atualizada em ${fmtData(d.planilha.atualizado_em)}. Ela se atualiza sozinha até 10 minutos após cada envio.` : 'Gerada automaticamente até 10 minutos após o primeiro envio, no formato da Avaliação Limpeza.'}</span></div>
         <div class="acoes-inline">${d.planilha ? `<a class="btn sec" href="${esc(d.planilha.url)}" target="_blank" rel="noopener">${ic('external-link')} Abrir planilha</a>` : ''}
         <button class="btn sec" data-acao="gerarPlanilha">${d.planilha ? 'Atualizar agora' : 'Gerar agora'}</button></div></div>`}
@@ -1745,6 +1858,7 @@ window.CHECKLISTS = {
         ${cardSimples('Uniforme e higiene pessoal', r.uniforme, 'uniforme')}${cardSimples('Uso de EPIs', r.epi, 'epi')}</section>
       ${estratificadoHTML(d)}
       ${criticosHTML(d.estratificado && d.estratificado.itensCriticos)}
+      ${recorrentesHTML(d.recorrentes)}
       ${d.observacoes.length ? `<details class="mapa bloco" style="margin-top:1.5rem"><summary>Todas as evidências e motivos (${d.observacoes.length})</summary><div style="margin-top:1rem">${listaObservacoes(d.observacoes, false)}</div></details>` : ''}`}
       <h2 class="titulo-sec">${ic('history')}Acumulado</h2>
       <section class="bloco">${tabelaAcumulado(d)}<div class="grafico-linha"><canvas id="gAcum"></canvas></div></section>`;
@@ -2205,6 +2319,24 @@ window.CHECKLISTS = {
       logo(sl, false, W - 1.75, H - 0.7, 1.3);
     }
 
+    /* 7b. Itens recorrentes (se repetiram em rodadas seguidas) */
+    const recs = ((d.recorrentes && d.recorrentes.itens) || []).filter((it) => it.seguidas >= 2 || it.nivel === 'voltou').slice(0, 8);
+    if (recs.length) {
+      sl = pptx.addSlide(); sl.background = { color: C.claro };
+      ret(sl, 0, 0, W, 1.25, C.esc); bola(sl, W - 1.6, -0.7, 2.2, C.aqua, 80);
+      txt(sl, [{ text: 'Itens recorrentes', options: { fontSize: 28, bold: true, breakLine: true } }, { text: 'Regular ou Insatisfatório em rodadas seguidas · ponto de melhoria e atenção', options: { fontSize: 13, color: C.aqua } }], { x: 0.6, y: 0.22, w: 11, h: 0.95 });
+      const semsR = d.recorrentes.semestres, corNv = { critico: 'C8372D', atencao: 'E0A21B', voltou: 'E0A21B' };
+      const cabR = [{ text: 'Item', options: { bold: true, color: C.branco, fill: { color: C.teal } } }].concat(semsR.map((x) => ({ text: x.replace(' Semestre/', 'º/').replace('ºº', 'º'), options: { bold: true, color: C.branco, fill: { color: C.teal }, align: 'center' } })))
+        .concat([{ text: 'Seguidas', options: { bold: true, color: C.branco, fill: { color: C.esc }, align: 'center' } }, { text: 'Situação', options: { bold: true, color: C.branco, fill: { color: C.esc }, align: 'center' } }]);
+      const linhasR = [cabR].concat(recs.map((it) => [{ text: [{ text: it.item, options: { bold: true, breakLine: true } }, { text: nomeCk(it.checklist), options: { fontSize: 9, color: C.cinza } }] }]
+        .concat(it.historico.map((h) => ({ text: h.ocorreu ? '●' : '○', options: { align: 'center', fontSize: 16, color: h.ocorreu ? 'C8372D' : 'B0CAC4' } })))
+        .concat([{ text: String(it.seguidas), options: { align: 'center', bold: true } }, { text: (NIVEL_REC[it.nivel] || [''])[0], options: { align: 'center', bold: true, color: C.branco, fill: { color: corNv[it.nivel] || C.teal } } }])));
+      sl.addTable(linhasR, { x: 0.6, y: 1.6, w: W - 1.2, colW: [4.6].concat(Array(semsR.length).fill((W - 1.2 - 4.6 - 3.2) / semsR.length)).concat([1.4, 1.8]), fontFace: FT, fontSize: 12, color: C.tinta,
+        fill: { color: C.branco }, border: { type: 'solid', pt: 0.6, color: 'C8E0DD' }, rowH: 0.55, valign: 'middle' });
+      txt(sl, '● falhou na rodada   ○ sem falha', { x: 0.6, y: H - 0.9, w: 6, h: 0.4, fontSize: 11, color: C.cinza });
+      logo(sl, false, W - 1.75, H - 0.7, 1.3);
+    }
+
     /* 8. Acumulado */
     secao('Acumulado', 'Visão consolidada do período');
     const ac = (d.acumulado || []).filter((x) => x.final !== null && x.final !== undefined).slice(-4);
@@ -2369,6 +2501,178 @@ window.CHECKLISTS = {
     catch (err) { carregando(); toast(err.message, 'erro'); }
   }
 
+
+  /* ---------- PDF DO CHECKLIST PREENCHIDO ---------- */
+  async function gerarPdfChecklist(d) {
+    if (!d) return;
+    carregando('Montando o PDF…');
+    try {
+      await carregarScriptGen(['https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'], () => window.jspdf);
+      const { jsPDF } = window.jspdf;
+      const a = d.avaliacao, comNotas = d.liberado !== false, pdf = new jsPDF({ unit: 'mm', format: 'a4' });
+      const W = 210, H = 297, M = 14, CW = W - 2 * M;
+      const COR = { esc: [2, 61, 58], teal: [0, 161, 155], menta: [214, 240, 237], tinta: [19, 39, 42], suave: [90, 116, 112], linha: [202, 220, 215],
+        O: [30, 122, 76], B: [141, 170, 59], R: [224, 162, 27], I: [200, 55, 45], NA: [148, 163, 166] };
+      let y = 0;
+      const cabecalho = () => {
+        pdf.setFillColor(...COR.esc); pdf.rect(0, 0, W, 24, 'F'); pdf.setFillColor(...COR.teal); pdf.rect(0, 24, W, 1.4, 'F');
+        if (LOGO_BRANCA) { try { pdf.addImage(LOGO_BRANCA, 'PNG', M, 6.5, 32, 12.2); } catch (e) {} }
+        pdf.setTextColor(28, 207, 201); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(9); pdf.text('CHECKLIST DE LIMPEZA · REG-UTL-176', W - M, 11, { align: 'right' });
+        pdf.setTextColor(214, 240, 237); pdf.setFont('helvetica', 'normal'); pdf.text(`${a.filial_nome} · ${a.checklist_nome}`, W - M, 17, { align: 'right' });
+        y = 32;
+      };
+      const novaPagina = () => { pdf.addPage(); cabecalho(); };
+      const precisa = (h) => { if (y + h > H - 16) novaPagina(); };
+      cabecalho();
+      pdf.setTextColor(...COR.esc); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(17); pdf.text(`${a.filial_nome} · ${a.checklist_nome}`, M, y); y += 7;
+      pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9.5); pdf.setTextColor(...COR.suave); pdf.text(`Registro ${a.id}${a.filial_id === 'teste' ? ' · TESTE (não entra nos resultados)' : ''}`, M, y); y += 6;
+      // quadro de informações
+      const larguraInfo = comNotas ? CW - 46 : CW;
+      const info = [['Data da inspeção', fmtData(a.data_inspecao)], ['Avaliador', a.nome], ['Enviado em', fmtData(a.enviado_em)], ['Semestre', a.semestre || '—'],
+        ['Acompanhado por', a.acompanhante || '—', true], ['Veículos / locais', (a.colunas || []).map((c) => c.nome).join(', ') || '—', true]];
+      // posições: pares em duas colunas; os "largos" ocupam a linha inteira (até 2 linhas de texto)
+      let yy = y + 7, col = 0; const pos = [];
+      info.forEach(([rot, val, largo]) => {
+        if (largo) { if (col) { yy += 11; col = 0; } const l = pdf.setFontSize(10) && pdf.splitTextToSize(String(val), larguraInfo - 10).slice(0, 2); pos.push({ rot, l, x: M + 5, y: yy }); yy += 7 + l.length * 4.4; }
+        else { pos.push({ rot, l: [pdf.splitTextToSize(String(val), larguraInfo / 2 - 8)[0]], x: M + 5 + col * (larguraInfo / 2), y: yy }); if (col) yy += 11; col = col ? 0 : 1; }
+      });
+      const hInfo = Math.max(yy - y + (col ? 11 : 0) - 1, 36);
+      pdf.setFillColor(...COR.menta); pdf.roundedRect(M, y, larguraInfo, hInfo, 3, 3, 'F');
+      pos.forEach((q) => { pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7.5); pdf.setTextColor(...COR.suave); pdf.text(q.rot.toUpperCase(), q.x, q.y);
+        pdf.setFontSize(10); pdf.setTextColor(...COR.tinta); pdf.setFont('helvetica', 'bold'); pdf.text(q.l, q.x, q.y + 5); pdf.setFont('helvetica', 'normal'); });
+      if (comNotas && a.nota !== null && a.nota !== undefined) {
+        pdf.setFillColor(...COR.esc); pdf.roundedRect(W - M - 42, y, 42, hInfo, 3, 3, 'F');
+        pdf.setTextColor(159, 217, 211); pdf.setFontSize(8); pdf.text('NOTA DA ABA', W - M - 21, y + 9, { align: 'center' });
+        pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(22); pdf.text(fmt(a.nota), W - M - 21, y + 21, { align: 'center' });
+        pdf.setFontSize(8); pdf.setTextColor(28, 207, 201); pdf.text(`${fmt(a.positivo, 1)}% positivo`, W - M - 21, y + 28, { align: 'center' }); pdf.setFont('helvetica', 'normal');
+      }
+      y += hInfo + 6;
+      // contagens
+      const cont = (a.contagens && a.contagens.limpeza) || {};
+      const chips = ['O', 'B', 'R', 'I', 'NA'], cwid = (CW - 4 * 3) / 5;
+      chips.forEach((n, i) => { const x = M + i * (cwid + 3); pdf.setFillColor(...COR[n]); pdf.roundedRect(x, y, cwid, 12, 2.5, 2.5, 'F');
+        pdf.setTextColor(n === 'R' ? 19 : 255, n === 'R' ? 39 : 255, n === 'R' ? 42 : 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(12); pdf.text(String(cont[n] || 0), x + cwid / 2, y + 6, { align: 'center' });
+        pdf.setFont('helvetica', 'normal'); pdf.setFontSize(7); pdf.text(n === 'NA' ? 'Não aplicável' : NOMES[n], x + cwid / 2, y + 10, { align: 'center' }); });
+      y += 18;
+      // respostas: uma tabela por veículo/local
+      const colunas = (a.colunas && a.colunas.length) ? a.colunas : [...new Map(d.respostas.map((r) => [r.coluna_id, { id: r.coluna_id, nome: r.coluna, grupo: r.grupo }])).values()];
+      for (const c of colunas) {
+        const resp = d.respostas.filter((r) => String(r.coluna_id) === String(c.id));
+        precisa(16);
+        pdf.setFillColor(...COR.teal); pdf.roundedRect(M, y, CW, 8, 2, 2, 'F'); pdf.setTextColor(255, 255, 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10);
+        pdf.text(c.grupo && c.grupo !== c.nome ? `${c.grupo} · ${c.nome}` : String(c.nome), M + 3, y + 5.4); y += 10;
+        let secAtual = '';
+        for (const r of resp) {
+          if (r.secao !== secAtual) { secAtual = r.secao; precisa(7); pdf.setTextColor(...COR.esc); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8.5); pdf.text(String(secAtual).toUpperCase(), M + 1, y + 3.5); y += 5.5; }
+          const nomeItem = r.item + (r.descricao ? ` (${r.descricao})` : '');
+          const linhasItem = pdf.splitTextToSize(nomeItem, 88), linhasMot = r.justificativa ? pdf.splitTextToSize(r.justificativa, CW - 112) : [];
+          const h = Math.max(linhasItem.length, linhasMot.length, 1) * 4.2 + 2.6;
+          precisa(h);
+          pdf.setDrawColor(...COR.linha); pdf.line(M, y + h, M + CW, y + h);
+          pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8.8); pdf.setTextColor(...COR.tinta); pdf.text(linhasItem, M + 1, y + 4);
+          const cor = COR[r.nota] || COR.NA; pdf.setFillColor(...cor); pdf.roundedRect(M + 92, y + 1, 14, 5, 2.4, 2.4, 'F');
+          pdf.setTextColor(r.nota === 'R' ? 19 : 255, r.nota === 'R' ? 39 : 255, r.nota === 'R' ? 42 : 255); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(7.5); pdf.text(String(r.nota), M + 99, y + 4.6, { align: 'center' });
+          if (linhasMot.length) { pdf.setFont('helvetica', 'normal'); pdf.setFontSize(8.3); pdf.setTextColor(...COR.suave); pdf.text(linhasMot, M + 110, y + 4); }
+          y += h;
+        }
+        y += 4;
+      }
+      if (a.obs_gerais) { const l = pdf.splitTextToSize(a.obs_gerais, CW - 6); precisa(l.length * 4.5 + 12); pdf.setTextColor(...COR.esc); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(10); pdf.text('Observações gerais', M, y + 4); y += 7;
+        pdf.setFont('helvetica', 'normal'); pdf.setFontSize(9); pdf.setTextColor(...COR.tinta); pdf.text(l, M, y + 3); y += l.length * 4.5 + 4; }
+      // evidências com fotos
+      const evid = d.respostas.filter((r) => r.foto_id);
+      if (evid.length) {
+        const fw = (CW - 6) / 2, fh = fw * 0.72;
+        precisa(9 + fh + 16); pdf.setTextColor(...COR.esc); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(12); pdf.text('Evidências', M, y + 5); y += 9;
+        for (let i = 0; i < evid.length; i++) {
+          const r = evid[i], col = i % 2;
+          if (col === 0) precisa(fh + 16);
+          const x = M + col * (fw + 6);
+          try { const src = await fotoBase64(r.foto_id); pdf.addImage(src, src.indexOf('image/png') >= 0 ? 'PNG' : 'JPEG', x, y, fw, fh, undefined, 'FAST'); }
+          catch (e) { pdf.setFillColor(...COR.menta); pdf.rect(x, y, fw, fh, 'F'); pdf.setTextColor(...COR.suave); pdf.setFontSize(8); pdf.text('Foto indisponível', x + fw / 2, y + fh / 2, { align: 'center' }); }
+          pdf.setTextColor(...COR.tinta); pdf.setFont('helvetica', 'bold'); pdf.setFontSize(8.5); pdf.text(pdf.splitTextToSize(`${r.nota} · ${r.item} · ${r.coluna}`, fw)[0], x, y + fh + 4.5);
+          pdf.setFont('helvetica', 'normal'); pdf.setTextColor(...COR.suave); pdf.setFontSize(8); pdf.text(pdf.splitTextToSize(r.justificativa || '', fw).slice(0, 2), x, y + fh + 8.5);
+          if (col === 1 || i === evid.length - 1) y += fh + 15;
+        }
+      }
+      // rodapé em todas as páginas
+      const n = pdf.getNumberOfPages();
+      for (let i = 1; i <= n; i++) { pdf.setPage(i); pdf.setFontSize(7.5); pdf.setTextColor(...COR.suave);
+        pdf.text(`Gerado em ${new Date().toLocaleString('pt-BR')} · Checklist de Limpeza · Univale`, M, H - 8); pdf.text(`Página ${i} de ${n}`, W - M, H - 8, { align: 'right' }); }
+      const nome = `Checklist ${a.filial_nome} - ${a.checklist_nome} - ${fmtData(a.data_inspecao).replace(/\//g, '-')}`;
+      const blob = pdf.output('blob'), url = URL.createObjectURL(blob);
+      let salvo = null;
+      try { const b64 = pdf.output('datauristring').split(',')[1]; salvo = await api('salvarPdf', { id: a.id, nome, base64: b64 }); } catch (e) { salvo = { erro: e.message }; }
+      carregando();
+      modal(`<h2>${ic('file-text')} PDF pronto</h2><p>${esc(nome)}.pdf</p>
+        <p class="suave">Itens e notas de cada veículo/local, motivos, quem acompanhou a inspeção e as fotos das evidências.</p>
+        ${salvo && salvo.ok ? '<p class="aviso-hist">Uma cópia foi guardada no Drive, na pasta “Checklist de Limpeza - PDFs dos checklists”.</p>' : ''}
+        <div class="acoes"><a class="btn sec" href="${url}" download="${esc(nome)}.pdf">${ic('download')} Baixar PDF</a>
+          ${salvo && salvo.ok ? `<a class="btn primario" href="${esc(salvo.url)}" target="_blank" rel="noopener">${ic('external-link')} Abrir no Drive</a>` : `<a class="btn primario" href="${url}" target="_blank" rel="noopener">${ic('eye')} Abrir</a>`}</div>`);
+    } catch (e) { carregando(); toast(e.message, 'erro'); }
+  }
+  function carregarScriptGen(urls, pronto) {
+    return new Promise((resolve, reject) => {
+      const tentar = (i) => { if (pronto()) return resolve(); if (i >= urls.length) return reject(new Error('Não foi possível carregar o gerador de PDF. Verifique a internet.'));
+        const sc = document.createElement('script'); sc.src = urls[i]; sc.onload = () => resolve(); sc.onerror = () => { sc.remove(); tentar(i + 1); }; document.head.appendChild(sc); };
+      tentar(0);
+    });
+  }
+
+  /* ---------- ITENS RECORRENTES ---------- */
+  const NIVEL_REC = { critico: ['Crítico', 'i'], atencao: ['Atenção', 'r'], voltou: ['Voltou', 'r'], novo: ['Novo', 'b'], resolvido: ['Resolvido', 'o'] };
+  function recorrentesHTML(rec, geral) {
+    const itens = geral ? (rec || []) : ((rec && rec.itens) || []);
+    if (!itens.length) return '';
+    const sems = geral ? [] : rec.semestres;
+    const curto = (sx) => sx.replace(' Semestre/', 'º/').replace('ºº', 'º');
+    return `<h2 class="titulo-sec">${ic('repeat')}${geral ? 'Pontos de atenção recorrentes' : 'Itens recorrentes'}</h2>
+      <p class="suave" style="margin-top:-.4rem">Itens com Regular ou Insatisfatório que se repetem em rodadas seguidas. Crítico: 3 ou mais seguidas · Atenção: 2 seguidas · Voltou: reapareceu depois de uma rodada sem falha.</p>
+      <div class="rolagem"><table class="tab-lista tab-rec"><thead><tr>${geral ? '<th>Filial</th>' : ''}<th>Item</th><th>Rodadas</th><th class="num">Seguidas</th><th>Situação</th></tr></thead><tbody>
+      ${itens.map((it) => { const nv = NIVEL_REC[it.nivel] || ['', 'b']; return `<tr class="rec-${it.nivel}">${geral ? `<td><strong>${esc(it.filial_nome)}</strong></td>` : ''}<td><strong>${esc(it.item)}</strong><small>${esc(nomeCk(it.checklist))}</small></td>
+        <td><span class="linha-tempo">${it.historico.map((h) => `<i class="${h.ocorreu ? 'sim' : 'nao'}" title="${esc(h.semestre)}${h.ocorreu ? ': ' + esc(h.locais.join(', ')) : ': sem falha'}">${esc(curto(h.semestre))}</i>`).join('')}</span></td>
+        <td class="num"><b>${it.seguidas}</b></td><td><span class="badge nivel-${nv[1]}">${nv[0]}</span></td></tr>`; }).join('')}</tbody></table></div>`;
+  }
+
+  /* ---------- TESTE DA QUALIDADE (Matriz · Teste) ---------- */
+  VIEWS.teste = function () {
+    app.innerHTML = topo('teste') + `<main class="pagina"><div id="conteudo">${esqueleto()}</div></main>`;
+    api('testeStatus', {}).then((d) => { if ($('#conteudo')) renderTeste(d); }).catch((e) => { $('#conteudo').innerHTML = `<p class="erro-msg">${esc(e.message)}</p>`; });
+  };
+  function renderTeste(d) {
+    const el = $('#conteudo'), ativa = d.entradas.find((e) => e.status === 'PLANEJADO') || d.entradas[d.entradas.length - 1];
+    const passos = [['flask-conical', 'Criar', 'Cria a auditoria de teste para você, com prazo de 7 dias'], ['bell-ring', 'E-mail', 'Chega o aviso de “nova auditoria” (cadastre seu e-mail em Meu perfil)'],
+      ['smartphone', 'Preencher', 'Abra pelo celular, preencha e envie; teste também sem internet'], ['mail', 'Conferir', 'Chega o e-mail de checklist recebido'],
+      ['badge-check', 'Validar', 'Veja o resultado, valide e gere PDF e apresentação'], ['trash-2', 'Apagar', 'Limpe os dados de teste quando terminar']];
+    el.innerHTML = `<div class="painel-cab"><div><span class="aud-ciclo">${ic('flask-conical')} Só a Qualidade vê</span><h1>Ambiente de teste</h1>
+        <p class="suave">Uma filial fictícia, <b>Matriz · Teste</b>, para conferir o ciclo inteiro de verdade: e-mails, preenchimento, envio sem internet, validação, PDF e apresentação. Nada daqui entra no painel, no resumo, no cronograma ou nas planilhas de resultado.</p></div></div>
+      <ol class="passos-teste">${passos.map(([i, t, x], n) => `<li><span class="passo-ic">${ic(i)}</span><b>${n + 1}. ${t}</b><span>${x}</span></li>`).join('')}</ol>
+      <section class="bloco teste-acoes">${ativa ? `<div class="teste-status">
+          <div><span class="aud-ciclo">Auditoria de teste</span><h2 style="margin:.1rem 0">Matriz · Teste</h2>
+            <p class="suave">${esc(['Garagem Matriz'].concat(ativa.pontos).join(' · '))} · avaliador: ${esc(ativa.auditores.join(', '))} · prazo ${fmtData(ativa.prazo)}</p>
+            <p><span class="badge sit-${ativa.situacao}">${SITUACAO[ativa.situacao] || ativa.situacao}</span> ${ativa.enviados.length} de ${ativa.aplicaveis.length} checklists enviados ${ativa.liberado ? '· <b>resultado validado</b>' : ''}</p></div>
+          <div class="acoes-inline">${ativa.status === 'PLANEJADO' ? `<button class="btn primario" data-auditoria="${esc(ativa.id)}">${ic('pen-line')} Preencher</button>` : ''}
+            ${ativa.enviados.length ? `<button class="btn sec" data-acao="verTeste">${ic('chart-column')} Ver resultado e validar</button>` : ''}</div></div>`
+        : `<div class="teste-status"><div><h2 style="margin:0">Nenhuma auditoria de teste</h2><p class="suave">Crie uma para começar. Ela aparece também em <b>Preencher</b>, marcada como teste.</p></div>
+          <button class="btn primario" data-acao="criarTeste">${ic('flask-conical')} Criar auditoria de teste</button></div>`}
+        ${d.avaliacoes.length ? `<h3>Checklists de teste enviados</h3><div class="rolagem"><table class="tab-lista"><thead><tr><th>Checklist</th><th>Enviado por</th><th>Acompanhado por</th><th>Enviado em</th><th class="num">Nota</th><th></th></tr></thead><tbody>
+          ${d.avaliacoes.map((a) => `<tr><td>${esc(a.checklist_nome)}</td><td>${esc(a.nome)}</td><td>${esc(a.acompanhante || '—')}</td><td>${fmtData(a.enviado_em)}</td><td class="num"><b>${fmt(a.nota)}</b></td>
+            <td><button class="btn sec pequeno" data-detalhe="${esc(a.id)}">${ic('eye')} Abrir</button></td></tr>`).join('')}</tbody></table></div>` : ''}
+        ${d.entradas.length ? `<div class="teste-rodape"><span class="suave">${ativa && ativa.status !== 'PLANEJADO' ? 'Auditoria de teste concluída. Apague os dados para começar um novo teste.' : 'Quando terminar, apague os dados de teste.'}</span>
+          <button class="btn sec perigo-txt" data-acao="apagarTeste">${ic('trash-2')} Apagar dados de teste</button></div>` : ''}</section>`;
+  }
+  async function criarTeste() {
+    carregando('Criando a auditoria de teste…');
+    try { await api('testeCriar', {}); carregando(); limparC(); toast(state.sessao.email ? 'Auditoria de teste criada. Confira o e-mail de aviso.' : 'Auditoria de teste criada. Cadastre seu e-mail em Meu perfil para receber os avisos.', 'ok'); VIEWS.teste(); }
+    catch (e) { carregando(); toast(e.message, 'erro'); }
+  }
+  async function apagarTeste() {
+    if (!await confirmar('Apagar os dados de teste?', 'Remove a auditoria de teste, os checklists e as respostas da Matriz · Teste. As fotos de teste vão para a lixeira do Drive.', 'Apagar')) return;
+    carregando('Apagando…');
+    try { const r = await api('testeApagar', {}); carregando(); limparC(); toast(`Dados de teste apagados (${r.removidas} linhas).`, 'ok'); VIEWS.teste(); }
+    catch (e) { carregando(); toast(e.message, 'erro'); }
+  }
+
   /* ---------- AVALIAÇÕES ---------- */
   VIEWS.avaliacoes = function () {
     app.innerHTML = topo('avaliacoes') + `<main class="pagina"><div id="conteudo">${esqueleto()}</div></main>`;
@@ -2400,7 +2704,7 @@ window.CHECKLISTS = {
       const acaoDet = ehQualidade() ? 'detalhe' : 'meuEnvio';
       const kd = chaveC(acaoDet, { id }); let d = lerC(kd);
       if (!d) { d = await api(acaoDet, { id }); gravarC(kd, d); }
-      const a = d.avaliacao, comNotas = d.liberado !== false;
+      const a = d.avaliacao, comNotas = d.liberado !== false; state.detalheAtual = d;
       const colunas = a.colunas.length ? a.colunas : [...new Map(d.respostas.map((r) => [r.coluna_id, { id: r.coluna_id, nome: r.coluna, grupo: r.grupo }])).values()];
       const secoes = [...new Set(d.respostas.map((r) => r.secao))];
       const mapa = {}; d.respostas.forEach((r) => { mapa[`${r.coluna_id}|${r.secao}|${r.item}`] = r; });
@@ -2411,7 +2715,9 @@ window.CHECKLISTS = {
       const evid = d.respostas.filter((r) => r.justificativa || r.nota === 'R' || r.nota === 'I');
 
       corpo.innerHTML = `<div class="det-cab"><div>${ehQualidade() ? '' : '<span class="aud-ciclo">Seu preenchimento</span>'}<h2>${esc(a.filial_nome)} · ${esc(a.checklist_nome)}</h2>
-          <p class="suave">Inspeção ${fmtData(a.data_inspecao)} · ${esc(a.nome)} · enviado ${fmtData(a.enviado_em)} · ${esc(a.id)}</p></div>
+          <p class="suave">Inspeção ${fmtData(a.data_inspecao)} · ${esc(a.nome)} · enviado ${fmtData(a.enviado_em)} · ${esc(a.id)}</p>
+          ${a.acompanhante ? `<p class="acomp-det">${ic('users-round')}Acompanhado por <b>${esc(a.acompanhante)}</b></p>` : ''}
+          <button class="btn sec pequeno" data-acao="baixarPdf">${ic('file-down')} Baixar PDF</button></div>
           ${comNotas ? `<div class="det-nota"><small>Nota da aba</small><strong>${fmt(a.nota)}</strong></div>` : ''}</div>
         ${comNotas ? '' : '<p class="aviso-hist">Estas são as respostas que você enviou. As notas e porcentagens aparecem depois que a Qualidade validar o resultado.</p>'}
         <div class="det-resumo ${comNotas ? '' : 'oculto'}"><div class="donut pequeno"><canvas id="gDet"></canvas><div class="donut-centro"><strong>${fmt(a.positivo, 1)}%</strong><small>positivo</small></div></div>
@@ -2812,7 +3118,7 @@ window.CHECKLISTS = {
       inp.type = ver ? 'text' : 'password'; b.textContent = ver ? 'Ocultar' : 'Mostrar'; b.setAttribute('aria-label', ver ? 'Ocultar senha' : 'Mostrar senha');
       return;
     }
-    if (el('[data-rota]')) { rota(el('[data-rota]').dataset.rota); return; }
+    if (el('[data-rota]')) { const r = el('[data-rota]').dataset.rota; if (r === 'painel' && state.filial === 'teste' && el('.nav-link')) state.filial = ''; rota(r); return; }
     if (el('[data-auditoria]')) { rota('auditoria', el('[data-auditoria]').dataset.auditoria); return; }
     if (el('[data-abrir]')) { abrirForm(state.rotaArg, el('[data-abrir]').dataset.abrir); return; }
     if (el('[data-detalhe]')) { abrirDetalhe(el('[data-detalhe]').dataset.detalhe); return; }
@@ -2839,6 +3145,12 @@ window.CHECKLISTS = {
     if (acao === 'sair') { api('logout').catch(() => {}); limparC(); salvarSessao(null); rota('login'); return; }
     if (acao === 'senha') { fecharModal(); modalSenha(); return; }
     if (acao === 'perfil') { modalPerfil(!state.sessao.email); return; }
+    if (acao === 'tentarFila') { processarFila(false); return; }
+    if (acao === 'descartarFila') { if (await confirmar('Descartar o checklist guardado?', 'Ele foi recusado pelo servidor e será apagado deste aparelho.', 'Descartar')) { const it = (await fila.todos()).find((i) => i.erro); if (it) { await fila.remover(it.uid); localStorage.setItem(chaveRascunho(it.cid, it.chave), JSON.stringify({ descartado: true })); localStorage.removeItem(chaveRascunho(it.cid, it.chave)); } atualizarFaixaFila(); } return; }
+    if (acao === 'baixarPdf') { gerarPdfChecklist(state.detalheAtual); return; }
+    if (acao === 'criarTeste') { criarTeste(); return; }
+    if (acao === 'apagarTeste') { apagarTeste(); return; }
+    if (acao === 'verTeste') { state.filial = 'teste'; state.semestre = null; rota('painel'); return; }
     if (acao === 'fecharModal') { fecharModal(); return; }
     if (acao === 'recarregar') { rota(state.rota, state.rotaArg); return; }
     if (acao === 'sugerir') { modalSugerir(); return; }
@@ -2896,6 +3208,7 @@ window.CHECKLISTS = {
     item.classList.remove('erro'); salvarRascunho();
   });
 
+  document.addEventListener('input', (e) => { if (e.target.id === 'fAcomp' && state.form) { state.form.acompanhante = e.target.value; salvarRascunho(); } });
   document.addEventListener('change', async (e) => {
     const t = e.target;
     if (t.id === 'selSem') { state.semestre = t.value; rota(state.rota); return; }
@@ -2903,6 +3216,7 @@ window.CHECKLISTS = {
     if (t.id === 'selAno') { state.anoCrono = Number(t.value); renderCronograma(); return; }
     if (state.rota !== 'form' || !state.form) return;
     if (t.id === 'fData') { state.form.dataInspecao = t.value; salvarRascunho(); return; }
+    if (t.id === 'fSemAcomp') { state.form.semAcompanhante = t.checked; const i = $('#fAcomp'); if (i) { i.disabled = t.checked; if (t.checked) i.value = ''; } salvarRascunho(); return; }
     if (t.dataset.campo === 'foto' && t.files && t.files[0]) {
       const item = t.closest('.item'); const r = state.form.respostas[item.dataset.col][item.dataset.key];
       try { carregando('Preparando foto…'); r.foto = await comprimirFoto(t.files[0]); carregando(); atualizarItem(item.dataset.col, item.dataset.key); renderAbas(); salvarRascunho(); }
