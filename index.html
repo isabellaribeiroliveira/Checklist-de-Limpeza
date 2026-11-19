@@ -889,7 +889,7 @@ main { overflow-wrap: break-word; }
 </head>
 <body>
   <!-- ==========================================================================
-       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 43)
+       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 44)
        Só para o GitHub Pages: cole abaixo, entre as aspas, o link da implantação do Apps Script (termina em /exec).
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
@@ -1050,7 +1050,7 @@ window.CHECKLISTS = {
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
   const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '43';
+  const VERSAO_SITE = '44';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -1162,7 +1162,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbw2RrPlwAS9RwGxhUeLwEcP8viQIROXUKG-qDs7fJyTA4lF4DLEh0WwuY1GMfABNBeS/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -1173,7 +1173,7 @@ window.CHECKLISTS = {
 
   async function api(action, dados = {}) {
     const pacote = Object.assign({ action, token: state.sessao && state.sessao.token }, dados);
-    const data = await chamarServidor(pacote, action === 'enviarChecklist' ? 180000 : (action === 'login' || action === 'ping' ? 240000 : 90000));
+    const data = await chamarServidor(pacote, ['enviarChecklist', 'salvarApresentacao', 'salvarPdf', 'baixarApresentacao'].includes(action) ? 180000 : (action === 'login' || action === 'ping' ? 240000 : 90000));
     if ((data.v || 0) < VERSAO_API_MIN) avisoVersao();
     if (!data.ok) {
       if (data.erro === 'SESSAO') { salvarSessao(null); limparC(); rota('login'); throw new Error('Sua sessão expirou. Entre de novo.'); }
@@ -1185,7 +1185,8 @@ window.CHECKLISTS = {
   }
 
   /* ---------- cache local: telas abrem na hora com os últimos dados e atualizam em segundo plano ---------- */
-  const LEITURAS = ['painel', 'cronograma', 'minhasAuditorias', 'listarFiliais', 'listarUsuarios', 'detalhe', 'meuEnvio', 'meuResultado'];
+  const LEITURAS = ['painel', 'cronograma', 'minhasAuditorias', 'listarFiliais', 'listarUsuarios', 'detalhe', 'meuEnvio', 'meuResultado',
+    'pacote', 'painelGestor', 'formulario', 'testeStatus', 'fotosApresentacao', 'meuPerfil', 'baixarApresentacao', 'ping', 'configEmail'];
   const memoria = new Map();
   const chaveC = (action, dados) => 'ck_api_' + (state.sessao ? state.sessao.login : '') + '_' + action + '_' + JSON.stringify(dados || {});
   function lerC(k) {
@@ -1356,7 +1357,7 @@ window.CHECKLISTS = {
         limparC();
         salvarSessao({ token: r.token, login: r.login, nome: r.nome, perfil: r.perfil, deveTrocar: !!r.trocarSenha, filiais: r.filiais || [], email: r.email || '', notificar: r.notificar !== false });
         if (r.trocarSenha) { rota('primeiraSenha'); return; }
-        if (r.perfil === 'QUALIDADE') { btn.textContent = 'Carregando o painel…'; await aquecer(); }
+
         rota(r.perfil === 'QUALIDADE' ? 'painel' : r.perfil === 'GESTOR' ? 'resultados' : 'inicio');
         talvezConvidarEmail(); setTimeout(() => processarFila(true), 1500);
       } catch (err) { clearTimeout(demora); $('#loginErro').textContent = err.message; btn.disabled = false; btn.innerHTML = 'Entrar ' + ic('arrow-right'); }
@@ -1908,6 +1909,7 @@ window.CHECKLISTS = {
       if (!$('#conteudo')) return;
       state.semestre = d.semestre; limparGraficos();
       d.filial ? renderPainelFilial(d) : renderPainelGeral(d);
+      if (!state.aquecido) { state.aquecido = true; setTimeout(() => aquecer(), 300); } // o restante vem em segundo plano
     });
   };
 
@@ -2045,10 +2047,16 @@ window.CHECKLISTS = {
         ${a && !(of && of.igualRascunho) ? `<button class="btn primario" data-acao="publicarApresentacao">${ic('send')} Publicar para gestores</button>` : ''}
         ${of ? `<button class="btn sec" data-acao="baixarOficial">${ic('download')} Baixar oficial</button>` : ''}</div></div>`;
   }
+  function atualizarQuadroApresentacao(d) {
+    const q = $('.barra-planilha.apresentacao'); if (q && ehQualidade()) q.outerHTML = barraApresentacaoQualidade(d);
+    try { gravarC(chaveC('painel', { semestre: d.semestre, filial: d.filial }), d); } catch (e) {}
+  }
   async function publicarApresentacao(d) {
     if (!await confirmar('Publicar para os gestores?', 'Os gestores da filial passam a baixar esta versão (com os ajustes que você fez no Drive). Você pode gerar e publicar de novo quando quiser.', 'Publicar')) return;
     carregando('Publicando…');
-    try { await api('publicarApresentacao', { filial: d.filial, semestre: d.semestre }); carregando(); toast('Apresentação publicada para os gestores.', 'ok'); rota(state.rota, state.rotaArg); }
+    try { const r = await api('publicarApresentacao', { filial: d.filial, semestre: d.semestre }); carregando();
+      d.apresentacao = Object.assign({}, d.apresentacao, { oficial: { url: r.url, publicada_em: new Date().toISOString().slice(0, 16).replace('T', ' '), publicada_por: state.sessao.nome, igualRascunho: true } });
+      atualizarQuadroApresentacao(d); toast('Apresentação publicada para os gestores.', 'ok'); }
     catch (e) { carregando(); toast(e.message, 'erro'); }
   }
   async function baixarOficial(d) {
@@ -2483,12 +2491,24 @@ window.CHECKLISTS = {
     const titulo2 = (sl, a, b, x, y, w, corB) => txt(sl, [{ text: a, options: { fontSize: 34, color: C.branco, breakLine: true } }, { text: b, options: { fontSize: 30, bold: true, color: corB || C.esc } }], { x, y, w, h: 1.6 });
 
     // fotos da apresentação da Qualidade (ônibus e frota), guardadas no servidor
-    let FOTO = {}; try { FOTO = (await api('fotosApresentacao', {})).fotos || {}; } catch (e) { FOTO = {}; }
+    // fotos da apresentação: buscadas uma vez por sessão
+    let FOTO = state.fotosApres || {};
+    if (!FOTO.onibus) { try { FOTO = (await api('fotosApresentacao', {})).fotos || {}; if (FOTO.onibus) state.fotosApres = FOTO; } catch (e) { FOTO = {}; } }
     if (!FOTO.onibus && !NO_APPS_SCRIPT) { // reserva: arquivos na pasta "fotos" ao lado do index.html no GitHub
       const paraData = async (url) => { const r = await fetch(url); if (!r.ok) throw new Error(); const b = await r.blob(); return await new Promise((ok) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); }); };
       for (const [k, arq] of [['onibus', 'fotos/onibus.jpg'], ['onibusRecorte', 'fotos/onibus-recorte.png'], ['frota', 'fotos/frota.jpg']]) { try { FOTO[k] = await paraData(arq); } catch (e) {} }
     }
     state.fotosFaltando = !FOTO.onibus;
+    // a foto de fundo se repete em vários slides: versão menor para o arquivo não pesar
+    const reduzir = (src, larg, q) => new Promise((ok) => { if (!src) return ok(src); const im = new Image(); im.onload = () => { const k = Math.min(1, larg / im.width), cv = document.createElement('canvas');
+      cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); ok(cv.toDataURL('image/jpeg', q)); }; im.onerror = () => ok(src); im.src = src; });
+    const fundoLeve = FOTO.onibus ? (state.fundoLeve || (state.fundoLeve = await reduzir(FOTO.onibus, 960, 0.55))) : '';
+    // fotos das evidências: busca várias ao mesmo tempo antes de montar os slides
+    const idsFotos = [...new Set((est.itensCriticos || []).flatMap((it) => it.fotos || []))].filter((id) => !state.fotos.has(id));
+    let feitas = 0;
+    const fila = idsFotos.slice();
+    await Promise.all([0, 1, 2, 3].map(async () => { while (fila.length) { const id = fila.shift(); try { await fotoBase64(id); } catch (e) {} feitas++; carregando(`Buscando as fotos das evidências (${feitas}/${idsFotos.length})…`); } }));
+    carregando('Montando os slides…');
     const fundoFoto = (s2, src, cor, transp) => { if (!src) return; s2.addImage({ data: src, x: 0, y: 0, w: W, h: H, sizing: { type: 'cover', w: W, h: H } });
       s2.addShape(S.rect, { x: 0, y: 0, w: W, h: H, fill: { color: cor, transparency: transp }, line: { color: cor, transparency: 100 } }); };
 
@@ -2507,7 +2527,7 @@ window.CHECKLISTS = {
     logo(sl, true, W - 1.75, H - 0.6, 1.35);
 
     /* 2. Avaliador, locais e período */
-    sl = pptx.addSlide(); sl.background = { color: C.teal }; fundoFoto(sl, FOTO.onibus, C.teal, 14);
+    sl = pptx.addSlide(); sl.background = { color: C.teal }; fundoFoto(sl, fundoLeve, C.teal, 14);
     bola(sl, -1.4, -1.4, 4.4, C.esc, 80); bola(sl, 10.4, 4.4, 4.2, C.aqua, 70);
     const quem = (ro.avaliadores && ro.avaliadores.length ? ro.avaliadores : ro.enviaram) || [];
     const bloco = (x, y, rot, val, sub) => {
@@ -2751,7 +2771,7 @@ window.CHECKLISTS = {
       : [{ t: `Apresentar os resultados do ${semLongo.replace(' • ', ' de ')} aos colaboradores de Serviços Gerais da filial ${f.nome}, destacando as observações pontuadas e os cuidados com estes itens durante a limpeza veicular e predial.`, r: '', p: '' }]
         .concat(est.itensCriticos.slice(0, 5).map((it) => ({ t: `Tratar "${it.item}" em ${listaBR(it.locais)}${it.motivos[0] ? ': ' + it.motivos[0].replace(/\.$/, '') : ''}. (Evidenciar com foto.)`, r: '', p: '' })));
     for (let i = 0; i < acoes.length; i += 4) {
-      sl = pptx.addSlide(); sl.background = { color: C.teal }; fundoFoto(sl, FOTO.onibus, C.teal, 10);
+      sl = pptx.addSlide(); sl.background = { color: C.teal }; fundoFoto(sl, fundoLeve, C.teal, 10);
       bola(sl, -1.2, 5.2, 3.4, C.esc, 80); bola(sl, 11.4, -1.0, 3.0, C.aqua, 75);
       txt(sl, `Plano de Ação • ${m ? m[1] + 'º Semestre' : sem}`, { x: 0, y: 0.35, w: W, h: 0.7, fontSize: 30, align: 'center' });
       if (ro.fluig) txt(sl, `Item de controle no Fluig nº ${ro.fluig}`, { x: 0, y: 0.98, w: W, h: 0.35, fontSize: 14, align: 'center', bold: true, color: C.esc });
@@ -2767,7 +2787,7 @@ window.CHECKLISTS = {
 
     /* 10. Encerramento */
     sl = pptx.addSlide(); sl.background = { color: C.esc };
-    if (FOTO.frota) fundoFoto(sl, FOTO.frota, C.esc, 28); else { bola(sl, -2, -2.2, 6, C.teal, 75); bola(sl, 9.8, 3.4, 5.2, C.aqua, 85); }
+    if (FOTO.frota) fundoFoto(sl, await reduzir(FOTO.frota, 1280, 0.62), C.esc, 28); else { bola(sl, -2, -2.2, 6, C.teal, 75); bola(sl, 9.8, 3.4, 5.2, C.aqua, 85); }
     logo(sl, true, W / 2 - 2.3, 1.55, 4.6);
     txt(sl, '“Se importa a gente transporta”', { x: 0, y: 3.65, w: W, h: 0.7, fontSize: 28, align: 'center', color: C.aqua, italic: true });
     txt(sl, 'Matriz: Coronel Fabriciano – MG\nFiliais: Ipatinga / Santa Bárbara / Mariana / Itaúna – MG · Dias D’Ávila / Camaçari / Salvador – BA · Vitória – ES\nTelefone: (31) 3865-1600',
@@ -2782,13 +2802,17 @@ window.CHECKLISTS = {
     carregando('Carregando o gerador…');
     try {
       await carregarScript(['https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js', 'https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js', 'https://unpkg.com/pptxgenjs@3.12.0/dist/pptxgen.bundle.js']);
-      carregando('Montando os slides e buscando as fotos…');
+      carregando('Preparando as fotos…');
       const pptx = await montarPptx(d);
-      carregando('Salvando a apresentação no Drive…');
+      carregando('Guardando a apresentação no Drive (pode levar alguns segundos)…');
       const base64 = await pptx.write({ outputType: 'base64' });
       let salvo = null;
       if (ehQualidade()) { try { salvo = await api('salvarApresentacao', { filial: d.filial, semestre: d.semestre, nome, base64 }); } catch (e) { salvo = { erro: e.message }; } }
-      if (salvo && salvo.ok) { limparC(); rota(state.rota, state.rotaArg); await new Promise((ok) => setTimeout(ok, 900)); } // atualiza o quadro (rascunho → publicar)
+      if (salvo && salvo.ok) { // atualiza só o quadro da apresentação (rascunho → publicar), sem recarregar o painel
+        const ofAnt = d.apresentacao && d.apresentacao.oficial;
+        d.apresentacao = { url: salvo.url, atualizado_em: new Date().toISOString().slice(0, 16).replace('T', ' '), por: state.sessao.nome, oficial: ofAnt ? Object.assign({}, ofAnt, { igualRascunho: false }) : null };
+        atualizarQuadroApresentacao(d);
+      }
       carregando();
       const blobUrl = URL.createObjectURL(new Blob([Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0))], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' }));
       modal(`<h2>Apresentação pronta</h2><p>${esc(nome)}.pptx</p>
@@ -3704,7 +3728,8 @@ window.CHECKLISTS = {
   // pré-carrega as telas mais usadas para a navegação ficar instantânea
   // Qualidade: uma única consulta traz painel geral, painel de cada filial, cronograma, filiais e auditorias
   async function aquecer() {
-    if (!state.sessao || state.sessao.deveTrocar) return;
+    if (!state.sessao || state.sessao.deveTrocar || state.aquecendo) return;
+    state.aquecendo = true; setTimeout(() => { state.aquecendo = false; }, 60000);
     carregarFormulario();
     if (!ehQualidade()) return;
     try {
