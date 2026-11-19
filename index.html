@@ -885,11 +885,24 @@ main { overflow-wrap: break-word; }
 .prorr-linha small { display: block; color: var(--suave); font-size: .8rem; }
 @media (max-width: 560px) { .prorr-linha { grid-template-columns: auto 1fr; } .prorr-linha input[type=date] { grid-column: 1 / -1; } }
 
+/* ============ v45 · observações da rodada ============ */
+.obs-lista { display: grid; gap: 1rem; }
+.obs-card { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 1rem; background: var(--superficie); border: 1px solid var(--linha); border-radius: var(--raio); padding: 1rem; box-shadow: var(--sombra); }
+.obs-texto h3 { margin: .1rem 0 .4rem; font: 700 1.25rem var(--fonte-titulo); color: var(--escuro); }
+.obs-texto p { margin: .3rem 0; font-size: .93rem; line-height: 1.4; }
+.obs-fotos { display: grid; gap: .4rem; background: var(--menta); border-radius: 14px; padding: .5rem; }
+.obs-fotos.n1 { grid-template-columns: 1fr; } .obs-fotos.n2 { grid-template-columns: 1fr 1fr; }
+.obs-fotos.n3 { grid-template-columns: 1.2fr 1fr; grid-template-rows: 1fr 1fr; } .obs-fotos.n3 > :first-child { grid-row: 1 / 3; }
+.obs-fotos.n4 { grid-template-columns: 1fr 1fr; grid-auto-flow: column; grid-template-rows: 1fr 1fr; }
+.obs-fotos .foto-lazy { min-height: 120px; border-radius: 10px; overflow: hidden; padding: 0; }
+.obs-fotos .foto-lazy img, .obs-fotos .foto-abrir img { width: 100%; height: 100%; object-fit: cover; min-height: 120px; }
+@media (max-width: 760px) { .obs-card { grid-template-columns: 1fr; } }
+
   </style>
 </head>
 <body>
   <!-- ==========================================================================
-       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 44)
+       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 45)
        Só para o GitHub Pages: cole abaixo, entre as aspas, o link da implantação do Apps Script (termina em /exec).
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
@@ -1050,7 +1063,7 @@ window.CHECKLISTS = {
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
   const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '44';
+  const VERSAO_SITE = '45';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -1138,7 +1151,7 @@ window.CHECKLISTS = {
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
-  const VERSAO_API_MIN = 43; // versão do Code.gs que este site espera
+  const VERSAO_API_MIN = 44; // versão do Code.gs que este site espera
   let avisouVersao = false;
   function avisoVersao() {
     if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
@@ -1162,7 +1175,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbw2RrPlwAS9RwGxhUeLwEcP8viQIROXUKG-qDs7fJyTA4lF4DLEh0WwuY1GMfABNBeS/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -1372,7 +1385,7 @@ window.CHECKLISTS = {
       <div class="acoes" style="justify-content:flex-start"><button class="btn sec" data-acao="refazerDiag">Testar de novo</button><button class="btn primario" data-rota="login">Voltar ao site</button></div></main>`;
     const itens = [linha(true, 'Site carregado', `Versão do site ${VERSAO_SITE} · ${NO_APPS_SCRIPT ? 'aberto pelo link do Apps Script' : 'aberto fora do Apps Script (GitHub)'}`)];
     if (!NO_APPS_SCRIPT) {
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbw2RrPlwAS9RwGxhUeLwEcP8viQIROXUKG-qDs7fJyTA4lF4DLEh0WwuY1GMfABNBeS/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) itens.push(linha(false, 'API_URL vazia', 'Fora do Apps Script, preencha API_URL no topo do index.html com o link da implantação (termina em /exec). Ou simplesmente use o link do Apps Script.'));
       else if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) itens.push(linha(false, 'API_URL parece errada', `Está assim: <code>${esc(url)}</code>. Ela deve terminar em <b>/exec</b>.`));
       else itens.push(linha(true, 'API_URL configurada', `<code>${esc(url)}</code>`));
@@ -1387,7 +1400,7 @@ window.CHECKLISTS = {
       if (d.planilha) itens.push(linha(true, 'Planilha de dados conectada', Object.keys(d.abas || {}).map((k) => `${esc(k)}: ${d.abas[k] === null ? '<b>falta</b>' : d.abas[k]}`).join(' · ')));
       else itens.push(linha(false, 'Planilha de dados não conectada', 'O Apps Script precisa ser criado pela planilha: Extensões › Apps Script.'));
       (d.avisos || []).forEach((a) => itens.push(linha(false, esc(a))));
-      itens.push(d.evidencias ? linha(true, `Fotos de evidência do 1º semestre: ${d.evidencias}`, 'Do arquivo Evidencias.gs (fotos tiradas das apresentações).') : linha(null, 'Fotos de evidência do 1º semestre não instaladas', 'Opcional: crie no Apps Script o script Evidencias e cole o Evidencias.gs.'));
+      itens.push(d.evidencias ? linha(true, `Observações do 1º semestre: ${d.evidencias} fotos`, 'Do arquivo Evidencias.gs, como nos slides das apresentações.') : linha(null, 'Observações do 1º semestre não instaladas', 'Opcional: crie no Apps Script o script Evidencias e cole o Evidencias.gs.'));
       if (d.fotos && d.fotos.length >= 3) itens.push(linha(true, 'Fotos da apresentação encontradas', 'Ônibus da capa, ônibus do fundo e frota do encerramento.'));
       else itens.push(linha(false, 'Fotos da apresentação não encontradas', 'O Historico.gs no Apps Script é de uma versão antiga. Cole o Historico.gs novo (o arquivo maior, com as fotos no final) e publique a Nova versão. Sem ele, a apresentação sai sem o ônibus.'));
     } catch (e) { itens.push(linha(false, 'O sistema não respondeu', esc(e.message))); }
@@ -2071,6 +2084,16 @@ window.CHECKLISTS = {
     } catch (e) { carregando(); toast(e.message, 'erro'); }
   }
 
+  /* ---------- OBSERVAÇÕES da rodada (como nos slides: local, tópicos e fotos na ordem) ---------- */
+  function observacoesHTML(d) {
+    const obs = d.observacoesRodada || []; if (!obs.length) return '';
+    return `<h2 class="titulo-sec">${ic('camera')}Observações da apresentação</h2>
+      <p class="suave" style="margin-top:-.4rem">Como nos slides de observações: cada grupo de fotos fica com o seu local e o seu texto.</p>
+      <div class="obs-lista">${obs.map((o) => `<article class="obs-card"><div class="obs-texto"><span class="aud-ciclo">${esc(nomeCk(o.checklist))}</span><h3>${esc(o.local)}</h3>
+        ${o.intro ? `<p class="suave">${esc(o.intro)}</p>` : ''}${o.topicos.map((t) => `<p>${t[0] ? `<b>${esc(t[0])}:</b> ` : ''}${esc(t[1])}</p>`).join('')}</div>
+        <div class="obs-fotos n${Math.min(o.fotos.length, 4)}">${o.fotos.map((id) => `<div class="foto-lazy" data-foto="${esc(id)}"><span>foto</span></div>`).join('')}</div></article>`).join('')}</div>`;
+  }
+
   /* ---------- PLANO DE AÇÃO da rodada ---------- */
   const COR_STATUS = { 'Aberta': 'nivel-r', 'Em andamento': 'nivel-b', 'Concluída': 'nivel-o' };
   function planoHTML(d) {
@@ -2187,6 +2210,7 @@ window.CHECKLISTS = {
       ${estratificadoHTML(d)}
       ${criticosHTML(d.estratificado && d.estratificado.itensCriticos)}
       ${recorrentesHTML(d.recorrentes)}
+      ${observacoesHTML(d)}
       ${planoHTML(d)}
       ${d.observacoes.length ? `<details class="mapa bloco" style="margin-top:1.5rem"><summary>Todas as evidências e motivos (${d.observacoes.length})</summary><div style="margin-top:1rem">${listaObservacoes(d.observacoes, false)}</div></details>` : ''}`}
       <h2 class="titulo-sec">${ic('history')}Acumulado</h2>
@@ -2504,7 +2528,8 @@ window.CHECKLISTS = {
       cv.width = Math.round(im.width * k); cv.height = Math.round(im.height * k); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height); ok(cv.toDataURL('image/jpeg', q)); }; im.onerror = () => ok(src); im.src = src; });
     const fundoLeve = FOTO.onibus ? (state.fundoLeve || (state.fundoLeve = await reduzir(FOTO.onibus, 960, 0.55))) : '';
     // fotos das evidências: busca várias ao mesmo tempo antes de montar os slides
-    const idsFotos = [...new Set((est.itensCriticos || []).flatMap((it) => it.fotos || []))].filter((id) => !state.fotos.has(id));
+    const obsRodada = d.observacoesRodada || [];
+    const idsFotos = [...new Set((est.itensCriticos || []).flatMap((it) => it.fotos || []).concat(obsRodada.flatMap((o) => o.fotos)))].filter((id) => !state.fotos.has(id));
     let feitas = 0;
     const fila = idsFotos.slice();
     await Promise.all([0, 1, 2, 3].map(async () => { while (fila.length) { const id = fila.shift(); try { await fotoBase64(id); } catch (e) {} feitas++; carregando(`Buscando as fotos das evidências (${feitas}/${idsFotos.length})…`); } }));
@@ -2597,8 +2622,31 @@ window.CHECKLISTS = {
       logo(sl, true, 0.55 + 3.6, H - 0.62, 1.15);
     });
 
-    /* 4. Observações com fotos: continua em mais slides quando há muitos itens ou fotos (até 4 itens e 4 fotos por slide) */
-    for (const k of ORDEM_CK) {
+    /* 4a. Observações registradas da rodada (como nos slides da Qualidade): um slide por observação, fotos na mesma disposição */
+    const fotoEm = async (s2, id, x, y, w, h) => { try { const src = await fotoBase64(id); s2.addImage({ data: src, x, y, w, h, sizing: { type: 'cover', w, h } }); } catch (e) {} };
+    { // na ordem em que as observações foram registradas (a mesma dos slides)
+      for (const o of obsRodada) {
+        sl = pptx.addSlide(); sl.background = { color: C.esc };
+        ret(sl, 0, 0, 6.2, H, C.verde);
+        txt(sl, [{ text: 'Observações', options: { fontSize: 30, bold: true, fontFace: FB, breakLine: true } }, { text: o.local, options: { fontSize: 22, bold: true, color: C.esc } }], { x: 0.55, y: 0.45, w: 5.4, h: 1.5 });
+        const corpo = [];
+        if (o.intro) corpo.push({ text: o.intro, options: { color: C.branco, breakLine: true, paraSpaceAfter: 14 } });
+        o.topicos.forEach((t) => { if (t[0]) corpo.push({ text: t[0] + ':', options: { bold: true, color: C.esc, breakLine: true } }); corpo.push({ text: t[1], options: { color: C.branco, breakLine: true, paraSpaceAfter: 12 } }); });
+        txt(sl, corpo, { x: 0.55, y: 2.15, w: 5.4, h: H - 2.7, fontSize: 14, valign: 'top' });
+        // moldura clara com as fotos, como no original
+        sl.addShape(S.roundRect, { x: 6.55, y: 0.5, w: 6.3, h: 6.5, rectRadius: 0.25, fill: { color: 'D6F0ED' }, line: { color: 'D6F0ED' } });
+        const fx = 6.8, fy = 0.75, fw = 5.8, fh = 6.0, g = 0.12, fs = o.fotos;
+        if (fs.length === 1) await fotoEm(sl, fs[0], fx, fy, fw, fh);
+        else if (fs.length === 2) { await fotoEm(sl, fs[0], fx, fy, (fw - g) / 2, fh); await fotoEm(sl, fs[1], fx + (fw + g) / 2, fy, (fw - g) / 2, fh); }
+        else if (fs.length === 3) { const lw = fw * 0.55; await fotoEm(sl, fs[0], fx, fy, lw, fh); await fotoEm(sl, fs[1], fx + lw + g, fy, fw - lw - g, (fh - g) / 2); await fotoEm(sl, fs[2], fx + lw + g, fy + (fh + g) / 2, fw - lw - g, (fh - g) / 2); }
+        else { const cw = (fw - g) / 2, ch = (fh - g) / 2; // ordem: coluna da esquerda (cima, baixo), depois a da direita
+          for (let i = 0; i < Math.min(4, fs.length); i++) await fotoEm(sl, fs[i], fx + Math.floor(i / 2) * (cw + g), fy + (i % 2) * (ch + g), cw, ch); }
+        logo(sl, true);
+      }
+    }
+
+    /* 4b. Observações a partir dos itens pontuados com foto (quando a rodada não tem observações registradas) */
+    for (const k of (obsRodada.length ? [] : ORDEM_CK)) {
       const crit = est.itensCriticos.filter((i) => i.checklist === k); if (!crit.length) continue;
       const c = r.checklists[k];
       const paginas = []; let pg = null;
