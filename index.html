@@ -889,7 +889,7 @@ main { overflow-wrap: break-word; }
 </head>
 <body>
   <!-- ==========================================================================
-       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 42)
+       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 43)
        Só para o GitHub Pages: cole abaixo, entre as aspas, o link da implantação do Apps Script (termina em /exec).
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
@@ -1050,7 +1050,7 @@ window.CHECKLISTS = {
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
   const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '42';
+  const VERSAO_SITE = '43';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -1138,7 +1138,7 @@ window.CHECKLISTS = {
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
-  const VERSAO_API_MIN = 42; // versão do Code.gs que este site espera
+  const VERSAO_API_MIN = 43; // versão do Code.gs que este site espera
   let avisouVersao = false;
   function avisoVersao() {
     if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
@@ -1162,7 +1162,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbz-3IMWm1K4MFQogOhLTH4tdsgM7xA2edU8gSdChiGAgV9Jzd5wyLa2eaCpnLgPDoyr/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -1371,7 +1371,7 @@ window.CHECKLISTS = {
       <div class="acoes" style="justify-content:flex-start"><button class="btn sec" data-acao="refazerDiag">Testar de novo</button><button class="btn primario" data-rota="login">Voltar ao site</button></div></main>`;
     const itens = [linha(true, 'Site carregado', `Versão do site ${VERSAO_SITE} · ${NO_APPS_SCRIPT ? 'aberto pelo link do Apps Script' : 'aberto fora do Apps Script (GitHub)'}`)];
     if (!NO_APPS_SCRIPT) {
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbz-3IMWm1K4MFQogOhLTH4tdsgM7xA2edU8gSdChiGAgV9Jzd5wyLa2eaCpnLgPDoyr/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) itens.push(linha(false, 'API_URL vazia', 'Fora do Apps Script, preencha API_URL no topo do index.html com o link da implantação (termina em /exec). Ou simplesmente use o link do Apps Script.'));
       else if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) itens.push(linha(false, 'API_URL parece errada', `Está assim: <code>${esc(url)}</code>. Ela deve terminar em <b>/exec</b>.`));
       else itens.push(linha(true, 'API_URL configurada', `<code>${esc(url)}</code>`));
@@ -1386,6 +1386,9 @@ window.CHECKLISTS = {
       if (d.planilha) itens.push(linha(true, 'Planilha de dados conectada', Object.keys(d.abas || {}).map((k) => `${esc(k)}: ${d.abas[k] === null ? '<b>falta</b>' : d.abas[k]}`).join(' · ')));
       else itens.push(linha(false, 'Planilha de dados não conectada', 'O Apps Script precisa ser criado pela planilha: Extensões › Apps Script.'));
       (d.avisos || []).forEach((a) => itens.push(linha(false, esc(a))));
+      itens.push(d.evidencias ? linha(true, `Fotos de evidência do 1º semestre: ${d.evidencias}`, 'Do arquivo Evidencias.gs (fotos tiradas das apresentações).') : linha(null, 'Fotos de evidência do 1º semestre não instaladas', 'Opcional: crie no Apps Script o script Evidencias e cole o Evidencias.gs.'));
+      if (d.fotos && d.fotos.length >= 3) itens.push(linha(true, 'Fotos da apresentação encontradas', 'Ônibus da capa, ônibus do fundo e frota do encerramento.'));
+      else itens.push(linha(false, 'Fotos da apresentação não encontradas', 'O Historico.gs no Apps Script é de uma versão antiga. Cole o Historico.gs novo (o arquivo maior, com as fotos no final) e publique a Nova versão. Sem ele, a apresentação sai sem o ônibus.'));
     } catch (e) { itens.push(linha(false, 'O sistema não respondeu', esc(e.message))); }
     if (state.sessao) itens.push(linha(null, `Sessão aberta como ${esc(state.sessao.nome)} (${esc(state.sessao.perfil)})`, 'Se as telas continuarem em branco, use Sair e entre de novo.'));
     $('#diag').innerHTML = itens.join('');
@@ -2481,6 +2484,11 @@ window.CHECKLISTS = {
 
     // fotos da apresentação da Qualidade (ônibus e frota), guardadas no servidor
     let FOTO = {}; try { FOTO = (await api('fotosApresentacao', {})).fotos || {}; } catch (e) { FOTO = {}; }
+    if (!FOTO.onibus && !NO_APPS_SCRIPT) { // reserva: arquivos na pasta "fotos" ao lado do index.html no GitHub
+      const paraData = async (url) => { const r = await fetch(url); if (!r.ok) throw new Error(); const b = await r.blob(); return await new Promise((ok) => { const fr = new FileReader(); fr.onload = () => ok(fr.result); fr.readAsDataURL(b); }); };
+      for (const [k, arq] of [['onibus', 'fotos/onibus.jpg'], ['onibusRecorte', 'fotos/onibus-recorte.png'], ['frota', 'fotos/frota.jpg']]) { try { FOTO[k] = await paraData(arq); } catch (e) {} }
+    }
+    state.fotosFaltando = !FOTO.onibus;
     const fundoFoto = (s2, src, cor, transp) => { if (!src) return; s2.addImage({ data: src, x: 0, y: 0, w: W, h: H, sizing: { type: 'cover', w: W, h: H } });
       s2.addShape(S.rect, { x: 0, y: 0, w: W, h: H, fill: { color: cor, transparency: transp }, line: { color: cor, transparency: 100 } }); };
 
@@ -2569,43 +2577,57 @@ window.CHECKLISTS = {
       logo(sl, true, 0.55 + 3.6, H - 0.62, 1.15);
     });
 
-    /* 4. Observações com fotos */
+    /* 4. Observações com fotos: continua em mais slides quando há muitos itens ou fotos (até 4 itens e 4 fotos por slide) */
     for (const k of ORDEM_CK) {
       const crit = est.itensCriticos.filter((i) => i.checklist === k); if (!crit.length) continue;
       const c = r.checklists[k];
-      sl = pptx.addSlide(); sl.background = { color: C.esc };
-      ret(sl, 0, 0, 6.2, H, C.verde);
-      txt(sl, 'Observações', { x: 0.55, y: 0.45, w: 5.2, h: 0.65, fontSize: 30, bold: true, fontFace: FB });
-      txt(sl, `${nomeCk(k)} · ${listaBR(locaisCk(k))}`, { x: 0.55, y: 1.1, w: 5.4, h: 0.4, fontSize: 13, bold: true, color: C.esc });
-      txt(sl, `Na avaliação realizada em ${listaBR(locaisCk(k)) || f.nome}, foram identificados itens que não atenderam aos critérios mínimos estabelecidos para o processo de limpeza:`,
-        { x: 0.55, y: 1.6, w: 5.4, h: 0.9, fontSize: 14 });
-      const ns = ['R', 'I'].filter((n) => c.contagem[n]);
-      ns.forEach((n, i) => {
-        sl.addShape(S.roundRect, { x: 0.55 + i * 2.6, y: 2.55, w: 2.4, h: 0.78, rectRadius: 0.1, fill: { color: C.menta }, line: { color: C.menta } });
-        bola(sl, 0.72 + i * 2.6, 2.68, 0.18, CN[n], 0);
-        txt(sl, NOMES[n], { x: 0.98 + i * 2.6, y: 2.63, w: 1.8, h: 0.25, fontSize: 10, color: C.cinza });
-        txt(sl, `${nf(c.contagem[n] / c.total * 100, 1)}%`, { x: 0.72 + i * 2.6, y: 2.88, w: 2, h: 0.4, fontSize: 19, bold: true, color: C.esc });
+      const paginas = []; let pg = null;
+      crit.forEach((it) => {
+        const nf_ = (it.fotos || []).length;
+        if (!pg || pg.itens.length >= 4 || (nf_ && pg.fotos.length >= 4)) { pg = { itens: [], fotos: [] }; paginas.push(pg); }
+        pg.itens.push(it);
+        (it.fotos || []).forEach((id, fi) => { if (pg.fotos.length < 4) pg.fotos.push({ id, item: it.item, local: (it.fotosOnde && it.fotosOnde[fi]) || it.locais[0] || '' }); });
       });
-      const linhas = []; crit.slice(0, 5).forEach((it) => {
-        linhas.push({ text: `${it.item} (${it.locais.join(', ')}): `, options: { bold: true, color: C.aqua } });
-        linhas.push({ text: (it.motivos[0] || 'sem motivo registrado') + (it.motivos.length > 1 ? ` (+${it.motivos.length - 1})` : ''), options: { color: C.branco, breakLine: true } });
-      });
-      txt(sl, linhas, { x: 0.55, y: 3.55, w: 5.4, h: 3.5, fontSize: 13.5, paraSpaceAfter: 10, valign: 'top' });
-      const fotos = []; crit.forEach((it) => (it.fotos || []).forEach((id) => { if (fotos.length < 4) fotos.push({ id, item: it.item }); }));
-      if (fotos.length) {
-        const cols = fotos.length === 1 ? 1 : 2, fw = cols === 1 ? 6.4 : 3.12, fh = fotos.length <= 2 ? (cols === 1 ? 5.6 : 5.0) : 2.9;
-        for (let i = 0; i < fotos.length; i++) {
-          try {
-            const src = await fotoBase64(fotos[i].id);
-            const x = 6.55 + (i % cols) * (fw + 0.16), y = 0.55 + Math.floor(i / cols) * (fh + 0.42);
-            sl.addImage({ data: src, x, y, w: fw, h: fh, sizing: { type: 'cover', w: fw, h: fh } });
-            txt(sl, fotos[i].item, { x, y: y + fh + 0.05, w: fw, h: 0.3, fontSize: 10, color: C.menta });
-          } catch (e) { /* foto indisponível: segue */ }
+      for (let pi = 0; pi < paginas.length; pi++) {
+        const pag = paginas[pi];
+        sl = pptx.addSlide(); sl.background = { color: C.esc };
+        ret(sl, 0, 0, 6.2, H, C.verde);
+        txt(sl, 'Observações' + (paginas.length > 1 ? ` (${pi + 1}/${paginas.length})` : ''), { x: 0.55, y: 0.45, w: 5.4, h: 0.65, fontSize: 30, bold: true, fontFace: FB });
+        txt(sl, `${nomeCk(k)} · ${listaBR(locaisCk(k))}`, { x: 0.55, y: 1.1, w: 5.4, h: 0.4, fontSize: 13, bold: true, color: C.esc });
+        let yTexto = 1.6;
+        if (pi === 0) {
+          txt(sl, `Na avaliação realizada em ${listaBR(locaisCk(k)) || f.nome}, foram identificados itens que não atenderam aos critérios mínimos estabelecidos para o processo de limpeza:`,
+            { x: 0.55, y: 1.6, w: 5.4, h: 0.9, fontSize: 14 });
+          const ns = ['R', 'I'].filter((n) => c.contagem[n]);
+          ns.forEach((n, i) => {
+            sl.addShape(S.roundRect, { x: 0.55 + i * 2.6, y: 2.55, w: 2.4, h: 0.78, rectRadius: 0.1, fill: { color: C.menta }, line: { color: C.menta } });
+            bola(sl, 0.72 + i * 2.6, 2.68, 0.18, CN[n], 0);
+            txt(sl, NOMES[n], { x: 0.98 + i * 2.6, y: 2.63, w: 1.8, h: 0.25, fontSize: 10, color: C.cinza });
+            txt(sl, `${nf(c.contagem[n] / c.total * 100, 1)}%`, { x: 0.72 + i * 2.6, y: 2.88, w: 2, h: 0.4, fontSize: 19, bold: true, color: C.esc });
+          });
+          yTexto = 3.55;
         }
-      } else {
-        slideRosca(sl, c, 7.4, 1.0, 4.6);
+        const linhas = []; pag.itens.forEach((it) => {
+          linhas.push({ text: `${it.item} (${it.locais.join(', ')}): `, options: { bold: true, color: C.aqua } });
+          linhas.push({ text: (it.motivos[0] || 'sem motivo registrado') + (it.motivos.length > 1 ? ` (+${it.motivos.length - 1})` : ''), options: { color: C.branco, breakLine: true } });
+        });
+        txt(sl, linhas, { x: 0.55, y: yTexto, w: 5.4, h: H - yTexto - 0.5, fontSize: 13.5, paraSpaceAfter: 10, valign: 'top' });
+        const fotos = pag.fotos;
+        if (fotos.length) {
+          const cols = fotos.length === 1 ? 1 : 2, fw = cols === 1 ? 6.4 : 3.12, fh = fotos.length <= 2 ? (cols === 1 ? 5.6 : 5.0) : 2.9;
+          for (let i = 0; i < fotos.length; i++) {
+            try {
+              const src = await fotoBase64(fotos[i].id);
+              const x = 6.55 + (i % cols) * (fw + 0.16), y = 0.55 + Math.floor(i / cols) * (fh + 0.42);
+              sl.addImage({ data: src, x, y, w: fw, h: fh, sizing: { type: 'cover', w: fw, h: fh } });
+              txt(sl, `${fotos[i].item}${fotos[i].local ? ' · ' + fotos[i].local : ''}`, { x, y: y + fh + 0.05, w: fw, h: 0.3, fontSize: 10, color: C.menta });
+            } catch (e) { /* foto indisponível: segue */ }
+          }
+        } else {
+          slideRosca(sl, c, 7.4, 1.0, 4.6);
+        }
+        logo(sl, true);
       }
-      logo(sl, true);
     }
 
     /* 5. Seção */
@@ -2770,6 +2792,7 @@ window.CHECKLISTS = {
       carregando();
       const blobUrl = URL.createObjectURL(new Blob([Uint8Array.from(atob(base64), (ch) => ch.charCodeAt(0))], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' }));
       modal(`<h2>Apresentação pronta</h2><p>${esc(nome)}.pptx</p>
+        ${state.fotosFaltando ? '<p class="erro-msg"><b>Saiu sem as fotos do ônibus:</b> o Historico.gs no Apps Script é de uma versão antiga. Cole o Historico.gs novo (o maior, com as fotos no final), publique a Nova versão e gere de novo. Confira em Diagnóstico.</p>' : ''}
         <p class="suave">${(d.plano || []).length ? 'Com o plano de ação registrado (responsáveis e prazos).' : 'Sem plano de ação registrado: as ações saíram como sugestão. Monte o plano no painel para sair com responsáveis e prazos.'} ${ehQualidade() ? 'Próximo passo: abra no Drive, ajuste o que precisar e clique em “Publicar para gestores”.' : ''}</p>
         ${!ehQualidade() ? '' : salvo && salvo.ok ? '<p class="aviso-hist">Uma cópia foi guardada no Drive, na pasta "Checklist de Limpeza - Apresentações".</p>' : `<p class="erro-msg">Não foi possível guardar no Drive${salvo && salvo.erro ? ': ' + esc(salvo.erro) : ''}. Use o botão Baixar.</p>`}
         <div class="acoes"><a class="btn sec" href="${blobUrl}" download="${esc(nome)}.pptx">Baixar .pptx</a>${salvo && salvo.ok ? `<a class="btn primario" href="${esc(salvo.url)}" target="_blank" rel="noopener">${ic('external-link')} Abrir no Drive para ajustar</a>` : ''}</div>`);
