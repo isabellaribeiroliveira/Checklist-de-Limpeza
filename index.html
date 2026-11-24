@@ -1131,7 +1131,7 @@ window.CHECKLISTS = {
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
   const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '48';
+  const VERSAO_SITE = '47';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -1232,7 +1232,7 @@ window.CHECKLISTS = {
     document.body.prepend(b);
   }
   // Dentro do Apps Script o site chama o servidor direto (google.script.run); no GitHub usa a URL de CONFIG.API_URL.
-  const NO_APPS_SCRIPT = !!(window. && google.script && google.script.run);
+  const NO_APPS_SCRIPT = !!(window.google && google.script && google.script.run);
   function chamarServidor(pacote, limiteMs) {
     return new Promise((resolve, reject) => {
       const erroRede = (msg) => { const e = new Error(msg); e.rede = true; return e; };
@@ -1245,7 +1245,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL ||'').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -1379,24 +1379,10 @@ window.CHECKLISTS = {
     if (SO_QUALIDADE.includes(nome) && !ehQualidade()) nome = ehGestor() ? 'resultados' : 'inicio';
     if (nome === 'resultados' && !ehGestor()) nome = ehQualidade() ? 'painel' : 'inicio';
     if (ehGestor() && ['inicio', 'auditoria', 'form', 'resultado'].includes(nome)) nome = 'resultados';
-    // mesma tela sendo atualizada (salvar, filtrar, validar…): mantém a posição; tela nova: vai para o topo
-    const mesma = state.rota === nome && JSON.stringify(state.rotaArg === undefined ? null : state.rotaArg) === JSON.stringify(arg === undefined ? null : arg);
-    const y = window.scrollY;
     state.rota = nome; state.rotaArg = arg; state.nav = (state.nav || 0) + 1;
     VIEWS[nome](arg);
     medirTopo();
-    if (!mesma || !y) { window.scrollTo(0, 0); return; }
-    manterRolagem(y, state.nav);
-  }
-  // o conteúdo pode chegar um pouco depois (servidor): tenta voltar à mesma altura até a página crescer o suficiente
-  function manterRolagem(y, nav) {
-    let n = 0;
-    const tenta = () => {
-      if (state.nav !== nav) return; // a pessoa já foi para outra tela
-      if (document.documentElement.scrollHeight - innerHeight >= y - 4) { window.scrollTo(0, y); if (++n < 3) setTimeout(tenta, 250); return; }
-      if (++n < 40) setTimeout(tenta, 100);
-    };
-    window.scrollTo(0, Math.min(y, document.documentElement.scrollHeight - innerHeight)); tenta();
+    window.scrollTo(0, 0);
   }
   function medirTopo() { const h = $('.topo'); if (h) document.documentElement.style.setProperty('--topo', h.offsetHeight + 'px'); }
   window.addEventListener('resize', medirTopo);
@@ -1469,7 +1455,7 @@ window.CHECKLISTS = {
       <div class="acoes" style="justify-content:flex-start"><button class="btn sec" data-acao="refazerDiag">Testar de novo</button><button class="btn primario" data-rota="login">Voltar ao site</button></div></main>`;
     const itens = [linha(true, 'Site carregado', `Versão do site ${VERSAO_SITE} · ${NO_APPS_SCRIPT ? 'aberto pelo link do Apps Script' : 'aberto fora do Apps Script (GitHub)'}`)];
     if (!NO_APPS_SCRIPT) {
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbzgOdF6ISOaEWc8101SvPml1_1Z1JQPPrmHm3JoT5VSyxN_-8uSlCwhd-I121GAi2E/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) itens.push(linha(false, 'API_URL vazia', 'Fora do Apps Script, preencha API_URL no topo do index.html com o link da implantação (termina em /exec). Ou simplesmente use o link do Apps Script.'));
       else if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) itens.push(linha(false, 'API_URL parece errada', `Está assim: <code>${esc(url)}</code>. Ela deve terminar em <b>/exec</b>.`));
       else itens.push(linha(true, 'API_URL configurada', `<code>${esc(url)}</code>`));
