@@ -965,11 +965,18 @@ main { overflow-wrap: break-word; }
 }
 @media (max-width: 900px) { .plano-edit [data-c="prazo"] { padding-inline: .5rem; font-size: .92rem; } }
 
+/* ============ v50 · por que a auditoria não aparece ============ */
+.aviso-programada { display: inline-flex; align-items: center; gap: .35rem; color: #8A5D00; font-size: .84rem; font-weight: 600; margin: .3rem 0 0; }
+.aviso-programada .ic, .aviso-ok .ic { width: 15px; height: 15px; flex: none; }
+.aviso-ok { display: inline-flex; align-items: center; gap: .35rem; color: var(--o); font-size: .84rem; font-weight: 600; margin: .3rem 0 0; }
+.aud-card.programada { cursor: default; border-style: dashed; opacity: .95; }
+.pessoa.sem-usuario { background: var(--i-claro) !important; color: var(--i) !important; border: 1px solid var(--i); }
+
   </style>
 </head>
 <body>
   <!-- ==========================================================================
-       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 47)
+       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 50)
        Só para o GitHub Pages: cole abaixo, entre as aspas, o link da implantação do Apps Script (termina em /exec).
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
@@ -984,7 +991,20 @@ main { overflow-wrap: break-word; }
     // se algo impedir o site de abrir, mostra o motivo em vez de uma tela vazia
     window.addEventListener('error', function (e) {
       var app = document.getElementById('app');
-      if (app && !app.innerHTML.trim()) app.innerHTML = '<div style="max-width:560px;margin:12vh auto;padding:28px;border-radius:18px;background:#F3F8F6;color:#13272A;font-family:Arial,sans-serif;box-shadow:0 10px 30px rgba(2,61,58,.12)"><h2 style="margin:0 0 8px;color:#023D3A">O site não conseguiu abrir</h2><p style="margin:0 0 12px">Mensagem técnica: <b>' + String(e.message || 'erro').replace(/</g, '&lt;') + '</b>' + (e.lineno ? ' (linha ' + e.lineno + ')' : '') + '</p><p style="margin:0;color:#5A7470">Se você acabou de editar a linha da API_URL no início do arquivo, confira se o link está entre aspas simples retas: API_URL: \'https://...\'</p></div>';
+      if (!app || app.innerHTML.trim()) return;
+      var esc = function (t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+      // diagnóstico: onde está aberto, tamanho do arquivo no ar e o texto da linha com problema
+      var onde = /github\.io/.test(location.host) ? 'site do GitHub (' + location.host + ')' : /google/.test(location.host) ? 'link do Apps Script' : location.host || 'arquivo no computador';
+      var linhas = [], trecho = '';
+      try { linhas = document.documentElement.outerHTML.split('\n'); if (e.lineno) trecho = linhas.slice(Math.max(0, e.lineno - 4), e.lineno).map(function (l) { return l.trim().slice(0, 150); }).filter(Boolean).join('\n'); } catch (x) {}
+      var esperado = 3947, total = linhas.length, dif = esperado && total && Math.abs(total - esperado) > 15;
+      app.innerHTML = '<div style="max-width:620px;margin:10vh auto;padding:28px;border-radius:18px;background:#F3F8F6;color:#13272A;font-family:Arial,sans-serif;box-shadow:0 10px 30px rgba(2,61,58,.12)">' +
+        '<h2 style="margin:0 0 8px;color:#023D3A">O site não conseguiu abrir</h2>' +
+        '<p style="margin:0 0 10px">Mensagem técnica: <b>' + esc(e.message || 'erro') + '</b>' + (e.lineno ? ' (linha ' + e.lineno + ')' : '') + '</p>' +
+        (trecho ? '<p style="margin:0 0 10px;font-size:13px">Trecho onde o navegador parou:<br><code style="display:block;background:#E3EEEB;padding:8px;border-radius:8px;white-space:pre-wrap;word-break:break-all">' + esc(trecho) + '</code></p>' : '') +
+        '<p style="margin:0 0 10px;font-size:14px">Aberto pelo: <b>' + esc(onde) + '</b> · versão do arquivo: <b>50</b></p>' +
+        (dif ? '<p style="margin:0 0 10px;padding:10px;border-radius:10px;background:#FFF4DE;color:#5C3E00;font-size:14px"><b>O arquivo no ar está diferente do original:</b> ele tem ' + total + ' linhas e o certo tem cerca de ' + esperado + '. Provavelmente foi colado pela metade ou por cima do antigo. Abra o arquivo, selecione tudo (Ctrl+A), apague, cole o index.html inteiro e salve.</p>' : '') +
+        '<p style="margin:0;color:#5A7470;font-size:14px">Se você acabou de editar a linha da API_URL no início do arquivo, confira se o link está entre aspas simples retas: API_URL: \'https://...\'</p></div>';
     });
     if (!window.CONFIG) window.CONFIG = { API_URL: '', configInvalida: true };
   </script>
@@ -1131,7 +1151,7 @@ window.CHECKLISTS = {
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
   const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '47';
+  const VERSAO_SITE = '50';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -1221,7 +1241,7 @@ window.CHECKLISTS = {
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
-  const VERSAO_API_MIN = 46; // versão do Code.gs que este site espera
+  const VERSAO_API_MIN = 47; // versão do Code.gs que este site espera
   let avisouVersao = false;
   function avisoVersao() {
     if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
@@ -1245,7 +1265,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbzgOdF6ISOaEWc8101SvPml1_1Z1JQPPrmHm3JoT5VSyxN_-8uSlCwhd-I121GAi2E/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -1379,10 +1399,24 @@ window.CHECKLISTS = {
     if (SO_QUALIDADE.includes(nome) && !ehQualidade()) nome = ehGestor() ? 'resultados' : 'inicio';
     if (nome === 'resultados' && !ehGestor()) nome = ehQualidade() ? 'painel' : 'inicio';
     if (ehGestor() && ['inicio', 'auditoria', 'form', 'resultado'].includes(nome)) nome = 'resultados';
+    // mesma tela sendo atualizada (salvar, filtrar, validar…): mantém a posição; tela nova: vai para o topo
+    const mesma = state.rota === nome && JSON.stringify(state.rotaArg === undefined ? null : state.rotaArg) === JSON.stringify(arg === undefined ? null : arg);
+    const y = window.scrollY;
     state.rota = nome; state.rotaArg = arg; state.nav = (state.nav || 0) + 1;
     VIEWS[nome](arg);
     medirTopo();
-    window.scrollTo(0, 0);
+    if (!mesma || !y) { window.scrollTo(0, 0); return; }
+    manterRolagem(y, state.nav);
+  }
+  // o conteúdo pode chegar um pouco depois (servidor): tenta voltar à mesma altura até a página crescer o suficiente
+  function manterRolagem(y, nav) {
+    let n = 0;
+    const tenta = () => {
+      if (state.nav !== nav) return; // a pessoa já foi para outra tela
+      if (document.documentElement.scrollHeight - innerHeight >= y - 4) { window.scrollTo(0, y); if (++n < 3) setTimeout(tenta, 250); return; }
+      if (++n < 40) setTimeout(tenta, 100);
+    };
+    window.scrollTo(0, Math.min(y, document.documentElement.scrollHeight - innerHeight)); tenta();
   }
   function medirTopo() { const h = $('.topo'); if (h) document.documentElement.style.setProperty('--topo', h.offsetHeight + 'px'); }
   window.addEventListener('resize', medirTopo);
@@ -1455,7 +1489,7 @@ window.CHECKLISTS = {
       <div class="acoes" style="justify-content:flex-start"><button class="btn sec" data-acao="refazerDiag">Testar de novo</button><button class="btn primario" data-rota="login">Voltar ao site</button></div></main>`;
     const itens = [linha(true, 'Site carregado', `Versão do site ${VERSAO_SITE} · ${NO_APPS_SCRIPT ? 'aberto pelo link do Apps Script' : 'aberto fora do Apps Script (GitHub)'}`)];
     if (!NO_APPS_SCRIPT) {
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbzgOdF6ISOaEWc8101SvPml1_1Z1JQPPrmHm3JoT5VSyxN_-8uSlCwhd-I121GAi2E/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) itens.push(linha(false, 'API_URL vazia', 'Fora do Apps Script, preencha API_URL no topo do index.html com o link da implantação (termina em /exec). Ou simplesmente use o link do Apps Script.'));
       else if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) itens.push(linha(false, 'API_URL parece errada', `Está assim: <code>${esc(url)}</code>. Ela deve terminar em <b>/exec</b>.`));
       else itens.push(linha(true, 'API_URL configurada', `<code>${esc(url)}</code>`));
@@ -1568,12 +1602,17 @@ window.CHECKLISTS = {
           <span class="aud-locais">${ic('map-pin')}${locaisAud(a).map(esc).join(' · ')}</span>
           ${prazoHTML(a)}
           <span class="aud-rodape">${selo}<span>${a.sem_checklists ? 'Registrada nas planilhas' : feitos + ' de ' + a.aplicaveis.length + ' checklists enviados'}</span></span>
+          ${q && !a.teste && a.status === 'PLANEJADO' && !a.enviados.length && (!a.confirmado || (a.liberacao && a.hoje < a.liberacao)) ? `<small class="aviso-programada">${ic('eye-off')}${!a.confirmado ? 'O avaliador ainda não vê: confirme a escala no Cronograma.' : 'O avaliador vê a partir de ' + fmtData(a.liberacao) + '.'}</small>` : ''}
           ${q ? `<small>Avaliador: ${esc(a.auditores.join(', '))}</small>` : a.minha === false ? `<small class="colega">Rodada da filial realizada por ${esc(a.auditores.join(', '))}</small>` : ''}
         </button>`;
       };
       const afazer = lista.filter((a) => !a.finalizada), feitas = lista.filter((a) => a.finalizada);
       el.innerHTML = `<h2 class="titulo-sec">Para fazer</h2>
         ${afazer.length ? `<div class="auditorias">${afazer.map(card).join('')}</div>`
+          : !q && (d.programadas || []).length ? `<div class="auditorias">${d.programadas.map((p) => `<div class="aud-card programada"><span class="aud-ciclo">${ciclo(p)}</span><strong>${esc(p.filial_nome)}</strong>
+              <span class="aud-locais">${ic('map-pin')}${[p.filial_nome].concat(p.pontos || []).map(esc).join(' · ')}</span>
+              <span class="aviso-programada">${ic('clock')}${esc(p.motivo)}</span></div>`).join('')}</div>
+              <p class="suave" style="margin-top:.6rem">Ela aparece para preencher assim que a escala estiver confirmada e chegar a data de liberação.</p>`
           : `<div class="bloco vazio-curto"><p class="suave">${q ? 'Nenhuma auditoria planejada.' : 'Nenhuma auditoria liberada para você agora. Quando a Qualidade confirmar a escala e chegar a data de liberação, ela aparece aqui.'}</p></div>`}
         ${q ? '' : `<h2 class="titulo-sec">Finalizadas</h2>
         ${feitas.length ? `<div class="auditorias">${feitas.map(card).join('')}</div>` : '<div class="bloco vazio-curto"><p class="suave">Você ainda não tem auditorias finalizadas.</p></div>'}`}`;
@@ -3353,8 +3392,11 @@ window.CHECKLISTS = {
     return `<div class="ciclo st-${e.status} sit-${sit}">
       <div class="ciclo-topo"><strong>${ciclo(e)}</strong><span class="badge sit-${sit}">${SITUACAO[sit]}</span></div>
       <ul class="locais"><li class="garagem">${esc(f.garagem)}</li>${e.pontos.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>
-      <p class="auds">${e.auditores.map((a) => `<span class="pessoa">${esc(nomeAud(a))}</span>`).join('')}</p>
+      <p class="auds">${e.auditores.map((a) => { const ok = !state.crono.ativos || state.crono.ativos.includes(a);
+        return `<span class="pessoa ${ok ? '' : 'sem-usuario'}" title="${ok ? '' : 'Este login não é de um usuário ativo: o avaliador não vai ver a auditoria. Corrija em Editar ou em Usuários.'}">${esc(nomeAud(a))}${ok ? '' : ' · login não encontrado'}</span>`; }).join('')}</p>
       ${datas}
+      ${e.status === 'PLANEJADO' && !e.enviados ? (!e.confirmado ? `<p class="aviso-programada">${ic('eye-off')}O avaliador só vê depois de confirmar a escala.</p>`
+        : e.liberacao && state.crono.hoje && state.crono.hoje < e.liberacao ? `<p class="aviso-programada">${ic('eye-off')}O avaliador vê a partir de ${dataCurta(e.liberacao)}.</p>` : `<p class="aviso-ok">${ic('eye')}Visível para o avaliador.</p>`) : ''}
       ${e.observacao ? `<p class="nota-crono">${esc(e.observacao)}</p>` : ''}
       <div class="acoes-ciclo">${acao}<button class="link" data-editar-crono="${esc(e.id)}">Editar</button></div></div>`;
   }
