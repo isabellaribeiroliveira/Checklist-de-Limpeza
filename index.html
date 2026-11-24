@@ -22,8 +22,8 @@
   /* cores da marca Univale */
   --escuro: #023D3A; --verde-marca: #007A6E; --petroleo: #00A19B; --petroleo-2: #1CB5AE; --aqua: #1CCFC9; --menta: #D6F0ED; --vermelho-marca: #E6062E;
   --petroleo-claro: #D6F0ED; --petroleo-txt: #007A6E;
-  --o: #1E7A4C; --b: #8DAA3B; --r: #E0A21B; --i: #C8372D; --na: #94A3A6;
-  --o-claro: #E2F2E9; --r-claro: #FFF5DD; --i-claro: #FBE7E5;
+  --o: #007A6E; --b: #3FB8AE; --r: #E39A1E; --i: #D7263D; --na: #94A3A6;
+  --o-claro: #DDF1EE; --b-claro: #E3F6F4; --r-claro: #FFF4DE; --i-claro: #FCE6E9;
   --raio: 16px; --raio-p: 10px;
   --sombra: 0 1px 2px rgba(18, 35, 42, .05), 0 6px 20px rgba(18, 35, 42, .06);
   --sombra-forte: 0 2px 6px rgba(18, 35, 42, .08), 0 16px 40px rgba(18, 35, 42, .12);
@@ -39,8 +39,8 @@
     --linha: #21403C; --linha-forte: #2D534E;
     --escuro: #021F1E; --verde-marca: #1CB5AE; --petroleo: #11ABA4; --petroleo-2: #1CCFC9; --aqua: #1CCFC9; --menta: #0F3B39;
     --petroleo-claro: #0F3B39; --petroleo-txt: #5FE0D9;
-    --o: #38A26C; --b: #9BBB49; --r: #E8B032; --i: #E0574C; --na: #6E8085;
-    --o-claro: #163327; --r-claro: #3A2F14; --i-claro: #3B1C1A;
+    --o: #22B8AC; --b: #7FD8CF; --r: #F0B44C; --i: #F0566A; --na: #6E8085;
+    --o-claro: #0F3533; --b-claro: #12403D; --r-claro: #3A2F14; --i-claro: #3D1720;
     --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
     --sombra-forte: 0 2px 6px rgba(0, 0, 0, .4), 0 16px 40px rgba(0, 0, 0, .45);
     color-scheme: dark;
@@ -52,8 +52,8 @@
     --linha: #21403C; --linha-forte: #2D534E;
     --escuro: #021F1E; --verde-marca: #1CB5AE; --petroleo: #11ABA4; --petroleo-2: #1CCFC9; --aqua: #1CCFC9; --menta: #0F3B39;
     --petroleo-claro: #0F3B39; --petroleo-txt: #5FE0D9;
-    --o: #38A26C; --b: #9BBB49; --r: #E8B032; --i: #E0574C; --na: #6E8085;
-    --o-claro: #163327; --r-claro: #3A2F14; --i-claro: #3B1C1A;
+    --o: #22B8AC; --b: #7FD8CF; --r: #F0B44C; --i: #F0566A; --na: #6E8085;
+    --o-claro: #0F3533; --b-claro: #12403D; --r-claro: #3A2F14; --i-claro: #3D1720;
     --sombra: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .25);
     --sombra-forte: 0 2px 6px rgba(0, 0, 0, .4), 0 16px 40px rgba(0, 0, 0, .45);
     color-scheme: dark;
@@ -764,9 +764,9 @@ tr.rec-critico td:first-child { box-shadow: inset 4px 0 0 var(--i); } tr.rec-ate
 .passo-ic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--menta); color: var(--petroleo-txt); margin-bottom: .2rem; }
 .teste-status { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
 .teste-rodape { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--linha); }
-.badge-teste { display: inline-block; background: #6C5CE7; color: #fff; font-size: .68rem; font-weight: 700; letter-spacing: .06em; padding: .1em .5em; border-radius: 6px; vertical-align: middle; }
-.faixa-teste { display: flex; gap: .7rem; align-items: center; padding: .75rem 1rem; border-radius: 14px; margin-bottom: 1rem; background: color-mix(in srgb, #6C5CE7 14%, var(--superficie)); border: 1px solid color-mix(in srgb, #6C5CE7 40%, var(--linha)); }
-.faixa-teste .ic { color: #6C5CE7; width: 22px; height: 22px; }
+.badge-teste { display: inline-block; background: #C98A12; color: #fff; font-size: .68rem; font-weight: 700; letter-spacing: .06em; padding: .1em .5em; border-radius: 6px; vertical-align: middle; }
+.faixa-teste { display: flex; gap: .7rem; align-items: center; padding: .75rem 1rem; border-radius: 14px; margin-bottom: 1rem; background: color-mix(in srgb, #C98A12 14%, var(--superficie)); border: 1px solid color-mix(in srgb, #C98A12 40%, var(--linha)); }
+.faixa-teste .ic { color: #C98A12; width: 22px; height: 22px; }
 @media (max-width: 1560px) and (min-width: 761px) { .nav-link .ic { display: none; } .nav-link { padding: .45em .62em; font-size: .9rem; } }
 @media (max-width: 1240px) and (min-width: 761px) { .usuario .logo-topo, .sep-usuario { display: none !important; } .perfil-txt { display: none; } }
 
@@ -897,12 +897,79 @@ main { overflow-wrap: break-word; }
 .obs-fotos .foto-lazy { min-height: 120px; border-radius: 10px; overflow: hidden; padding: 0; }
 .obs-fotos .foto-lazy img, .obs-fotos .foto-abrir img { width: 100%; height: 100%; object-fit: cover; min-height: 120px; }
 @media (max-width: 760px) { .obs-card { grid-template-columns: 1fr; } }
+.obs-foto { position: relative; }
+.mais-fotos { position: absolute; right: 8px; bottom: 8px; background: rgba(2, 61, 58, .82); color: #fff; font: 700 .8rem var(--fonte); padding: .2em .55em; border-radius: 999px; }
+.obs-texto .link .ic { width: 15px; height: 15px; vertical-align: -.2em; }
+.obs-texto .link[data-fotos-obs] { display: inline-flex; align-items: center; gap: .3em; text-align: left; justify-content: flex-start; margin-bottom: .25rem; }
+
+
+/* ============ v46 · harmonia: cores da marca, ritmo e respiro em qualquer tela ============ */
+.pagina { max-width: 1240px; margin-inline: auto; padding: clamp(1rem, 2.4vw, 2rem) clamp(.9rem, 3vw, 2rem) 3.5rem; }
+/* vermelho Univale como destaque discreto */
+.topo { box-shadow: inset 0 -3px 0 0 transparent; background-image: linear-gradient(90deg, var(--petroleo) 0 82%, var(--vermelho-marca) 82% 100%); background-size: 100% 3px; background-repeat: no-repeat; background-position: bottom; }
+.painel-cab h1, .pagina > h1, .cab-pagina h1 { position: relative; padding-bottom: .45rem; }
+.painel-cab h1::after, .pagina > h1::after, .cab-pagina h1::after { content: ''; position: absolute; left: 0; bottom: 0; width: 44px; height: 4px; border-radius: 4px; background: var(--vermelho-marca); }
+/* títulos de seção com o mesmo ritmo */
+.titulo-sec { margin: 2.4rem 0 .9rem; font-size: clamp(1.25rem, 2.2vw, 1.5rem); }
+.titulo-sec .ic { color: var(--petroleo-txt); }
+.sub-sec { margin: -.45rem 0 .9rem; }
+/* blocos e cartões com a mesma linguagem */
+.card, .bloco, .barra-planilha, .rodada, .critico, .obs, .obs-card { border-radius: var(--raio); border: 1px solid var(--linha); box-shadow: var(--sombra); }
+.barra-planilha { border-left-width: 1px; }
+.entregas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 1rem; margin: 1rem 0 0; }
+.entregas > .barra-planilha { margin: 0; height: 100%; flex-direction: column; align-items: flex-start; gap: .7rem; }
+.entregas > .barra-planilha .acoes-inline { margin-top: auto; }
+/* chips de nota e selos com as cores novas */
+.chip.n-B, .nota.n-B.sel { color: #fff; }
+.badge.nivel-o { background: var(--o-claro); color: var(--o); }
+.resolvidos { display: flex; gap: .55rem; align-items: flex-start; margin: .9rem 0 0; padding: .7rem .9rem; border-radius: 12px; background: var(--o-claro); color: var(--tinta); font-size: .93rem; }
+.resolvidos .ic { color: var(--o); flex: none; margin-top: .1rem; }
+/* observações recolhidas */
+.obs-details { margin-top: 1.6rem; }
+.obs-details > summary { display: flex; align-items: center; gap: .5rem; font-weight: 700; cursor: pointer; }
+.obs-details[open] > summary { margin-bottom: .6rem; }
+/* plano de ação editável */
+.plano-edit { display: flex; flex-direction: column; gap: .6rem; }
+.plano-edit .plano-linha { display: grid; grid-template-columns: 1.8rem minmax(0, 1fr) 170px 190px 150px 2.6rem; gap: .55rem; align-items: start; padding: .7rem; border: 1px solid var(--linha); border-radius: 14px; background: var(--superficie); box-shadow: var(--sombra); }
+.plano-n { display: grid; place-items: center; width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--menta); color: var(--petroleo-txt); font-weight: 800; font-size: .85rem; margin-top: .35rem; }
+.plano-edit textarea { min-height: 64px; resize: vertical; }
+.plano-edit input, .plano-edit textarea { width: 100%; min-width: 0; }
+.plano-barra { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-top: .8rem; }
+.plano-barra .acoes-inline { flex: 1 1 auto; }
+.plano-status { color: var(--suave); font-size: .88rem; }
+.plano-vazio { padding: 1rem; border: 1.5px dashed var(--linha-forte); border-radius: 14px; text-align: center; }
+@media (max-width: 900px) {
+  .plano-edit .plano-linha { grid-template-columns: 1.8rem minmax(0, 1fr) 2.6rem; }
+  .plano-edit .plano-linha textarea { grid-column: 2 / 3; }
+  .plano-edit .plano-linha [data-c="item"], .plano-edit .plano-linha [data-c="responsavel"], .plano-edit .plano-linha [data-c="prazo"] { grid-column: 2 / 3; }
+  .plano-edit .plano-linha .icone-btn { grid-column: 3; grid-row: 1; }
+  .plano-barra { flex-direction: column; align-items: stretch; }
+  .plano-barra .btn.primario { width: 100%; }
+}
+/* celular: respiro e toque confortável */
+@media (max-width: 640px) {
+  .titulo-sec { margin-top: 1.9rem; }
+  .card, .bloco, .barra-planilha, .rodada { border-radius: 14px; }
+  .btn { min-height: 44px; }
+  .resultado { gap: .8rem; }
+  .entregas { gap: .7rem; }
+}
+.entregas { margin-bottom: 1.4rem; }
+.plano-edit textarea { field-sizing: content; min-height: 64px; max-height: 260px; overflow-y: auto; }
+@media (max-width: 900px) {
+  .plano-edit .plano-linha { grid-template-columns: 1.8rem minmax(0, 1fr) minmax(0, 1fr) 2.6rem; }
+  .plano-edit .plano-linha textarea, .plano-edit .plano-linha [data-c="item"] { grid-column: 2 / 4; }
+  .plano-edit .plano-linha [data-c="responsavel"] { grid-column: 2 / 3; }
+  .plano-edit .plano-linha [data-c="prazo"] { grid-column: 3 / 4; }
+  .plano-edit .plano-linha .icone-btn { grid-column: 4; grid-row: 1; }
+}
+@media (max-width: 900px) { .plano-edit [data-c="prazo"] { padding-inline: .5rem; font-size: .92rem; } }
 
   </style>
 </head>
 <body>
   <!-- ==========================================================================
-       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 45)
+       CHECKLIST DE LIMPEZA · REG-UTL-176 · Univale · site (versão 47)
        Só para o GitHub Pages: cole abaixo, entre as aspas, o link da implantação do Apps Script (termina em /exec).
        Pelo link do Apps Script não é preciso preencher nada.
        ========================================================================== -->
@@ -1051,11 +1118,12 @@ window.CHECKLISTS = {
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const NOMES = { O: 'Ótimo', B: 'Bom', R: 'Regular', I: 'Insatisfatório', NA: 'Não aplicável' };
   const ORDEM = ['O', 'B', 'R', 'I', 'NA'];
-  const CORES = { O: '#1E7A4C', B: '#8DAA3B', R: '#E0A21B', I: '#C8372D', NA: '#9AA6A9' };
+  const CORES = { O: '#007A6E', B: '#3FB8AE', R: '#E39A1E', I: '#D7263D', NA: '#9AA6A9' };
   const ORDEM_CK = ['geral', 'predial_garagem', 'predial_pa', 'parcial'];
   const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
   const STATUS = { PLANEJADO: 'Planejado', REALIZADO: 'Realizado', CANCELADO: 'Cancelado' };
-  const PALETA = ['#00A19B', '#F2A93B', '#6C5CE7', '#E4572E', '#2E86DE', '#8DAA3B', '#023D3A'];
+  // cores das filiais nos gráficos: da marca (teal, vermelho, âmbar, petróleo, aqua), coloridas e harmônicas
+  const PALETA = ['#00A19B', '#D7263D', '#F2A93B', '#023D3A', '#1CCFC9', '#7C8F8C', '#A31F34'];
   const app = $('#app');
   const LOGO_COR = window.LOGO_COR || '', LOGO_BRANCA = window.LOGO_BRANCA || '';
   // ícones Lucide (ISC), embutidos para funcionar sem depender de outro site
@@ -1063,7 +1131,7 @@ window.CHECKLISTS = {
   const ic = (nome, cls) => `<svg class="ic ${cls || ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[nome] || ''}</svg>`;
   const MARCA = `<span class="marca-ic">${ic('clipboard-check')}</span>`;
   const ICONE_ROTA = { teste: 'flask-conical', painel: 'layout-dashboard', avaliacoes: 'clipboard-list', cronograma: 'calendar-days', inicio: 'pen-line', formulario: 'list-checks', filiais: 'building-2', usuarios: 'users', resultados: 'chart-column' };
-  const VERSAO_SITE = '45';
+  const VERSAO_SITE = '47';
   // site atualizado: descarta dados guardados pela versão anterior
   try {
     if (localStorage.getItem('ck_versao_site') !== VERSAO_SITE) {
@@ -1088,6 +1156,8 @@ window.CHECKLISTS = {
   const categoria = (item) => /uniforme/i.test(item) ? 'uniforme' : (/\bEPI/i.test(item) ? 'epi' : 'limpeza');
   const catItem = (it) => (it && it.categoria) || categoria(it && it.nome !== undefined ? it.nome : it);
   const exigeEvidencia = (item, nota, it) => nota === 'R' || nota === 'I' || (nota === 'B' && (it ? catItem(it) : categoria(item)) !== 'limpeza');
+  // foto obrigatória junto com o motivo, menos em Uniforme (opcional)
+  const exigeFoto = (item, nota, it) => exigeEvidencia(item, nota, it) && (it ? catItem(it) : categoria(item)) !== 'uniforme';
   const TEMAS = { auto: ['Automático', 'monitor'], claro: ['Claro', 'sun'], escuro: ['Escuro', 'moon'] };
   const temaAtual = () => { try { return localStorage.getItem('ck_tema') || 'auto'; } catch (e) { return 'auto'; } };
   function aplicarTema(t, redesenhar) {
@@ -1151,7 +1221,7 @@ window.CHECKLISTS = {
   function salvarSessao(s) { state.sessao = s; try { s ? localStorage.setItem('ck_sessao', JSON.stringify(s)) : localStorage.removeItem('ck_sessao'); } catch (e) {} }
 
   /* ---------- API ---------- */
-  const VERSAO_API_MIN = 44; // versão do Code.gs que este site espera
+  const VERSAO_API_MIN = 46; // versão do Code.gs que este site espera
   let avisouVersao = false;
   function avisoVersao() {
     if (avisouVersao || !ehQualidade()) return; // só a Qualidade, que publica o script, recebe o aviso
@@ -1161,7 +1231,7 @@ window.CHECKLISTS = {
     b.querySelector('button').addEventListener('click', () => b.remove());
     document.body.prepend(b);
   }
-  // Dentro do Apps Script o site chama o servidor direto (.script.run); no GitHub usa a URL de CONFIG.API_URL.
+  // Dentro do Apps Script o site chama o servidor direto (google.script.run); no GitHub usa a URL de CONFIG.API_URL.
   const NO_APPS_SCRIPT = !!(window.google && google.script && google.script.run);
   function chamarServidor(pacote, limiteMs) {
     return new Promise((resolve, reject) => {
@@ -1175,7 +1245,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycbyBWB0Hj3HnJh0B3ntJXh9k8dgH5zvnf3KMoIduHzHbQs1ta1xZm4dhUGsioRp62NJR/exec').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -1645,7 +1715,7 @@ window.CHECKLISTS = {
     ck.secoes.forEach((s, si) => s.itens.forEach((it, ii) => {
       if (!itemVale(it, c)) return;
       const r = state.form.respostas[c.id][`${si}-${ii}`];
-      if (r && r.nota) { feitos++; if (exigeEvidencia(it.nome, r.nota, it) && (!r.justificativa || !r.foto)) pend++; }
+      if (r && r.nota) { feitos++; if (exigeEvidencia(it.nome, r.nota, it) && (!r.justificativa || (exigeFoto(it.nome, r.nota, it) && !r.foto))) pend++; }
     }));
     return { feitos, pend, total: itensDaColuna(c) };
   }
@@ -1709,16 +1779,16 @@ window.CHECKLISTS = {
   function itemHTML(colId, si, ii) {
     const it = ckAtual().secoes[si].itens[ii]; const key = `${si}-${ii}`;
     const r = state.form.respostas[colId][key] || {};
-    const precisa = r.nota && exigeEvidencia(it.nome, r.nota, it);
+    const precisa = r.nota && exigeEvidencia(it.nome, r.nota, it), fotoOpc = precisa && !exigeFoto(it.nome, r.nota, it);
     return `<div class="item ${r.nota ? 'feito' : ''}" id="it-${colId}-${key}" data-col="${colId}" data-key="${key}">
       <div class="item-nome">${esc(it.nome)}</div>${it.detalhe ? `<div class="item-detalhe">${esc(it.detalhe)}</div>` : ''}
       <div class="notas" role="radiogroup" aria-label="${esc(it.nome)}">${ORDEM.map((n) => `<button type="button" role="radio" aria-checked="${r.nota === n}" class="nota n-${n} ${r.nota === n ? 'sel' : ''}" data-nota="${n}" title="${NOMES[n]}"><b>${n}</b><span>${NOMES[n]}</span></button>`).join('')}</div>
       ${it.outros && r.nota && r.nota !== 'NA' ? `<label class="campo">Qual item foi avaliado?<input data-campo="descricao" value="${esc(r.descricao || '')}" placeholder="Descreva o item"></label>` : ''}
       ${precisa ? `<div class="evidencia">
-        <p><b class="chip n-${r.nota}">${r.nota}</b> Explique o motivo da nota ${NOMES[r.nota]} e anexe uma foto do que foi pontuado.</p>
+        <p><b class="chip n-${r.nota}">${r.nota}</b> Explique o motivo da nota ${NOMES[r.nota]}${fotoOpc ? '. A foto é opcional.' : ' e anexe uma foto do que foi pontuado.'}</p>
         <label class="campo">Motivo da classificação<textarea data-campo="justificativa" rows="2" placeholder="O que foi encontrado e onde">${esc(r.justificativa || '')}</textarea></label>
         <div class="foto">${r.foto ? `<img src="${r.foto}" alt="Foto anexada de ${esc(it.nome)}"><button type="button" class="link perigo" data-acao="tirarFoto">Remover foto</button>`
-          : `<label class="btn sec foto-btn">Tirar ou escolher foto<input type="file" accept="image/*" data-campo="foto" hidden></label>`}</div>
+          : `<label class="btn sec foto-btn">${fotoOpc ? 'Anexar foto (opcional)' : 'Tirar ou escolher foto'}<input type="file" accept="image/*" data-campo="foto" hidden></label>`}</div>
       </div>` : ''}
     </div>`;
   }
@@ -1771,7 +1841,7 @@ window.CHECKLISTS = {
           if (it.outros && r.nota !== 'NA' && !(r.descricao || '').trim()) return { c, key, msg: `Descreva qual item foi avaliado em ${onde}.` };
           if (exigeEvidencia(it.nome, r.nota, it)) {
             if (!(r.justificativa || '').trim()) return { c, key, msg: `Escreva o motivo da classificação de ${onde}.` };
-            if (!r.foto) return { c, key, msg: `Anexe a foto de ${onde}.` };
+            if (exigeFoto(it.nome, r.nota, it) && !r.foto) return { c, key, msg: `Anexe a foto de ${onde}.` };
           }
         }
       }
@@ -2069,7 +2139,8 @@ window.CHECKLISTS = {
     carregando('Publicando…');
     try { const r = await api('publicarApresentacao', { filial: d.filial, semestre: d.semestre }); carregando();
       d.apresentacao = Object.assign({}, d.apresentacao, { oficial: { url: r.url, publicada_em: new Date().toISOString().slice(0, 16).replace('T', ' '), publicada_por: state.sessao.nome, igualRascunho: true } });
-      atualizarQuadroApresentacao(d); toast('Apresentação publicada para os gestores.', 'ok'); }
+      if (r.plano) { d.plano = r.plano; const pe = $('#planoEdit'); if (pe) { pe.innerHTML = linhasPlano(d.plano); $('#planoStatus').textContent = `${d.plano.length} ação(ões) · atualizado com a apresentação`; } }
+      atualizarQuadroApresentacao(d); toast(r.plano ? 'Publicada. O plano de ação do site foi atualizado com o da apresentação.' : 'Apresentação publicada para os gestores.', 'ok'); }
     catch (e) { carregando(); toast(e.message, 'erro'); }
   }
   async function baixarOficial(d) {
@@ -2084,65 +2155,79 @@ window.CHECKLISTS = {
     } catch (e) { carregando(); toast(e.message, 'erro'); }
   }
 
+  // itens que falharam antes e não falharam nesta rodada (o restante da recorrência já aparece em cada item crítico)
+  function resolvidosHTML(rec) {
+    const rs = rec && rec.itens ? rec.itens.filter((x) => x.nivel === 'resolvido') : [];
+    if (!rs.length) return '';
+    return `<p class="resolvidos">${ic('check')}<span><b>Resolvidos nesta rodada:</b> ${rs.map((x) => esc(x.item)).join(', ')}.</span></p>`;
+  }
   /* ---------- OBSERVAÇÕES da rodada (como nos slides: local, tópicos e fotos na ordem) ---------- */
   function observacoesHTML(d) {
     const obs = d.observacoesRodada || []; if (!obs.length) return '';
-    return `<h2 class="titulo-sec">${ic('camera')}Observações da apresentação</h2>
-      <p class="suave" style="margin-top:-.4rem">Como nos slides de observações: cada grupo de fotos fica com o seu local e o seu texto.</p>
+    return `<details class="mapa bloco obs-details"><summary>${ic('camera')} Observações da apresentação (${obs.length})</summary>
+      <p class="suave">Como nos slides de observações: cada grupo de fotos fica com o seu local e o seu texto.</p>
       <div class="obs-lista">${obs.map((o) => `<article class="obs-card"><div class="obs-texto"><span class="aud-ciclo">${esc(nomeCk(o.checklist))}</span><h3>${esc(o.local)}</h3>
         ${o.intro ? `<p class="suave">${esc(o.intro)}</p>` : ''}${o.topicos.map((t) => `<p>${t[0] ? `<b>${esc(t[0])}:</b> ` : ''}${esc(t[1])}</p>`).join('')}</div>
-        <div class="obs-fotos n${Math.min(o.fotos.length, 4)}">${o.fotos.map((id) => `<div class="foto-lazy" data-foto="${esc(id)}"><span>foto</span></div>`).join('')}</div></article>`).join('')}</div>`;
+        <div class="obs-fotos n${Math.min(o.fotos.length, 4)}">${o.fotos.map((id) => `<div class="foto-lazy" data-foto="${esc(id)}"><span>foto</span></div>`).join('')}</div></article>`).join('')}</div></details>`;
   }
 
   /* ---------- PLANO DE AÇÃO da rodada ---------- */
   const COR_STATUS = { 'Aberta': 'nivel-r', 'Em andamento': 'nivel-b', 'Concluída': 'nivel-o' };
+  const prazoTxt = (a) => (a.prazo ? fmtData(a.prazo) : /prazo:\s*imediato/i.test(a.acao) ? 'Imediato' : '—');
+  const semImediato = (t) => String(t || '').replace(/\s*\(Prazo:\s*imediato\.?\)/i, '');
   function planoHTML(d) {
     if (!d.rodada || !d.rodada.id || d.historico) return '';
-    const pl = d.plano || [], q = ehQualidade() && d.filial !== undefined;
+    const pl = d.plano || [];
     if (!pl.length && !ehQualidade()) return '';
-    return `<h2 class="titulo-sec">${ic('list-todo')}Plano de ação</h2>
-      <p class="suave" style="margin-top:-.4rem">${d.rodada.fluig ? `Item de controle no Fluig nº <b>${esc(d.rodada.fluig)}</b>. ` : ''}As ações, os responsáveis e os prazos entram na apresentação do semestre.</p>
-      ${pl.length ? `<div class="rolagem"><table class="tab-lista tab-plano"><thead><tr><th>Ação</th><th>Item</th><th>Responsável</th><th>Prazo</th></tr></thead><tbody>
-        ${pl.map((a) => `<tr><td><strong>${esc(a.acao.replace(/\s*\(Prazo:\s*imediato\.?\)/i, ''))}</strong></td><td>${esc(a.item || '—')}</td><td>${esc(a.responsavel || '—')}</td><td>${a.prazo ? fmtData(a.prazo) : /prazo:\s*imediato/i.test(a.acao) ? 'Imediato' : '—'}</td></tr>`).join('')}
-        </tbody></table></div>` : '<div class="bloco vazio-curto"><p class="suave">Nenhuma ação registrada para esta rodada.</p></div>'}
-      ${q ? `<div class="acoes-inline" style="margin-top:.75rem"><button class="btn sec" data-acao="editarPlano">${ic('pen-line')} ${pl.length ? 'Editar plano de ação' : 'Montar plano de ação'}</button></div>` : ''}`;
+    const topo = `<h2 class="titulo-sec">${ic('list-todo')}Plano de ação</h2>
+      <p class="suave sub-sec">${d.rodada.fluig ? `Item de controle no Fluig nº <b>${esc(d.rodada.fluig)}</b>. ` : ''}${ehQualidade() ? 'Edite aqui ou na apresentação: ao publicar, o que você mudou na apresentação volta para cá.' : 'Ações, responsáveis e prazos definidos pela Qualidade.'}</p>`;
+    if (!ehQualidade()) return topo + `<div class="rolagem"><table class="tab-lista tab-plano"><thead><tr><th>Ação</th><th>Item</th><th>Responsável</th><th>Prazo</th></tr></thead><tbody>
+      ${pl.map((a) => `<tr><td><strong>${esc(semImediato(a.acao))}</strong></td><td>${esc(a.item || '—')}</td><td>${esc(a.responsavel || '—')}</td><td>${prazoTxt(a)}</td></tr>`).join('')}</tbody></table></div>`;
+    return topo + `<div class="plano-edit" id="planoEdit">${linhasPlano(pl)}</div>
+      <div class="plano-barra"><div class="acoes-inline"><button type="button" class="btn sec pequeno" data-pl="nova">${ic('plus')} Ação</button>
+        <button type="button" class="btn sec pequeno" data-pl="sugerir">${ic('wand-sparkles')} Sugerir dos itens críticos</button>
+        ${d.apresentacao ? `<button type="button" class="btn sec pequeno" data-pl="trazer">${ic('download')} Trazer da apresentação</button>` : ''}</div>
+        <span class="plano-status" id="planoStatus">${pl.length ? `${pl.length} ação(ões) salvas` : 'Nenhuma ação ainda'}</span>
+        <button type="button" class="btn primario" data-pl="salvar" id="planoSalvar" disabled>${ic('check')} Salvar plano</button></div>`;
   }
-  function modalPlano(d) {
-    let linhas = (d.plano || []).map((a) => Object.assign({}, a));
-    const sugerir = () => {
-      const ja = linhas.map((a) => (a.item || '').toLowerCase());
-      ((d.estratificado && d.estratificado.itensCriticos) || []).forEach((it) => { if (ja.includes(it.item.toLowerCase())) return;
-        linhas.push({ acao: `Tratar ${it.item} em ${it.locais.join(', ')}${it.motivos[0] ? ': ' + it.motivos[0].replace(/\.$/, '') : ''}`, item: it.item, responsavel: '', prazo: '' }); });
-      if (!linhas.length) linhas.push({ acao: '', item: '', responsavel: '', prazo: '' });
-    };
-    if (!linhas.length) sugerir();
-    const desenhar = (corpo) => {
-      $('#planoLinhas', corpo).innerHTML = linhas.map((a, i) => `<div class="plano-linha" data-i="${i}">
-        <textarea data-c="acao" rows="2" placeholder="Ação">${esc(a.acao)}</textarea>
-        <input data-c="item" value="${esc(a.item || '')}" placeholder="Item relacionado">
-        <input data-c="responsavel" value="${esc(a.responsavel || '')}" placeholder="Responsável">
-        <input data-c="prazo" type="date" value="${esc(a.prazo || '')}">
-        <button type="button" class="link perigo" data-tira="${i}" title="Remover">✕</button></div>`).join('');
-    };
-    const ler = (corpo) => { $$('.plano-linha', corpo).forEach((el) => { const a = linhas[Number(el.dataset.i)]; $$('[data-c]', el).forEach((x) => { a[x.dataset.c] = x.value; }); }); };
-    const corpo = modal(`<div class="plano-modal"><span class="aud-ciclo">${esc(nomeFilial(d).nome)} · ${esc(d.semestre)}</span><h2>${ic('list-todo')} Plano de ação</h2>
-      <p class="suave">Registre as ações com responsável e prazo. Elas aparecem na apresentação e para os gestores da filial.</p>
-      <div id="planoLinhas"></div>
-      <div class="acoes" style="justify-content:space-between"><div class="acoes-inline"><button type="button" class="btn sec pequeno" data-p="nova">${ic('plus')} Ação</button><button type="button" class="btn sec pequeno" data-p="sugerir">${ic('wand-sparkles')} Sugerir dos itens críticos</button></div>
-        <button type="button" class="btn primario" data-p="salvar">${ic('check')} Salvar plano</button></div></div>`, true);
-    desenhar(corpo);
-    corpo.addEventListener('click', async (ev) => {
-      const t = ev.target.closest('[data-p],[data-tira]'); if (!t) return;
-      ler(corpo);
-      if (t.dataset.tira !== undefined) { linhas.splice(Number(t.dataset.tira), 1); desenhar(corpo); return; }
-      if (t.dataset.p === 'nova') { linhas.push({ acao: '', item: '', responsavel: '', prazo: '' }); desenhar(corpo); $$('.plano-linha textarea', corpo).pop().focus(); return; }
-      if (t.dataset.p === 'sugerir') { sugerir(); desenhar(corpo); return; }
-      if (t.dataset.p === 'salvar') {
-        carregando('Salvando o plano…');
-        try { const r = await api('salvarPlano', { id: d.rodada.id, acoes: linhas.filter((a) => String(a.acao || '').trim()) }); carregando(); fecharModal(); toast(`Plano de ação salvo (${r.acoes} ações).`, 'ok'); rota(state.rota, state.rotaArg); }
-        catch (e) { carregando(); toast(e.message, 'erro'); }
-      }
-    });
+  function linhasPlano(pl) {
+    if (!pl.length) return '<p class="suave plano-vazio">Nenhuma ação registrada. Use “Sugerir dos itens críticos” ou “+ Ação”.</p>';
+    return pl.map((a, i) => `<div class="plano-linha" data-i="${i}"><span class="plano-n">${i + 1}</span>
+      <textarea data-c="acao" rows="2" placeholder="O que será feito">${esc(a.acao)}</textarea>
+      <input data-c="item" value="${esc(a.item || '')}" placeholder="Item relacionado">
+      <input data-c="responsavel" value="${esc(a.responsavel || '')}" placeholder="Responsável">
+      <input data-c="prazo" type="date" value="${esc(a.prazo || '')}" aria-label="Prazo">
+      <button type="button" class="icone-btn" data-pl-tira="${i}" title="Remover ação">${ic('trash-2')}</button></div>`).join('');
+  }
+  function lerPlanoTela(d) { $$('#planoEdit .plano-linha').forEach((el) => { const a = d.plano[Number(el.dataset.i)]; if (a) $$('[data-c]', el).forEach((x) => { a[x.dataset.c] = x.value; }); }); }
+  function planoMudou(texto) { const b = $('#planoSalvar'); if (b) b.disabled = false; const st = $('#planoStatus'); if (st) st.textContent = texto || 'Alterações não salvas'; }
+  async function acaoPlano(d, op, i) {
+    d.plano = d.plano || []; lerPlanoTela(d);
+    if (op === 'tira') { d.plano.splice(i, 1); $('#planoEdit').innerHTML = linhasPlano(d.plano); planoMudou(); return; }
+    if (op === 'nova') { d.plano.push({ acao: '', item: '', responsavel: '', prazo: '' }); $('#planoEdit').innerHTML = linhasPlano(d.plano); planoMudou(); $$('#planoEdit textarea').pop().focus(); return; }
+    if (op === 'sugerir') {
+      const ja = d.plano.map((a) => (a.item || '').toLowerCase()); let n = 0;
+      ((d.estratificado && d.estratificado.itensCriticos) || []).forEach((it) => { if (ja.includes(it.item.toLowerCase())) return; n++;
+        d.plano.push({ acao: `Tratar ${it.item} em ${it.locais.join(', ')}${it.motivos[0] ? ': ' + it.motivos[0].replace(/\.$/, '') : ''}`, item: it.item, responsavel: '', prazo: '' }); });
+      $('#planoEdit').innerHTML = linhasPlano(d.plano); planoMudou(n ? `${n} ação(ões) sugerida(s): complete responsável e prazo` : 'Todos os itens críticos já estão no plano'); return;
+    }
+    if (op === 'trazer') {
+      carregando('Lendo o plano da apresentação…');
+      try { const r = await api('trazerPlano', { filial: d.filial, semestre: d.semestre }); carregando();
+        if (!r.achou) { toast('Não encontrei a tabela de plano de ação na apresentação.', 'aviso'); return; }
+        d.plano = r.acoes; $('#planoEdit').innerHTML = linhasPlano(d.plano); $('#planoSalvar').disabled = true; $('#planoStatus').textContent = `${d.plano.length} ação(ões) trazidas da apresentação`;
+        gravarC(chaveC('painel', { semestre: d.semestre, filial: d.filial }), d); toast('Plano atualizado com o que está na apresentação.', 'ok');
+      } catch (e) { carregando(); toast(e.message, 'erro'); }
+      return;
+    }
+    if (op === 'salvar') {
+      const b = $('#planoSalvar'); b.disabled = true; b.innerHTML = `${ic('refresh-cw')} Salvando…`;
+      try { const r = await api('salvarPlano', { id: d.rodada.id, acoes: d.plano.filter((a) => String(a.acao || '').trim()) });
+        d.plano = r.acoes; $('#planoEdit').innerHTML = linhasPlano(d.plano); $('#planoStatus').textContent = `${d.plano.length} ação(ões) salvas`;
+        gravarC(chaveC('painel', { semestre: d.semestre, filial: d.filial }), d); toast('Plano de ação salvo. Ele entra na próxima apresentação gerada.', 'ok');
+      } catch (e) { b.disabled = false; toast(e.message, 'erro'); }
+      b.innerHTML = `${ic('check')} Salvar plano`;
+    }
   }
 
   function barraLiberacao(d) {
@@ -2180,11 +2265,11 @@ window.CHECKLISTS = {
         <span class="suave">${d.apresentacao && d.apresentacao.oficial ? `Versão oficial publicada pela Qualidade em ${fmtData(d.apresentacao.oficial.publicada_em)}, com o plano de ação, responsáveis e prazos.` : 'A Qualidade ainda não publicou a apresentação deste semestre. Ela aparece aqui assim que for publicada.'}</span></div>
         ${d.apresentacao && d.apresentacao.oficial ? `<div class="acoes-inline"><button class="btn primario" data-acao="baixarOficial">${ic('download')} Baixar apresentação</button></div>` : ''}</div>`)
         : modoAvaliador ? '' : d.historico ? '<p class="aviso-hist">Semestre do histórico importado das planilhas (aba Acumulado): há só as notas por indicador, sem itens nem evidências.</p>' : `
-      ${barraApresentacaoQualidade(d)}
+      <div class="entregas">${barraApresentacaoQualidade(d)}
       <div class="barra-planilha" ${d.filial === 'teste' ? 'hidden' : ''}><span class="barra-ic">${ic('sheet')}</span><div><strong>Planilha de resultado</strong>
         <span class="suave">${d.planilha ? `Atualizada em ${fmtData(d.planilha.atualizado_em)}. Ela se atualiza sozinha até 10 minutos após cada envio.` : 'Gerada automaticamente até 10 minutos após o primeiro envio, no formato da Avaliação Limpeza.'}</span></div>
         <div class="acoes-inline">${d.planilha ? `<a class="btn sec" href="${esc(d.planilha.url)}" target="_blank" rel="noopener">${ic('external-link')} Abrir planilha</a>` : ''}
-        <button class="btn sec" data-acao="gerarPlanilha">${d.planilha ? 'Atualizar agora' : 'Gerar agora'}</button></div></div>`}
+        <button class="btn sec" data-acao="gerarPlanilha">${d.planilha ? 'Atualizar agora' : 'Gerar agora'}</button></div></div></div>`}
       <section class="resultado">
         <div class="nota-final clicavel" data-kpi="final" tabindex="0"><span>Nota final</span><strong ${r.final !== null ? `data-contar="${r.final}"` : ''}>${fmt(r.final)}</strong>
           ${a && a.final !== null ? deltaHTML(r.final, a.final, antRot).replace('class="delta', 'class="delta') + `<small style="margin-top:.2rem">vs ${esc(antRot)} (${fmt(a.final)})</small>` : ''}
@@ -2209,10 +2294,10 @@ window.CHECKLISTS = {
         ${cardSimples('Uniforme e higiene pessoal', r.uniforme, 'uniforme')}${cardSimples('Uso de EPIs', r.epi, 'epi')}</section>
       ${estratificadoHTML(d)}
       ${criticosHTML(d.estratificado && d.estratificado.itensCriticos)}
-      ${recorrentesHTML(d.recorrentes)}
+      ${resolvidosHTML(d.recorrentes)}
       ${observacoesHTML(d)}
       ${planoHTML(d)}
-      ${d.observacoes.length ? `<details class="mapa bloco" style="margin-top:1.5rem"><summary>Todas as evidências e motivos (${d.observacoes.length})</summary><div style="margin-top:1rem">${listaObservacoes(d.observacoes, false)}</div></details>` : ''}`}
+      ${(() => { const outros = d.observacoes.filter((o) => o.nota !== 'R' && o.nota !== 'I'); return outros.length ? `<details class="mapa bloco" style="margin-top:1.5rem"><summary>Outros comentários dos avaliadores (${outros.length})</summary><div style="margin-top:1rem">${listaObservacoes(outros, false)}</div></details>` : ''; })()}`}
       <h2 class="titulo-sec">${ic('history')}Acumulado</h2>
       <section class="bloco">${tabelaAcumulado(d)}<div class="grafico-linha"><canvas id="gAcum"></canvas></div></section>`;
     ORDEM_CK.forEach((k) => { const c = r.checklists[k]; if (c.total) state.charts.push(donut($('#g-' + k), c.contagem)); });
@@ -2407,10 +2492,13 @@ window.CHECKLISTS = {
   function obsHTML(o, mostrarFilial) {
     const ck = CHECKLISTS[o.checklist] ? CHECKLISTS[o.checklist].titulo : o.checklist;
     return `<article class="obs">
-      <div class="obs-foto">${o.foto_id ? `<div class="foto-lazy" data-foto="${esc(o.foto_id)}"><span>Carregando foto…</span></div>` : '<div class="sem-foto">Sem foto</div>'}</div>
+      <div class="obs-foto">${o.foto_id ? `<div class="foto-lazy" data-foto="${esc(o.foto_id)}"><span>Carregando foto…</span></div>`
+        : (o.fotos_obs || []).length ? `<div class="foto-lazy" data-foto="${esc(o.fotos_obs[0])}"><span>Carregando foto…</span></div>${o.fotos_obs.length > 1 ? `<span class="mais-fotos">+${o.fotos_obs.length - 1}</span>` : ''}`
+        : '<div class="sem-foto">Sem foto</div>'}</div>
       <div class="obs-texto"><p class="obs-topo"><b class="chip n-${o.nota}">${o.nota}</b><strong>${esc(o.item)}${o.descricao ? ' · ' + esc(o.descricao) : ''}</strong></p>
         <p class="suave">${mostrarFilial && o.filial_nome ? esc(o.filial_nome) + ' · ' : ''}${esc(ck)} · ${esc(o.coluna)}${o.data_inspecao ? ' · ' + fmtData(o.data_inspecao) : ''}</p>
         <p>${esc(o.justificativa || '—')}</p>
+        ${!o.foto_id && (o.fotos_obs || []).length ? `<button class="link" data-fotos-obs="${esc(o.fotos_obs.join(','))}" data-obs-local="${esc(o.obs_local || '')}">${ic('camera')} Ver ${o.fotos_obs.length === 1 ? 'a foto' : 'as ' + o.fotos_obs.length + ' fotos'} da observação${o.obs_local ? ' · ' + esc(o.obs_local) : ''}</button>` : ''}
         ${o.avaliacao_id ? `<button class="link" data-detalhe="${esc(o.avaliacao_id)}">Ver avaliação completa</button>` : ''}</div></article>`;
   }
   function listaObservacoes(obs, mostrarFilial) {
@@ -2498,7 +2586,7 @@ window.CHECKLISTS = {
 
   async function montarPptx(d) {
     const C = { esc: '023D3A', verde: '007A6E', teal: '00A19B', aqua: '1CCFC9', menta: 'D6F0ED', claro: 'F2FAFA', cinza: '5E7D7A', branco: 'FFFFFF', verm: 'E6062E', tinta: '12232A' };
-    const CN = { O: '0B8F86', B: '4DC8BB', R: 'E0A21B', I: 'C8372D' };
+    const CN = { O: '007A6E', B: '3FB8AE', R: 'E39A1E', I: 'D7263D' };
     const FT = 'Segoe UI', FB = 'Segoe UI Semibold';
     const f = nomeFilial(d), r = d.resumo, ro = d.rodada || {}, est = d.estratificado || { locais: [], veiculos: [], itensCriticos: [] };
     const sem = d.semestre, m = String(sem).match(/(\d)º Semestre\/(\d{2})/), semLongo = m ? `${m[1]}º Semestre • 20${m[2]}` : sem;
@@ -2743,7 +2831,7 @@ window.CHECKLISTS = {
       const cks = ORDEM_CK.filter((k) => est.locais.some((l) => l.checklists[k]));
       const cabT = [{ text: 'Local', options: { bold: true, color: C.branco, fill: { color: C.teal } } }].concat(cks.map((k) => ({ text: nomeCk(k), options: { bold: true, color: C.branco, fill: { color: C.teal }, align: 'center' } })))
         .concat(['Uniforme', 'EPI', 'Nota do local'].map((t) => ({ text: t, options: { bold: true, color: C.branco, fill: { color: t === 'Nota do local' ? C.esc : C.teal }, align: 'center' } })));
-      const corN = (n) => n === null || n === undefined ? C.cinza : n >= 95 ? '1E7A4C' : n >= 90 ? 'B07A00' : 'C8372D';
+      const corN = (n) => n === null || n === undefined ? C.cinza : n >= 95 ? '007A6E' : n >= 90 ? 'B07A00' : 'D7263D';
       const celN = (n) => ({ text: nf(n), options: { align: 'center', bold: true, color: corN(n) } });
       const linhasL = [cabT].concat(est.locais.map((l, i) => [{ text: [{ text: l.local, options: { bold: true, breakLine: true } }, { text: (l.tipo === 'garagem' ? 'Garagem' : 'Ponto de apoio') + ` · ${l.total} itens`, options: { fontSize: 9, color: C.cinza } }], options: { fill: { color: i % 2 ? 'F7FCFC' : C.branco } } }]
         .concat(cks.map((k) => Object.assign(celN(l.checklists[k] ? l.checklists[k].nota : null), {})))
@@ -2754,7 +2842,7 @@ window.CHECKLISTS = {
         border: { type: 'solid', pt: 0.6, color: 'C8E0DD' }, rowH: altL, valign: 'middle' });
       const yG = 1.5 + altL * (est.locais.length + 1) + 0.3, hG = H - 1.25 - yG;
       if (hG > 1.4) { // gráfico de barras: nota de cada local por checklist
-        const PAL = ['00A19B', 'F2A93B', '6C5CE7', 'E4572E'];
+        const PAL = ['00A19B', 'D7263D', 'F2A93B', '023D3A'];
         sl.addChart(pptx.ChartType.bar, cks.map((k) => ({ name: nomeCk(k), labels: est.locais.map((l) => l.local.replace(/^Garagem /, '')), values: est.locais.map((l) => l.checklists[k] ? Math.round(l.checklists[k].nota * 100) / 100 : 0) })),
           { x: 0.6, y: yG, w: W - 1.2, h: hG, barDir: 'col', barGrouping: 'clustered', chartColors: PAL.slice(0, cks.length), valAxisMinVal: 70, valAxisMaxVal: 100, valAxisLabelFontSize: 9,
             catAxisLabelFontSize: 11, showLegend: true, legendPos: 'r', legendFontSize: 10, showValue: true, dataLabelFontSize: 8, dataLabelFormatCode: '0.0', valGridLine: { color: 'DDEBEA', size: 0.5 } });
@@ -2771,11 +2859,11 @@ window.CHECKLISTS = {
       sl = pptx.addSlide(); sl.background = { color: C.claro };
       ret(sl, 0, 0, W, 1.25, C.esc); bola(sl, W - 1.6, -0.7, 2.2, C.aqua, 80);
       txt(sl, [{ text: 'Itens recorrentes', options: { fontSize: 28, bold: true, breakLine: true } }, { text: 'Regular ou Insatisfatório em rodadas seguidas · ponto de melhoria e atenção', options: { fontSize: 13, color: C.aqua } }], { x: 0.6, y: 0.22, w: 11, h: 0.95 });
-      const semsR = d.recorrentes.semestres, corNv = { critico: 'C8372D', atencao: 'E0A21B', voltou: 'E0A21B' };
+      const semsR = d.recorrentes.semestres, corNv = { critico: 'D7263D', atencao: 'E39A1E', voltou: 'E39A1E' };
       const cabR = [{ text: 'Item', options: { bold: true, color: C.branco, fill: { color: C.teal } } }].concat(semsR.map((x) => ({ text: x.replace(' Semestre/', 'º/').replace('ºº', 'º'), options: { bold: true, color: C.branco, fill: { color: C.teal }, align: 'center' } })))
         .concat([{ text: 'Seguidas', options: { bold: true, color: C.branco, fill: { color: C.esc }, align: 'center' } }, { text: 'Situação', options: { bold: true, color: C.branco, fill: { color: C.esc }, align: 'center' } }]);
       const linhasR = [cabR].concat(recs.map((it) => [{ text: [{ text: it.item, options: { bold: true, breakLine: true } }, { text: nomeCk(it.checklist), options: { fontSize: 9, color: C.cinza } }] }]
-        .concat(it.historico.map((h) => ({ text: h.ocorreu ? '●' : '○', options: { align: 'center', fontSize: 16, color: h.ocorreu ? 'C8372D' : 'B0CAC4' } })))
+        .concat(it.historico.map((h) => ({ text: h.ocorreu ? '●' : '○', options: { align: 'center', fontSize: 16, color: h.ocorreu ? 'D7263D' : 'B0CAC4' } })))
         .concat([{ text: String(it.seguidas), options: { align: 'center', bold: true } }, { text: (NIVEL_REC[it.nivel] || [''])[0], options: { align: 'center', bold: true, color: C.branco, fill: { color: corNv[it.nivel] || C.teal } } }])));
       sl.addTable(linhasR, { x: 0.6, y: 1.6, w: W - 1.2, colW: [4.6].concat(Array(semsR.length).fill((W - 1.2 - 4.6 - 3.2) / semsR.length)).concat([1.4, 1.8]), fontFace: FT, fontSize: 12, color: C.tinta,
         fill: { color: C.branco }, border: { type: 'solid', pt: 0.6, color: 'C8E0DD' }, rowH: 0.55, valign: 'middle' });
@@ -3663,9 +3751,13 @@ window.CHECKLISTS = {
     if (el('[data-ver-filial]')) { state.filial = el('[data-ver-filial]').dataset.verFilial; rota(rotaPainel()); return; }
     if (el('[data-novo-crono]')) { const [fid, ano, c] = el('[data-novo-crono]').dataset.novoCrono.split('|'); editarCrono({ filial_id: fid, ano: Number(ano), ciclo: Number(c), pontos: [], auditores: [] }); return; }
     if (el('[data-kpi]')) { const k = el('[data-kpi]'); abrirKpi(k.dataset.kpi, k.dataset.chave); return; }
-    if (el('[data-form-aba]')) { if (state.formEdit) lerEditorForm(); VIEWS.formulario(el('[data-form-aba]').dataset.formAba); return; }
+    if (el('[data-form-aba]')) { if (state.formEdit) lerEditorForm(); const y = window.scrollY; VIEWS.formulario(el('[data-form-aba]').dataset.formAba).then(() => window.scrollTo(0, Math.min(y, 220))); return; }
     if (el('[data-fe]')) { acaoEditorForm(el('[data-fe]')); return; }
     if (el('[data-onde]')) { const [si, ii] = el('[data-onde]').dataset.onde.split('-').map(Number); modalOnde(si, ii); return; }
+    if (el('[data-fotos-obs]')) { const b = el('[data-fotos-obs]'), ids = b.dataset.fotosObs.split(',');
+      const corpo = modal(`<h2>${ic('camera')} Fotos da observação</h2><p class="suave">${esc(b.dataset.obsLocal || '')}</p>
+        <div class="obs-fotos n${Math.min(ids.length, 4)}" style="min-height:420px">${ids.map((id) => `<div class="foto-lazy" data-foto="${esc(id)}"><span>foto</span></div>`).join('')}</div>`, true);
+      observarFotos(corpo); return; }
     if (el('[data-prorrogar]')) { const id = el('[data-prorrogar]').dataset.prorrogar;
       const e = (state.crono && state.crono.entradas.find((x) => x.id === id)) || (state.testeDados && state.testeDados.entradas.find((x) => x.id === id));
       if (e) modalProrrogar(e, e.filial_id === 'teste' || !state.crono ? 'Matriz · Teste' : `${(state.crono.filiais.find((f) => f.id === e.filial_id) || {}).nome || ''} ${ciclo(e)}`); return; }
@@ -3700,7 +3792,8 @@ window.CHECKLISTS = {
     if (acao === 'gerarApresentacao') { gerarApresentacao(state.painelAtual); return; }
     if (acao === 'publicarApresentacao') { publicarApresentacao(state.painelAtual); return; }
     if (acao === 'baixarOficial') { baixarOficial(state.painelAtual); return; }
-    if (acao === 'editarPlano') { modalPlano(state.painelAtual); return; }
+    if (el('[data-pl]')) { acaoPlano(state.painelAtual, el('[data-pl]').dataset.pl); return; }
+    if (el('[data-pl-tira]')) { acaoPlano(state.painelAtual, 'tira', Number(el('[data-pl-tira]').dataset.plTira)); return; }
     if (acao === 'editarFluig') { modalFluig(state.painelAtual); return; }
     if (acao === 'salvarForm') { salvarEditorForm(); return; }
     if (acao === 'restaurarForm') { restaurarEditorForm(); return; }
@@ -3726,7 +3819,11 @@ window.CHECKLISTS = {
     if (acao === 'enviar') { enviarChecklist(); return; }
 
     const tab = el('[data-coluna]');
-    if (tab) { f.ativa = tab.dataset.coluna; renderAbas(); renderColuna(); $('#abasColunas').scrollIntoView({ behavior: 'smooth', block: 'start' }); salvarRascunho(); return; }
+    if (tab) { // troca de veículo/local sem mexer na rolagem da página; a aba escolhida só desliza para o lado na faixa de abas
+      f.ativa = tab.dataset.coluna; const y = window.scrollY; renderAbas(); renderColuna(); window.scrollTo(0, y);
+      const at = $('#abasColunas .tab.ativa'), faixa = at && at.closest('.tabs');
+      if (faixa && at && faixa.scrollWidth > faixa.clientWidth) faixa.scrollTo({ left: at.offsetLeft - faixa.clientWidth / 2 + at.offsetWidth / 2, behavior: 'smooth' });
+      salvarRascunho(); return; }
     const add = el('[data-add]');
     if (add) { const c = { id: uid(), grupo: add.dataset.add, nome: '' }; const ult = f.colunas.map((x) => x.grupo).lastIndexOf(c.grupo);
       f.colunas.splice(ult + 1, 0, c); f.respostas[c.id] = respostasIniciais(ckAtual()); f.ativa = c.id; renderAbas(); renderColuna(); atualizarProgresso(); salvarRascunho(); $('#fPrefixo') && $('#fPrefixo').focus(); return; }
@@ -3754,10 +3851,15 @@ window.CHECKLISTS = {
   });
 
   document.addEventListener('input', (e) => { if (e.target.id === 'fAcomp' && state.form) { state.form.acompanhante = e.target.value; salvarRascunho(); } });
+  // caixas de texto do plano crescem com o texto (para navegadores sem "field-sizing")
+  const ajustarAltura = (t) => { if (!t || CSS.supports('field-sizing', 'content')) return; t.style.height = 'auto'; t.style.height = Math.min(260, t.scrollHeight + 2) + 'px'; };
+  document.addEventListener('input', (e) => { if (e.target.closest && e.target.closest('#planoEdit')) { planoMudou(); if (e.target.tagName === 'TEXTAREA') ajustarAltura(e.target); } });
+  new MutationObserver(() => { const pe = document.getElementById('planoEdit'); if (pe && !pe.dataset.ajustado) { pe.dataset.ajustado = '1'; requestAnimationFrame(() => { $$('textarea', pe).forEach(ajustarAltura); delete pe.dataset.ajustado; }); } }).observe(document.body, { childList: true, subtree: true });
   document.addEventListener('change', async (e) => {
     const t = e.target;
     if (t.id === 'selSem') { state.semestre = t.value; rota(state.rota); return; }
     if (t.id === 'selFilial') { state.filial = t.value; rota(state.rota); return; }
+    if (t.closest && t.closest('#planoEdit')) { planoMudou(); return; }
     if (t.id === 'feFiltro') { lerEditorForm(); state.formFiltro = t.value; renderEditorForm(true); return; }
     if (t.id === 'selAno') { state.anoCrono = Number(t.value); renderCronograma(); return; }
     if (state.rota !== 'form' || !state.form) return;
