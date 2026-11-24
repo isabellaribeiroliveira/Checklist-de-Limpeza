@@ -1245,7 +1245,7 @@ window.CHECKLISTS = {
           .api(JSON.stringify(pacote));
         return;
       }
-      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycby-wwFzYjbk_i9VfxA1zEqFVzyCEhKjKHyHBA23YGFk8A0Im7CUGHj1syhNow6BH9ayLg/exec').trim();
       if (!url) { clearTimeout(t); reject(new Error('Abra o sistema pelo link do Apps Script, ou preencha API_URL no topo do index.html.')); return; }
       fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(pacote) })
         .then((res) => res.text())
@@ -1469,7 +1469,7 @@ window.CHECKLISTS = {
       <div class="acoes" style="justify-content:flex-start"><button class="btn sec" data-acao="refazerDiag">Testar de novo</button><button class="btn primario" data-rota="login">Voltar ao site</button></div></main>`;
     const itens = [linha(true, 'Site carregado', `Versão do site ${VERSAO_SITE} · ${NO_APPS_SCRIPT ? 'aberto pelo link do Apps Script' : 'aberto fora do Apps Script (GitHub)'}`)];
     if (!NO_APPS_SCRIPT) {
-      const url = (window.CONFIG && CONFIG.API_URL || '').trim();
+      const url = (window.CONFIG && CONFIG.API_URL || 'https://script.google.com/macros/s/AKfycby-wwFzYjbk_i9VfxA1zEqFVzyCEhKjKHyHBA23YGFk8A0Im7CUGHj1syhNow6BH9ayLg/exec').trim();
       if (!url) itens.push(linha(false, 'API_URL vazia', 'Fora do Apps Script, preencha API_URL no topo do index.html com o link da implantação (termina em /exec). Ou simplesmente use o link do Apps Script.'));
       else if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(url)) itens.push(linha(false, 'API_URL parece errada', `Está assim: <code>${esc(url)}</code>. Ela deve terminar em <b>/exec</b>.`));
       else itens.push(linha(true, 'API_URL configurada', `<code>${esc(url)}</code>`));
